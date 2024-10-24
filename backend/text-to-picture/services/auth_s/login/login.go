@@ -1,14 +1,16 @@
 package login
 
 import (
-	"log"
+	"errors"
+	middlewire "gocode/backend/backend/text-to-picture/middlewire/jwt"
+	models "gocode/backend/backend/text-to-picture/models/init"
 	"net/http"
-	"text-to-picture/middlewire"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -21,11 +23,6 @@ type User struct {
 
 // 注册
 func Register(c *gin.Context) {
-	db, err := InitDB()
-	if err != nil {
-		log.Fatalf("数据库连接错误: %v", err)
-	}
-
 	// 定义用于接收 JSON 数据的结构体
 	var input struct {
 		Name     string `json:"name"`
@@ -45,15 +42,18 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// 检查邮箱是否存在
 	var user User
-	err = db.QueryRow("SELECT id FROM users WHERE email = $1", input.Email).Scan(&user.ID)
-	if err == nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"message": "用户已存在"})
+	result := models.DB.Where("email = ?", input.Name).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "用户邮箱存在"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
 	// 创建用户
-	_, err = db.Exec("INSERT INTO users (name, email, password, is_verified) VALUES ($1, $2, $3, $4)", input.Name, input.Email, input.Password, true)
+	err := models.DB.Exec("INSERT INTO users (name, email, password, is_verified) VALUES ($1, $2, $3, $4)", input.Name, input.Email, input.Password, true)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "用户创建失败"})
 		return
@@ -67,11 +67,6 @@ func Register(c *gin.Context) {
 
 // 登录
 func Login(c *gin.Context) {
-	db, err := InitDB()
-	if err != nil {
-		log.Fatalf("数据库连接错误: %v", err)
-	}
-	defer db.Close()
 
 	// 定义用于接收 JSON 数据的结构体
 	var input struct {
@@ -87,12 +82,15 @@ func Login(c *gin.Context) {
 
 	// 查找用户
 	var user User
-	err = db.QueryRow("SELECT id, password FROM users WHERE name = $1", input.Name).Scan(&user.ID, &user.Password)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "用户不存在"})
+	result := models.DB.Where("name = ?", input.Name).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "用户不存在"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
-
 	// 验证密码
 	if user.Password != input.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "密码错误"})
