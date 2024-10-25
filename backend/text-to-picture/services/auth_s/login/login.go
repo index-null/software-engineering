@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,7 @@ type User struct {
 	IsVerified bool
 }
 
+// 注册
 // 注册
 func Register(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
@@ -42,24 +44,37 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// 检查邮箱是否已存在
 	var user User
-	result := models.DB.Where("email = ?", input.Name).First(&user)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "用户邮箱存在"})
-			return
-		}
+	result := models.DB.Where("email = ?", input.Email).First(&user)
+	if result.Error == nil {
+		c.JSON(http.StatusConflict, gin.H{"message": "用户邮箱已存在"})
+		return
+	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
-	// 创建用户
-	err := models.DB.Exec("INSERT INTO users (name, email, password, is_verified) VALUES ($1, $2, $3, $4)", input.Name, input.Email, input.Password, true)
+
+	// 对密码进行哈希处理
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "密码加密失败"})
+		return
+	}
+
+	// 创建用户
+	newUser := User{
+		Name:       input.Name,
+		Email:      input.Email,
+		Password:   string(hashedPassword),
+		IsVerified: true,
+	}
+	if err := models.DB.Create(&newUser).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "用户创建失败"})
 		return
 	}
 
-	// 返回结果，包括加密后的密码
+	// 返回结果
 	c.JSON(http.StatusOK, gin.H{
 		"message": "注册成功",
 	})
@@ -67,7 +82,6 @@ func Register(c *gin.Context) {
 
 // 登录
 func Login(c *gin.Context) {
-
 	// 定义用于接收 JSON 数据的结构体
 	var input struct {
 		Name     string `json:"name"`
@@ -91,11 +105,13 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
-	// 验证密码
-	if user.Password != input.Password {
+
+	// 验证密码将用户的明文密码与数据库中的哈希密码对比
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "密码错误"})
 		return
 	}
+
 	// 生成 JWT
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &middlewire.Claims{
@@ -111,6 +127,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "生成 token 错误"})
 		return
 	}
+
 	// 登录成功
 	c.JSON(http.StatusOK, gin.H{
 		"message": "登录成功",
