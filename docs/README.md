@@ -65,11 +65,11 @@
 
 5. **图片收藏界面**
    - 查询展示出用户的收藏图片
-   
+
 6. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，result，time
-   - 收藏表：id，user（外键），result（外键）
+   - 收藏表：id，user（外键），result
 
 
   
