@@ -1,4 +1,4 @@
-package models
+package repository
 
 import (
 	d "gocode/backend/backend/text-to-picture/models/init"
