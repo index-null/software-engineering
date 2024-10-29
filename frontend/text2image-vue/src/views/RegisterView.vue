@@ -1,5 +1,6 @@
 <template>
   <div class="register-container">
+    <h1>注册</h1>
     <el-form ref="registerForm" :model="registerForm" :rules="rules" label-width="100px">
       <el-form-item label="用户名">
         <el-input v-model="registerForm.username" ></el-input>
