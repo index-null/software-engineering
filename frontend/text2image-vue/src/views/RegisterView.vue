@@ -2,17 +2,17 @@
   <div class="register-container">
     <h1>注册</h1>
     <el-form ref="registerForm" :model="registerForm" :rules="rules" label-width="100px">
-      <el-form-item label="用户名">
+      <el-form-item label="用户名" prop="username">
         <el-input v-model="registerForm.username" ></el-input>
       </el-form-item>
-      <el-form-item label="邮箱">
+      <el-form-item label="邮箱" prop="email">
         <el-input v-model="registerForm.email" type="email"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
-        <el-input type="password" v-model="registerForm.password"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input type="password" v-model="registerForm.password"  autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码">
-        <el-input type="password" v-model="registerForm.confirmPassword"></el-input>
+      <el-form-item label="确认密码" prop="confirmPassword">
+        <el-input type="password" v-model="registerForm.confirmPassword"  autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">注册</el-button>
@@ -44,31 +44,44 @@ export default {
       { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
     ],
     password: [
-      { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 6, max: 16, message: '密码长度在 6 到 16 个字符', trigger: 'blur' }
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { validator: this.validatePass, trigger: 'blur' }
     ],
     confirmPassword: [
-        { required: true, message: '请再次输入密码', trigger: 'blur' },
-        { validator: (rule, value, callback) => {
-            if (value !== this.registerForm.password) {
-              callback(new Error('两次输入的密码不一致'));
-            } else {
-              callback();
-            }
-          }, trigger: 'blur' }
+    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    { validator: this.validatePass2, trigger: 'blur' }
       ]
   },
   methods: {
+    validatePass(rule, value, callback) {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        if (this.registerForm.password !== "") {
+          this.$refs.registerForm.validateField("confirmPassword");
+        }
+        callback();
+      }
+    },
+    validatePass2(rule, value, callback) {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.registerForm.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    },
     submitForm() {
-        this.$refs.registerForm.validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
+      this.$refs.registerForm.validate((valid) => {
+        if (valid) {
+          alert('submit!');
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
       resetForm() {
         this.$refs.registerForm.resetFields();
     }
