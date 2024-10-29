@@ -53,6 +53,17 @@
         },
       };
     },
+    created(){
+      const registeredUsername = localStorage.getItem('registeredUsername');
+      if(registeredUsername){
+        this.ruleForm.uname = registeredUsername; // 填充用户名
+        this.$message.success(`欢迎回来，${registeredUsername}`);
+      }else{
+        this.$message.error('请先注册', {
+        duration: 2000 // 显示时间设置为 5000 毫秒，即 5 秒
+        });
+      }
+    },
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {

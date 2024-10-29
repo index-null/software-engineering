@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
@@ -83,12 +84,34 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
+        // 后端设置路由处理注册信息
+        axios.post('/api/register', this.registerForm)
+          .then(response => {
+            if (response.data.success) {
+              // 注册成功，保存用户名到本地存储
+              localStorage.setItem('registeredUsername', this.registerForm.uname);
+              // 跳转到登录界面
+              this.$router.push('/login');
+            } else {
+              // 注册失败，显示错误消息
+              this.$message.error(response.data.message);
+            }
+          })
+          .catch(error => {
+             console.error('注册失败:', error);
+            if (error.response) {
+            // 服务器端错误，可以获取错误状态和消息
+            this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
+            } else if (error.request) {
+            // 请求已发出，但未收到响应
+            this.$message.error('请求未响应，请检查网络连接');
+            } else {
+            // 发送请求时出错
+            this.$message.error('请求发送失败，请稍后再试');
+            }
+          });
         }
-      });
+      })
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -100,8 +123,8 @@ export default {
       }else{
         this.$router.go(-1);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
