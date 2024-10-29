@@ -88,7 +88,7 @@ export default {
         axios.post('/api/register', this.registerForm)
           .then(response => {
             if (response.data.success) {
-              // 注册成功，保存用户名到本地存储
+              // 注册成功，保存用户名到本地浏览器中
               localStorage.setItem('registeredUsername', this.registerForm.uname);
               // 跳转到登录界面
               this.$router.push('/login');
