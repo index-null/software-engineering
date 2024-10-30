@@ -1,4 +1,4 @@
-package models
+package repository
 
 import (
 	d "gocode/backend/backend/text-to-picture/models/init"
@@ -10,7 +10,7 @@ import (
 )
 
 // 根据用户名查询用户信息
-func GetUserByUserName(db *gorm.DB, username string) (*u.UserLogin, error) {
+func GetUserByName(db *gorm.DB, username string) (*u.UserLogin, error) {
 	var user u.UserLogin
 	err := db.Where("user_name = ?", username).First(&user).Error
 	if err != nil {
@@ -37,7 +37,7 @@ func GetUserInfo(c *gin.Context) {
 	var user *u.UserLogin
 	var err error
 	if username != "" {
-		user, err = GetUserByUserName(d.DB, username)
+		user, err = GetUserByName(d.DB, username)
 	} else if useremail != "" {
 		user, err = GetUserByEmail(d.DB, username)
 	}
@@ -51,5 +51,4 @@ func GetUserInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
-
 }
