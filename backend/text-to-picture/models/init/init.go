@@ -1,4 +1,4 @@
-package models
+package init
 
 import (
 	"fmt"
@@ -11,26 +11,26 @@ import (
 const createTableSQL = `
 CREATE TABLE IF NOT EXISTS user_login (
     id INT PRIMARY KEY,
-	email VARCHAR(255) UNIQUE NOT NULL,
-	username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+	email VARCHAR(50) UNIQUE NOT NULL,
+	username VARCHAR(30) NOT NULL,
+    password VARCHAR(30) NOT NULL,
     token VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS user_query (
     id INT PRIMARY KEY,
-	user_id INT NOT NULL,
+	userName VARCHAR(30) NOT NULL,
     params TEXT,
     result TEXT,
     time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES user_login(id)
+    FOREIGN KEY (userName) REFERENCES user_login(username)
 );
 
-CREATE TABLE IF NOT EXISTS image (
+CREATE TABLE IF NOT EXISTS FavoritedImage (
 	id INT PRIMARY KEY,
-	user_id INT NOT NULL,
+	userName VARCHAR(30) NOT NULL,
 	result TEXT,
-	FOREIGN KEY (user_id) REFERENCES user_login(id)
+	FOREIGN KEY (userName) REFERENCES user_login(username)
 )
 `
 

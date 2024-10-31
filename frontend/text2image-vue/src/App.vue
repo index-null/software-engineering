@@ -4,9 +4,20 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </nav>
+    <UserProfile />
     <router-view/>
   </div>
 </template>
+
+<script>
+import UserProfile from './components/UserProfile.vue';
+export default {
+  name: 'App',
+  components: {
+    UserProfile
+  }
+}
+</script>
 
 <style>
 #app {
