@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gocode/backend/backend/text-to-picture/models/image"
-	 models "gocode/backend/backend/text-to-picture/models/user"
+	 userLogin "gocode/backend/backend/text-to-picture/models/user"
 	"regexp"
 
 	"gorm.io/gorm"
@@ -18,7 +18,7 @@ func isValidEmail(email string) bool {
 }
 
 // 向用户登录表插入数据
-func InsertUserLogin(db *gorm.DB, user *models.UserLogin) error {
+func InsertUserLogin(db *gorm.DB, user *userLogin.UserLogin) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
@@ -34,7 +34,7 @@ func InsertUserLogin(db *gorm.DB, user *models.UserLogin) error {
 	if isValidEmail(user.Email) == false {
 		return fmt.Errorf("邮箱格式不正确")
 	}
-	var existingUserLogin models.UserLogin
+	var existingUserLogin userLogin.UserLogin
 
 	result := db.Where("UserName = ?", user.UserName).First(&existingUserLogin)
 	if result.Error == nil {
