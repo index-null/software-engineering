@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/lib/pq v1.10.9
 	golang.org/x/crypto v0.23.0
 	gorm.io/driver/postgres v1.5.9
