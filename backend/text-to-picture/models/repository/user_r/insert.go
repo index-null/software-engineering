@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gocode/backend/backend/text-to-picture/models/image"
-	 userLogin "gocode/backend/backend/text-to-picture/models/user"
+	userLogin "gocode/backend/backend/text-to-picture/models/user"
 	"regexp"
 
 	"gorm.io/gorm"
@@ -18,7 +18,7 @@ func isValidEmail(email string) bool {
 }
 
 // 向用户登录表插入数据
-func InsertUserLogin(db *gorm.DB, user *userLogin.UserLogin) error {
+func InsertUserLogin(db *gorm.DB, user *userLogin.Register) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
@@ -34,7 +34,7 @@ func InsertUserLogin(db *gorm.DB, user *userLogin.UserLogin) error {
 	if isValidEmail(user.Email) == false {
 		return fmt.Errorf("邮箱格式不正确")
 	}
-	var existingUserLogin userLogin.UserLogin
+	var existingUserLogin userLogin.Register
 
 	result := db.Where("UserName = ?", user.UserName).First(&existingUserLogin)
 	if result.Error == nil {
@@ -58,17 +58,17 @@ func InsertUserLogin(db *gorm.DB, user *userLogin.UserLogin) error {
 }
 
 // 向用户查询表插入数据
-func InsertUserQuery(db *gorm.DB, user *image.UserQuery) error {
-	if err := InsertUserLogin(db, &user.User); err != nil {
-		return err
-	}
+func InsertUserQuery(db *gorm.DB, user *image.QueryImage) error {
+	//if err := InsertUserLogin(db, &user.User); err != nil {
+	//	return err
+	//}
 	if user.Params == "" {
 		return fmt.Errorf("参数为空")
 	}
 	if user.Result == "" {
 		return fmt.Errorf("结果为空")
 	}
-	if user.Time == "" {
+	if user.Time.IsZero() {
 		return fmt.Errorf("时间参数为空")
 	}
 
@@ -81,10 +81,10 @@ func InsertUserQuery(db *gorm.DB, user *image.UserQuery) error {
 }
 
 // 向用户收藏表插入数据
-func InsertFavoritedImage(db *gorm.DB, user *image.FavoritedImage) error {
-	if err := InsertUserLogin(db, &user.User); err != nil {
-		return err
-	}
+func InsertFavoritedImage(db *gorm.DB, user *image.Image) error {
+	//if err := InsertUserLogin(db, &user.User); err != nil {
+	//	return err
+	//}
 	if user.Result == "" {
 		return fmt.Errorf("结果为空")
 	}
