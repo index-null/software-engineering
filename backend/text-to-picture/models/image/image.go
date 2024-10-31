@@ -1,4 +1,5 @@
-package models
+package image
+
 
 import(
 	u "gocode/backend/backend/text-to-picture/models/user"
