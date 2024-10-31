@@ -4,6 +4,8 @@ import (
 	"errors"
 	middlewire "gocode/backend/backend/text-to-picture/middlewire/jwt"
 	models "gocode/backend/backend/text-to-picture/models/init"
+	"gocode/backend/backend/text-to-picture/models/repository/user_r"
+	userLogin "gocode/backend/backend/text-to-picture/models/user"
 	"net/http"
 	"time"
 
@@ -23,35 +25,13 @@ type User struct {
 }
 
 // 注册
-// 注册
 func Register(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
-	var input struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var input userLogin.Register
 
 	// 解析 JSON 数据
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "请求数据格式错误"})
-		return
-	}
-
-	// 数据验证
-	if len(input.Name) == 0 || len(input.Email) == 0 || len(input.Password) < 6 {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"message": "参数不完整或密码长度不足"})
-		return
-	}
-
-	// 检查邮箱是否已存在
-	var user User
-	result := models.DB.Where("email = ?", input.Email).First(&user)
-	if result.Error == nil {
-		c.JSON(http.StatusConflict, gin.H{"message": "用户邮箱已存在"})
-		return
-	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
 
@@ -62,15 +42,10 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// 创建用户
-	newUser := User{
-		Name:       input.Name,
-		Email:      input.Email,
-		Password:   string(hashedPassword),
-		IsVerified: true,
-	}
-	if err := models.DB.Create(&newUser).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "用户创建失败"})
+	//修改密码为加密密码，插入数据
+	input.Password = string(hashedPassword)
+	if err := user_r.InsertUserLogin(models.DB, &input); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "用户创建失败", "error": err.Error()})
 		return
 	}
 

@@ -1,6 +1,7 @@
-package repository
+package user_r
 
 import (
+	"errors"
 	d "gocode/backend/backend/text-to-picture/models/init"
 	u "gocode/backend/backend/text-to-picture/models/user"
 	"net/http"
@@ -10,8 +11,8 @@ import (
 )
 
 // 根据用户名查询用户信息
-func GetUserByName(db *gorm.DB, username string) (*u.UserLogin, error) {
-	var user u.UserLogin
+func GetUserByName(db *gorm.DB, username string) (*u.Login, error) {
+	var user u.Login
 	err := db.Where("user_name = ?", username).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -20,8 +21,8 @@ func GetUserByName(db *gorm.DB, username string) (*u.UserLogin, error) {
 }
 
 // 根据电子邮件查询用户信息
-func GetUserByEmail(db *gorm.DB, email string) (*u.UserLogin, error) {
-	var user u.UserLogin
+func GetUserByEmail(db *gorm.DB, email string) (*u.Login, error) {
+	var user u.Login
 	err := db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func GetUserInfo(c *gin.Context) {
 	username := c.Query("user_name") // 从查询参数中获取用户名
 	useremail := c.Query("user_email")
 
-	var user *u.UserLogin
+	var user *u.Login
 	var err error
 	if username != "" {
 		user, err = GetUserByName(d.DB, username)
@@ -42,7 +43,7 @@ func GetUserInfo(c *gin.Context) {
 		user, err = GetUserByEmail(d.DB, username)
 	}
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "用户未找到"})
 			return
 		}
