@@ -2,48 +2,113 @@
   <div class="user-profile">
     <h1>个人信息</h1>
     <div class="profile-info">
-      <img :src="user.avatar" alt="用户头像" class="avatar">
+     <el-row class="demo-avatar demo-basic">
+    <el-col :span="12">
+      <div class="sub-title">circle</div>
+      <div class="demo-basic--circle">
+        <div class="block">
+          <el-avatar :size="50" :src="user.circleUrl"></el-avatar>
+        </div>
+      </div>
+    </el-col>
+  </el-row>
       <div class="info">
         <p><strong>姓名:</strong> {{ user.name }}</p>
         <p><strong>邮箱:</strong> {{ user.email }}</p>
         <p><strong>电话:</strong> {{ user.phone }}</p>
+        <p><strong>居住地址:</strong> {{ user.address }}</p>
+        <p><strong>学校:</strong> {{ user.school }}</p>
+        <p><strong>个人签名:</strong>
+         <textarea v-model="user.signature" placeholder="请输入您的个人签名" class="signature-input"></textarea>
+        </p>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
 .user-profile {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid#ccc;
+  border: 1px solid #ccc;
   border-radius: 5px;
 }
 
 .avatar {
+  position: relative;
+  display: inline-block;
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
   margin-right: 20px;
+}
+
+.change-avatar-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 0 0 5px 0;
+  cursor: pointer;
+  padding: 2px 8px;
+  font-size: 12px;
 }
 
 .info p {
   margin: 10px 0;
 }
+.demo-avatar .sub-title {
+  font-size: 16px;
+  color: #5e6d82;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.demo-basic--circle .block {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+}
 </style>
+
 <script>
 export default {
-  name: 'UserProfile',
   data() {
     return {
       user: {
-        avatar: 'https://via.placeholder.com/150',
+        avatar: require('@/assets/logo.png'), // 确保路径正确
         name: '张三',
         email: 'zhangsan@example.com',
-        phone: '123-456-7890'
-      }
+        phone: '123-456-7890',
+        address: '北京市朝阳区',
+        school: '清华大学',
+        signature: '',
+        circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+      } 
+      
     };
+  },
+   methods: {
+    changeAvatar() {
+      this.$refs.fileInput.click();
+    },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.user.avatar = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 };
 </script>
+
+<!-- 隐藏的文件输入元素 -->
+<input type="file" ref="fileInput" @change="onFileChange" style="display: none;" />
