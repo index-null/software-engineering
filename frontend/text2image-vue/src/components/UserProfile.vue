@@ -3,8 +3,8 @@
     <h1>个人信息</h1>
     <div class="profile-info">
      <el-row class="demo-avatar demo-basic">
-    <el-col :span="12">
-      <div class="sub-title">circle</div>
+    <el-col :span="24">
+      <div class="sub-title"></div>
       <div class="demo-basic--circle">
         <div class="block">
           <el-avatar :size="50" :src="user.circleUrl"></el-avatar>
@@ -18,9 +18,14 @@
         <p><strong>电话:</strong> {{ user.phone }}</p>
         <p><strong>居住地址:</strong> {{ user.address }}</p>
         <p><strong>学校:</strong> {{ user.school }}</p>
-        <p><strong>个人签名:</strong>
-         <textarea v-model="user.signature" placeholder="请输入您的个人签名" class="signature-input"></textarea>
-        </p>
+        <p><strong>个人签名:</strong></p>
+        <div style="margin: 20px 0;"></div>
+<el-input
+  type="textarea"
+  :autosize="{ minRows: 2, maxRows: 4}"
+  placeholder="请输入内容"
+  v-model="user.textarea2">
+</el-input>
       </div>
     </div>
   </div>
@@ -87,7 +92,9 @@ export default {
         address: '北京市朝阳区',
         school: '清华大学',
         signature: '',
-        circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+        circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+        textarea1: '',
+      textarea2: ''
       } 
       
     };
