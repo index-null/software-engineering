@@ -2,11 +2,11 @@ package login
 
 import (
 	"errors"
-	middlewire "gocode/backend/backend/text-to-picture/middlewire/jwt"
-	models "gocode/backend/backend/text-to-picture/models/init"
-	"gocode/backend/backend/text-to-picture/models/repository/user_r"
-	userLogin "gocode/backend/backend/text-to-picture/models/user"
 	"net/http"
+	middlewire "text-to-picture/middlewire/jwt"
+	models "text-to-picture/models/init"
+	"text-to-picture/models/repository/user_r"
+	userLogin "text-to-picture/models/user"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

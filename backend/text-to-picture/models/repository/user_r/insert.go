@@ -3,9 +3,9 @@ package user_r
 import (
 	"errors"
 	"fmt"
-	"gocode/backend/backend/text-to-picture/models/image"
-	userLogin "gocode/backend/backend/text-to-picture/models/user"
 	"regexp"
+	"text-to-picture/models/image"
+	userLogin "text-to-picture/models/user"
 
 	"gorm.io/gorm"
 )

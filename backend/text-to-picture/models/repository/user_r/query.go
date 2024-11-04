@@ -2,9 +2,9 @@ package user_r
 
 import (
 	"errors"
-	d "gocode/backend/backend/text-to-picture/models/init"
-	u "gocode/backend/backend/text-to-picture/models/user"
 	"net/http"
+	d "text-to-picture/models/init"
+	u "text-to-picture/models/user"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
