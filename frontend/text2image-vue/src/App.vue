@@ -1,24 +1,15 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/" class="nav-link">Home</router-link> 
       <router-link to="/about" class="nav-link">About</router-link>
       <router-link to="/login" class="nav-link">Login</router-link>
-      <router-link to="/register" class="nav-link">Register</router-link>
     </nav>
-    <UserProfile />
     <router-view/>
   </div>
 </template>
 
 <script>
-import UserProfile from './components/UserProfile.vue';
-export default {
-  name: 'App',
-  components: {
-    UserProfile
-  }
-}
+
 </script>
 
 <style>
