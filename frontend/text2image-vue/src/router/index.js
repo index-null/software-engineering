@@ -1,7 +1,8 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import RegisterView from '../views/RegisterView.vue'
-import LoginView from '../views/LoginView.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import RegisterView from '../views/RegisterView.vue';
+import LoginView from '../views/LoginView.vue';
+import HistoryPage from '../views/HistoryPage.vue'; 
 
 Vue.use(VueRouter)
 
@@ -25,6 +26,10 @@ const routes = [{
     // which is lazy-loaded when the route is visited.
     component: () =>
         import ( /* webpackChunkName: "about" */ '../views/AboutView.vue')
+}, {
+    path: '/history',
+    name: 'History',
+    component: HistoryPage 
 }, {
     path: '/home',
     name: 'home',
