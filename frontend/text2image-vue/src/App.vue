@@ -3,6 +3,7 @@
     <nav>
       <router-link to="/about" class="nav-link">About</router-link>
       <router-link to="/login" class="nav-link">Login</router-link>
+      <router-link to="/history" class="nav-link">History</router-link>
     </nav>
     <router-view/>
   </div>
@@ -10,6 +11,9 @@
 
 <script>
 
+export default {
+  name: 'App',
+};
 </script>
 
 <style>
