@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <router-link to="/info" class="nav-link">个人信息界面</router-link>
+    
     <el-card class="image-container">
       <img :src="imageUrl" alt="Generated Image" v-if="imageUrl" class="generated-image" />
       <p v-else>生成的图片将显示在这里</p>
@@ -56,7 +56,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      imageUrl: '',
+      imageUrl: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335308.gif',
       form: {
         prompt: '',
         width: 512,
