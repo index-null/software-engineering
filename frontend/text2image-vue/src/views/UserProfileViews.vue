@@ -52,15 +52,30 @@ export default {
   methods: {
     handleAvatarClick() {
       if (this.isEditing) {
-        this.$refs.fileInput.click();
+        this.deleteOldAvatar().then(() => {
+          this.$refs.fileInput.click();
+        });
+      }
+    },
+    async deleteOldAvatar() {
+      if (this.user.avatar) {
+        const urlParts = this.user.avatar.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        try {
+          await this.initOSSClient();
+          await this.client.delete(`avator/${fileName}`);
+          console.log('旧头像删除成功:', fileName);
+        } catch (error) {
+          console.error('删除旧头像失败:', error);
+        }
       }
     },
     async initOSSClient() {
       this.client = new OSS({
-        region: '<YourRegion>', 
-        accessKeyId: '<YourAccessKeyId>',
-        accessKeySecret: '<YourAccessKeySecret>',
-        bucket: '<YourBucketName>'
+        region: process.env.VUE_APP_OSS_REGION,
+        accessKeyId: process.env.VUE_APP_OSS_ACCESS_KEY_ID,
+        accessKeySecret: process.env.VUE_APP_OSS_ACCESS_KEY_SECRET,
+        bucket: process.env.VUE_APP_OSS_BUCKET,
       });
     },
     async handleFileChange(event) {
@@ -69,7 +84,7 @@ export default {
 
       try {
         await this.initOSSClient();
-        const result = await this.client.put(`user/${file.name}`, file);
+        const result = await this.client.put(`avator/${file.name}`, file);
         this.user.avatar = result.url;
       } catch (error) {
         console.error('上传失败:', error);
