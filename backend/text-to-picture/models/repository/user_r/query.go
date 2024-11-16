@@ -2,9 +2,9 @@ package user_r
 
 import (
 	"errors"
+	"net/http"
 	d "text-to-picture/models/init"
 	u "text-to-picture/models/user"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

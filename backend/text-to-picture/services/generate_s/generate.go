@@ -2,11 +2,16 @@ package generate_s
 
 import (
 	"fmt"
-	"reflect"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
+	"log"
 	"net/url"
+	"os"
+	"reflect"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 // 传入的图片参数
@@ -33,7 +38,7 @@ func ParamentsError(err error, obj any) string {
 	return err.Error()
 }
 
-//判断OSS返回的url是否正确
+// 判断OSS返回的url是否正确
 func IsValidURL(inputURL string) bool {
 	parsedURL, err := url.Parse(inputURL)
 	if err != nil {
@@ -46,9 +51,11 @@ func IsValidURL(inputURL string) bool {
 
 	return true
 }
+
+var imageParaments ImageParaments
+
 // 接收传来的图片参数,并进行数据校验
 func AcceptParaments(c *gin.Context) error {
-	var imageParaments ImageParaments
 	if err := c.ShouldBindJSON(&imageParaments); err != nil {
 		fault := ParamentsError(err, &imageParaments)
 		return fmt.Errorf(fault)
@@ -62,18 +69,18 @@ func ReturnImage(c *gin.Context) {
 	//校验参数
 	if err := AcceptParaments(c); err != nil {
 		c.JSON(400, gin.H{
-			"success":false,
+			"success": false,
 			"message": err,
 		})
 		return
 	}
 
-	imageUrl , err := GenerateImage()
+	imageUrl, err := GenerateImage()
 
 	//校验生成图片
-	 if err != nil {
+	if err != nil {
 		c.JSON(500, gin.H{
-			"success":false,
+			"success": false,
 			"message": "图片生成失败",
 		})
 		return
@@ -82,20 +89,92 @@ func ReturnImage(c *gin.Context) {
 	//校验图片url
 	if !IsValidURL(imageUrl) {
 		c.JSON(500, gin.H{
-			"success":false,
+			"success": false,
 			"message": "无效url",
 		})
 		return
 	}
 
-	c.JSON(200,gin.H{
-		"success":true,
-		"image_url":imageUrl,
+	c.JSON(200, gin.H{
+		"success":   true,
+		"image_url": imageUrl,
 	})
 }
 
-func GenerateImage() (string,error){
+func GenerateImage() (string, error) {
 	//这里把图片上传到OSS,OSS会那里返回包含图片URL的json
-	return "https://your-bucket-name.oss-region.aliyuncs.com/user/avatar.png",nil
+	urloss, err := SavetoOss()
+	return urloss, err
 }
 
+var client *oss.Client // 全局变量用来存储OSS客户端实例
+func SavetoOss() (string, error) {
+	if err := godotenv.Load("oss.env"); err != nil {
+		log.Fatalf("Failed to load .env file: %v", err)
+	}
+	// 从环境变量中获取访问凭证
+	accessKeyID := os.Getenv("accessKeyId")
+	accessKeySecret := os.Getenv("accessKeySecret")
+	region := os.Getenv("region")
+	bucketName := os.Getenv("bucket")
+	// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+	provider, err := oss.NewEnvironmentVariableCredentialsProvider()
+	if err != nil {
+		log.Fatalf("Failed to create credentials provider: %v", err)
+	}
+
+	// 创建OSSClient实例。
+	// yourEndpoint填写Bucket对应的Endpoint，以华东1（杭州）为例，填写为https://oss-cn-hangzhou.aliyuncs.com。其它Region请按实际情况填写。
+	// yourRegion填写Bucket所在地域，以华东1（杭州）为例，填写为cn-hangzhou。其它Region请按实际情况填写。
+	clientOptions := []oss.ClientOption{oss.SetCredentialsProvider(&provider)}
+	clientOptions = append(clientOptions, oss.Region(region))
+	// 设置签名版本
+	clientOptions = append(clientOptions, oss.AuthVersion(oss.AuthV4))
+	client, err = oss.New("https://oss-"+region+".aliyuncs.com", accessKeyID, accessKeySecret, clientOptions...)
+	if err != nil {
+		log.Fatalf("Failed to create OSS client: %v", err)
+	}
+	// 填写存储空间名称，例如examplebucket。
+
+	// 示例操作：上传文件。
+	filetime := time.Now().Format("2024-01-01 00:00:00")
+	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
+	objectName := "generate/" + encodedPrompt + "-" + filetime + ".png"
+	localFileName := "E:/截图/新建文件夹/图片1.png" //测试就换成自己要上传的图片即可
+	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
+		handleError(err)
+	}
+	return objectName, err
+}
+
+// handleError 用于处理不可恢复的错误，并记录错误信息后终止程序。
+func handleError(err error) {
+	log.Fatalf("Error: %v", err)
+}
+
+// uploadFile 用于将本地文件上传到OSS存储桶。
+// 参数：
+//
+//	bucketName - 存储空间名称。
+//	objectName - Object完整路径，完整路径中不包含Bucket名称。
+//	localFileName - 本地文件的完整路径。
+//	endpoint - Bucket对应的Endpoint。
+//
+// 如果成功，记录成功日志；否则，返回错误。
+func uploadFile(bucketName, objectName, localFileName string) error {
+	// 获取存储空间。
+	bucket, err := client.Bucket(bucketName)
+	if err != nil {
+		return err
+	}
+
+	// 上传文件。
+	err = bucket.PutObjectFromFile(objectName, localFileName)
+	if err != nil {
+		return err
+	}
+
+	// 文件上传成功后，记录日志。
+	log.Printf("File uploaded successfully to %s/%s", bucketName, objectName)
+	return nil
+}
