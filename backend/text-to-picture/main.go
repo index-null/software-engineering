@@ -25,5 +25,6 @@ func main() {
 	r.POST("/register", auth.Register) // 注册路由
 	r.POST("/login", auth.Login)       // 登录路由
 
-	r.Run() // 启动服务器
+	r.Run("0.0.0.0:8080")
+	
 }
