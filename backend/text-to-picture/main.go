@@ -32,18 +32,18 @@ func main() {
 	}
 
 	//复制到config结构体
-	var config DBConfig
-	err = yaml.Unmarshal(yamlFile, &config)
+	var dbconfig DBConfig
+	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
 		log.Fatalf("Error parsing config.yaml file: %v", err)
 	}
 
 	//设置数据库连接的环境变量
-	os.Setenv("DB_USER", config.DB.User)
-	os.Setenv("DB_PASSWORD", config.DB.Password)
-	os.Setenv("DB_HOST", config.DB.Host)
-	os.Setenv("DB_PORT", config.DB.Port)
-	os.Setenv("DB_NAME", config.DB.Name)
+	os.Setenv("DB_USER", dbconfig.DB.User)
+	os.Setenv("DB_PASSWORD", dbconfig.DB.Password)
+	os.Setenv("DB_HOST", dbconfig.DB.Host)
+	os.Setenv("DB_PORT", dbconfig.DB.Port)
+	os.Setenv("DB_NAME", dbconfig.DB.Name)
 
 	// 连接数据库
 	if err := db.ConnectDatabase(); err != nil {
