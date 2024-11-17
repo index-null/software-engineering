@@ -6,12 +6,50 @@ import (
 	"github.com/swaggo/files" // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
+	"os"
+	"text-to-picture/services/generate_s"
+
 	"text-to-picture/api/auth"       // 导入注册和登录路由
 	"text-to-picture/api/generate"   // 导入生成图片的接口
 	db "text-to-picture/models/init" // 为 init 包设置别名为 db
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v3"
 )
 
+type DBConfig struct {
+	DB struct {
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Name     string `yaml:"name"`
+	} `yaml:"db"`
+}
+
 func main() {
+
+	//读取DBConfig.yaml文件
+	yamlFile, err := os.ReadFile("config\\DBconfig\\DBconfig.yaml")
+	if err != nil {
+		log.Fatalf("Error reading config.yaml file: %v", err)
+	}
+
+	//复制到config结构体
+	var dbconfig DBConfig
+	err = yaml.Unmarshal(yamlFile, &dbconfig)
+	if err != nil {
+		log.Fatalf("Error parsing config.yaml file: %v", err)
+	}
+
+	//设置数据库连接的环境变量
+	os.Setenv("DB_USER", dbconfig.DB.User)
+	os.Setenv("DB_PASSWORD", dbconfig.DB.Password)
+	os.Setenv("DB_HOST", dbconfig.DB.Host)
+	os.Setenv("DB_PORT", dbconfig.DB.Port)
+	os.Setenv("DB_NAME", dbconfig.DB.Name)
+
 	// 连接数据库
 	if err := db.ConnectDatabase(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)

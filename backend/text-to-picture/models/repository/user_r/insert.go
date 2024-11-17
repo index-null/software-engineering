@@ -68,7 +68,7 @@ func InsertUserQuery(db *gorm.DB, user *image.QueryImage) error {
 	if user.Result == "" {
 		return fmt.Errorf("结果为空")
 	}
-	if user.Time.IsZero() {
+	if user.Create_time.IsZero() {
 		return fmt.Errorf("时间参数为空")
 	}
 

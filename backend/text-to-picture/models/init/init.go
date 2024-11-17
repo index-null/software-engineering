@@ -10,29 +10,34 @@ import (
 
 const createTableSQL = `
 CREATE TABLE IF NOT EXISTS user_login (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
 	email VARCHAR(50) UNIQUE NOT NULL,
-	username VARCHAR(30) NOT NULL,
+	username VARCHAR(30) UNIQUE NOT NULL,
     password VARCHAR(30) NOT NULL,
+	avatar_url VARCHAR(255) NOT NULL,
+	create_time TIMESTAMP DEFAULT NOW(),
     token VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS user_query (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
     params TEXT,
     result TEXT,
-    time TIMESTAMP DEFAULT NOW(),
+    create_time TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (userName) REFERENCES user_login(username)
 );
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
 	result TEXT,
+	create_time TIMESTAMP DEFAULT NOW(),
 	FOREIGN KEY (userName) REFERENCES user_login(username)
 )
 `
+
+// user_login中avatar_url为头像图片url
 
 var DB *gorm.DB
 
