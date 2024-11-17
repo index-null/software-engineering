@@ -40,7 +40,7 @@ func GetUserInfo(c *gin.Context) {
 	if username != "" {
 		user, err = GetUserByName(d.DB, username)
 	} else if useremail != "" {
-		user, err = GetUserByEmail(d.DB, username)
+		user, err = GetUserByEmail(d.DB, useremail)
 	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS user_login (
 
 CREATE TABLE IF NOT EXISTS user_query (
     id INT PRIMARY KEY,
-	userName VARCHAR(30) NOT NULL,
+	username VARCHAR(30) NOT NULL,
     params TEXT,
     result TEXT,
     time TIMESTAMP DEFAULT NOW(),
@@ -28,9 +28,16 @@ CREATE TABLE IF NOT EXISTS user_query (
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
 	id INT PRIMARY KEY,
-	userName VARCHAR(30) NOT NULL,
+	username VARCHAR(30) NOT NULL,
 	result TEXT,
 	FOREIGN KEY (userName) REFERENCES user_login(username)
+);
+
+CREATE TABLE IF NOT EXISTS images (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    result TEXT,
+    FOREIGN KEY (user_id) REFERENCES user_login(id)
 )
 `
 

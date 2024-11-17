@@ -17,7 +17,7 @@ func isValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
-// 向用户登录表插入数据
+// 向用户注册表插入数据
 func InsertUserLogin(db *gorm.DB, user *userLogin.Register) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
