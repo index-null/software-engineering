@@ -2,13 +2,14 @@ package login
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
-	"gorm.io/gorm"
 	"net/http"
 	models "text-to-picture/models/init"
 	"text-to-picture/models/repository/user_r"
 	userLogin "text-to-picture/models/user"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -31,7 +32,7 @@ func Register(c *gin.Context) {
 	}
 
 	//插入数据
-	if err := user_r.InsertUserLogin(models.DB, &input); err != nil {
+	if err := user_r.InsertUserInformation(models.DB, &input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "用户创建失败", "error": err.Error()})
 		return
 	}

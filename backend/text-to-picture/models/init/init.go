@@ -9,7 +9,7 @@ import (
 )
 
 const createTableSQL = `
-CREATE TABLE IF NOT EXISTS user_login (
+CREATE TABLE IF NOT EXISTS UserInformation (
     id SERIAL PRIMARY KEY,
 	email VARCHAR(50) UNIQUE NOT NULL,
 	username VARCHAR(30) UNIQUE NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS user_login (
     token VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS user_query (
+CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
     params TEXT,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 )
 `
 
-// user_login中avatar_url为头像图片url
+// UserImformation中avatar_url为头像图片url
 
 var DB *gorm.DB
 

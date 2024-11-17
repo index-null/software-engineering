@@ -20,7 +20,7 @@ func Register(c *gin.Context) {
 	}
 
 	// 调用插入函数
-	err := user_r.InsertUserLogin(db.DB, &newUser) // 使用 db.DB 作为数据库连接
+	err := user_r.InsertUserInformation(db.DB, &newUser) // 使用 db.DB 作为数据库连接
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
@@ -31,7 +31,7 @@ func Register(c *gin.Context) {
 
 // 登录处理函数
 func Login(c *gin.Context) {
-	var loginUser user.Login // 使用 Login 结构体作为登录用户
+	var loginUser user.UserInformation // 使用 UserInformation 结构体作为登录用户
 	if err := c.ShouldBindJSON(&loginUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
