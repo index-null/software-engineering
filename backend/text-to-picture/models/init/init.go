@@ -33,12 +33,6 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	FOREIGN KEY (userName) REFERENCES user_login(username)
 );
 
-CREATE TABLE IF NOT EXISTS images (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    result TEXT,
-    FOREIGN KEY (user_id) REFERENCES user_login(id)
-)
 `
 
 var DB *gorm.DB
