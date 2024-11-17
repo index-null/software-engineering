@@ -1,0 +1,70 @@
+definitions:
+  generate_s.ImageParaments:
+    properties:
+      height:
+        maximum: 1024
+        minimum: 128
+        type: integer
+      prompt:
+        type: string
+      sampling_method:
+        enum:
+        - DDIM
+        - PLMS
+        - K-LMS
+        type: string
+      seed:
+        type: string
+      steps:
+        maximum: 100
+        minimum: 1
+        type: integer
+      width:
+        maximum: 1024
+        minimum: 128
+        type: integer
+    required:
+    - height
+    - prompt
+    - sampling_method
+    - seed
+    - steps
+    - width
+    type: object
+info:
+  contact: {}
+paths:
+  /generate:
+    post:
+      consumes:
+      - application/json
+      description: 根据传入的参数生成图片并返回图片的URL
+      parameters:
+      - description: 图片参数
+        in: body
+        name: imageParaments
+        required: true
+        schema:
+          $ref: '#/definitions/generate_s.ImageParaments'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 生成图片
+      tags:
+      - 图片生成
+swagger: "2.0"

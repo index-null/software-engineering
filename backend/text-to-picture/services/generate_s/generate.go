@@ -15,6 +15,7 @@ import (
 )
 
 // 传入的图片参数
+// @name ImageParaments
 type ImageParaments struct {
 	Prompt         string `json:"prompt" binding:"required" fault:"缺乏提示词"`
 	Width          int    `json:"width" binding:"required,min=128,max=1024" fault:"宽度不在范围内"`
@@ -64,8 +65,20 @@ func AcceptParaments(c *gin.Context) error {
 	return nil
 }
 
-// 返回图片生成图片的url
-func ReturnImage(c *gin.Context) {
+// ImageGeneratorImpl 实现了 ImageGenerator 接口
+type ImageGeneratorImpl struct{}
+
+// @Summary 生成图片
+// @Description 根据传入的参数生成图片并返回图片的URL
+// @Tags 图片生成
+// @Accept json
+// @Produce json
+// @Param imageParaments body ImageParaments true "图片参数"
+// @Success 200 {object} map[string]interface{} "成功响应"
+// @Failure 400 {object} map[string]interface{} "参数错误"
+// @Failure 500 {object} map[string]interface{} "内部错误"
+// @Router /generate [post]
+func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	//校验参数
 	if err := AcceptParaments(c); err != nil {
 		c.JSON(400, gin.H{

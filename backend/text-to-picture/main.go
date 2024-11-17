@@ -1,14 +1,14 @@
 package main
 
 import (
-	"log"
-	"text-to-picture/services/generate_s"
-
-	"text-to-picture/api/auth"       // 导入注册和登录路由
-	db "text-to-picture/models/init" // 为 init 包设置别名为 db
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files" // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
+	"text-to-picture/api/auth"       // 导入注册和登录路由
+	"text-to-picture/api/generate"   // 导入生成图片的接口
+	db "text-to-picture/models/init" // 为 init 包设置别名为 db
 )
 
 func main() {
@@ -33,8 +33,18 @@ func main() {
 
 	r.Use(cors.New(config))
 
+	// 创建 ImageGenerator 实例
+	imgGen := generate.NewImageGenerator()
+
+	// 注册路由
 	r.POST("/register", auth.Register) // 注册路由
 	r.POST("/login", auth.Login)       // 登录路由
-	r.POST("/generate", generate_s.ReturnImage)
+	r.POST("/generate", func(c *gin.Context) {
+		imgGen.ReturnImage(c)
+	})
+
+	// 注册 Swagger 路由
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.Run("0.0.0.0:8080")
 }

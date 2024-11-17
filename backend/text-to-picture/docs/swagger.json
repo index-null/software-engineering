@@ -1,0 +1,101 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/generate": {
+            "post": {
+                "description": "根据传入的参数生成图片并返回图片的URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "图片生成"
+                ],
+                "summary": "生成图片",
+                "parameters": [
+                    {
+                        "description": "图片参数",
+                        "name": "imageParaments",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/generate_s.ImageParaments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "generate_s.ImageParaments": {
+            "type": "object",
+            "required": [
+                "height",
+                "prompt",
+                "sampling_method",
+                "seed",
+                "steps",
+                "width"
+            ],
+            "properties": {
+                "height": {
+                    "type": "integer",
+                    "maximum": 1024,
+                    "minimum": 128
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "sampling_method": {
+                    "type": "string",
+                    "enum": [
+                        "DDIM",
+                        "PLMS",
+                        "K-LMS"
+                    ]
+                },
+                "seed": {
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 1
+                },
+                "width": {
+                    "type": "integer",
+                    "maximum": 1024,
+                    "minimum": 128
+                }
+            }
+        }
+    }
+}
