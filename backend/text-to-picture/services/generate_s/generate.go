@@ -22,7 +22,7 @@ type ImageParaments struct {
 	Height         int    `json:"height" binding:"required,min=128,max=1024" fault:"高度不在范围内"`
 	Steps          int    `json:"steps" binding:"required,min=1,max=100" fault:"步数不在范围内"`
 	SamplingMethod string `json:"sampling_method" binding:"required,oneof=DDIM PLMS K-LMS" fault:"采样方法不在范围内"`
-	Seed           string `json:"seed" binding:"required," fault:"缺乏种子"`
+	Seed           string `json:"seed" binding:"required" fault:"缺乏种子"`
 }
 
 // 获取在Tag中的fault信息
@@ -40,18 +40,18 @@ func ParamentsError(err error, obj any) string {
 }
 
 // 判断OSS返回的url是否正确
-func IsValidURL(inputURL string) bool {
-	parsedURL, err := url.Parse(inputURL)
-	if err != nil {
-		return false
-	}
-
-	if parsedURL.Scheme == "" || parsedURL.Host == "" {
-		return false
-	}
-
-	return true
-}
+//func IsValidURL(inputURL string) bool {
+//	parsedURL, err := url.Parse(inputURL)
+//	if err != nil {
+//		return false
+//	}
+//
+//	if parsedURL.Scheme == "" || parsedURL.Host == "" {
+//		return false
+//	}
+//
+//	return true
+//}
 
 var imageParaments ImageParaments
 
@@ -81,6 +81,7 @@ type ImageGeneratorImpl struct{}
 func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	//校验参数
 	if err := AcceptParaments(c); err != nil {
+		log.Printf("参数错误: %v", err)
 		c.JSON(400, gin.H{
 			"success": false,
 			"message": err,
@@ -92,6 +93,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 
 	//校验生成图片
 	if err != nil {
+		log.Panicf("图片生成失败: %v", err)
 		c.JSON(500, gin.H{
 			"success": false,
 			"message": "图片生成失败",
@@ -99,14 +101,15 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		return
 	}
 
-	//校验图片url
-	if !IsValidURL(imageUrl) {
-		c.JSON(500, gin.H{
-			"success": false,
-			"message": "无效url",
-		})
-		return
-	}
+	////校验图片url
+	//if !IsValidURL(imageUrl) {
+	//	log.Printf("无效url: %v", err)
+	//	c.JSON(500, gin.H{
+	//		"success": false,
+	//		"message": "无效url",
+	//	})
+	//	return
+	//}
 
 	c.JSON(200, gin.H{
 		"success":   true,
@@ -126,14 +129,14 @@ func SavetoOss() (string, error) {
 		log.Fatalf("Failed to load .env file: %v", err)
 	}
 	// 从环境变量中获取访问凭证
-	accessKeyID := os.Getenv("accessKeyId")
-	accessKeySecret := os.Getenv("accessKeySecret")
+	accessKeyID := os.Getenv("OSS_ACCESS_KEY_ID")
+	accessKeySecret := os.Getenv("OSS_ACCESS_KEY_SECRET")
 	region := os.Getenv("region")
 	bucketName := os.Getenv("bucket")
 	// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
 	provider, err := oss.NewEnvironmentVariableCredentialsProvider()
 	if err != nil {
-		log.Fatalf("Failed to create credentials provider: %v", err)
+		log.Printf("Failed to create credentials provider: %v", err)
 	}
 
 	// 创建OSSClient实例。
@@ -141,21 +144,23 @@ func SavetoOss() (string, error) {
 	// yourRegion填写Bucket所在地域，以华东1（杭州）为例，填写为cn-hangzhou。其它Region请按实际情况填写。
 	clientOptions := []oss.ClientOption{oss.SetCredentialsProvider(&provider)}
 	clientOptions = append(clientOptions, oss.Region(region))
+
 	// 设置签名版本
-	clientOptions = append(clientOptions, oss.AuthVersion(oss.AuthV4))
-	client, err = oss.New("https://oss-"+region+".aliyuncs.com", accessKeyID, accessKeySecret, clientOptions...)
+	clientOptions = append(clientOptions, oss.AuthVersion(oss.AuthV2))
+	client, err = oss.New("https://"+region+".aliyuncs.com", accessKeyID, accessKeySecret, clientOptions...)
 	if err != nil {
 		log.Fatalf("Failed to create OSS client: %v", err)
 	}
 	// 填写存储空间名称，例如examplebucket。
 
 	// 示例操作：上传文件。
-	filetime := time.Now().Format("2024-01-01 00:00:00")
+	filetime := time.Now().Format("2006-01-02 15:04:05")
 	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
 	objectName := "generate/" + encodedPrompt + "-" + filetime + ".png"
+	fmt.Println("objectName:", objectName)
 	localFileName := "E:/截图/新建文件夹/图片1.png" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		handleError(err)
+		log.Fatal("上传失败，error%v", err)
 	}
 	return objectName, err
 }
@@ -178,12 +183,14 @@ func uploadFile(bucketName, objectName, localFileName string) error {
 	// 获取存储空间。
 	bucket, err := client.Bucket(bucketName)
 	if err != nil {
+		log.Printf("Failed to get bucket %s: %v", bucketName, err)
 		return err
 	}
 
 	// 上传文件。
 	err = bucket.PutObjectFromFile(objectName, localFileName)
 	if err != nil {
+		log.Printf("Failed to upload file %s to bucket %s: %v", localFileName, bucketName, err)
 		return err
 	}
 
