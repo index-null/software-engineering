@@ -5,17 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files" // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
-	"text-to-picture/services/generate_s"
-
-	"text-to-picture/api/auth"       // 导入注册和登录路由
-	"text-to-picture/api/generate"   // 导入生成图片的接口
-	db "text-to-picture/models/init" // 为 init 包设置别名为 db
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"gopkg.in/yaml.v3"
+	"text-to-picture/api/auth"
+	"text-to-picture/api/generate"
+	db "text-to-picture/models/init"
 )
 
 type DBConfig struct {
