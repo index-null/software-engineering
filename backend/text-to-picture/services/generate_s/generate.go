@@ -122,7 +122,7 @@ func GenerateImage() (string, error) {
 
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss() (string, error) {
-	if err := godotenv.Load("oss.env"); err != nil {
+	if err := godotenv.Load("config\\oss\\oss.env"); err != nil {
 		log.Fatalf("Failed to load .env file: %v", err)
 	}
 	// 从环境变量中获取访问凭证

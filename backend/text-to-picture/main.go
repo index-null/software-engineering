@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files" // swagger embed files
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -28,14 +29,14 @@ func main() {
 	//读取DBConfig.yaml文件
 	yamlFile, err := os.ReadFile("config\\DBconfig\\DBconfig.yaml")
 	if err != nil {
-		log.Fatalf("Error reading config.yaml file: %v", err)
+		fmt.Println("Error reading config.yaml file: %v", err)
 	}
 
 	//复制到config结构体
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		log.Fatalf("Error parsing config.yaml file: %v", err)
+		fmt.Println("Error parsing config.yaml file: %v", err)
 	}
 
 	//设置数据库连接的环境变量
@@ -76,8 +77,11 @@ func main() {
 		imgGen.ReturnImage(c)
 	})
 
-	// 注册 Swagger 路由
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// 添加静态文件服务，指向 docs 目录
+	r.Static("/docs", "./docs")
+
+	// 注册 Swagger 路由，并指定 doc.json 文件的路径
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/docs/swagger.json")))
 
 	r.Run("0.0.0.0:8080")
 }
