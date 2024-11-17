@@ -32,9 +32,35 @@ func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.Image, error) {
 	return images, nil
 }
 
-func GetUserImages(c *gin.Context) {
+// 根据用户名查询相关图片
+func GetImagesByUsername(db *gorm.DB, username string) ([]i.Image, error) {
+	var images []i.Image
+	err := db.Table("images").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
+	if err != nil {
+		return nil, err
+	}
+
+	return images, nil
+}
+
+// 根据用户名查询收藏的图片
+func GetFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.Image, error) {
+	var images []i.Image
+	err := db.Table("FavoritedImage").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
+	if err != nil {
+		return nil, err
+	}
+
+	return images, nil
+}
+//-------------------------------------------------------------------------------------------
+func GetUserImagesById(c *gin.Context) {
 	userIdStr := c.Param("user_id") // 从请求中获取用户ID（字符串）
 	userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID"})
+		return
+	}
 
 	images, err := GetImagesByUserId(d.DB, userId)
 	if err != nil {
@@ -45,7 +71,7 @@ func GetUserImages(c *gin.Context) {
 	c.JSON(http.StatusOK, images)
 }
 
-func GetUserFavoritedImages(c *gin.Context) {
+func GetUserFavoritedImagesById(c *gin.Context) {
 	userIdStr := c.Param("user_id") // 从请求中获取用户ID（字符串）
 	userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
 	if err != nil {
@@ -61,3 +87,28 @@ func GetUserFavoritedImages(c *gin.Context) {
 
 	c.JSON(http.StatusOK, images)
 }
+
+func GetUserImagesByUsername(c *gin.Context) {
+	username := c.Param("user_name") // 从请求中获取用户ID（字符串）
+
+	images, err := GetImagesByUsername(d.DB, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败"})
+		return
+	}
+
+	c.JSON(http.StatusOK, images)
+}
+
+func GetUserFavoritedImagesByUsername(c *gin.Context) {
+	username := c.Param("user_name") // 从请求中获取用户ID（字符串）
+
+	images, err := GetFavoritedImagesByUsername(d.DB, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户收藏的图片失败"})
+		return
+	}
+
+	c.JSON(http.StatusOK, images)
+}
+
