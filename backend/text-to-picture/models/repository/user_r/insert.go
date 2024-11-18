@@ -25,9 +25,6 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
 	if user.Email == "" {
 		return fmt.Errorf("邮箱为空")
 	}
-	if user.ID == 0 {
-		return fmt.Errorf("id为空")
-	}
 	if len(user.Password) < 6 {
 		return fmt.Errorf("密码少于6位")
 	}
@@ -40,6 +37,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
 	if result.Error == nil {
 		return fmt.Errorf("用户名已存在")
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+
 		return fmt.Errorf("查询用户名时发生错误: %v", result.Error)
 	}
 

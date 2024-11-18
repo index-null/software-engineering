@@ -15,7 +15,7 @@ type UserInformation struct {
 }
 
 type Register struct {
-	ID          int       `json:"id" gorm:"primarykey"`
+	ID          int       `json:"id" gorm:"primarykey;autoIncrement"`
 	Email       string    `json:"email" gorm:"unique;not null"`
 	UserName    string    `json:"user_name" gorm:"not null"`
 	Password    string    `json:"password" gorm:"not null"`
