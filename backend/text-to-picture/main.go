@@ -29,14 +29,14 @@ func main() {
 	//读取DBConfig.yaml文件
 	yamlFile, err := os.ReadFile("config\\DBconfig\\DBconfig.yaml")
 	if err != nil {
-		fmt.Println("Error reading config.yaml file: %v", err)
+		fmt.Printf("Error reading config.yaml file: %v\n", err)
 	}
 
 	//复制到config结构体
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Println("Error parsing config.yaml file: %v", err)
+		fmt.Printf("Error parsing config.yaml file: %v\n", err)
 	}
 
 	//设置数据库连接的环境变量

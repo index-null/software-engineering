@@ -23,7 +23,7 @@ type User struct {
 // 注册
 func Register(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
-	var input userLogin.Register
+	var input userLogin.UserInformation
 
 	// 解析 JSON 数据
 	if err := c.BindJSON(&input); err != nil {

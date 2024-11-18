@@ -25,11 +25,7 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
     params TEXT,
     result TEXT,
     create_time TIMESTAMP DEFAULT NOW(),
-<<<<<<< HEAD
     FOREIGN KEY (userName) REFERENCES UserInformation(username)
-=======
-    FOREIGN KEY (userName) REFERENCES user_login(username)
->>>>>>> ac4fe47363a36df8dfcc928c5a9fb8f8a736f491
 );
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
@@ -37,14 +33,9 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	userName VARCHAR(30) NOT NULL,
 	result TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
-<<<<<<< HEAD
 	FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
 
-=======
-	FOREIGN KEY (userName) REFERENCES user_login(username)
-)
->>>>>>> ac4fe47363a36df8dfcc928c5a9fb8f8a736f491
 `
 
 // UserImformation中avatar_url为头像图片url

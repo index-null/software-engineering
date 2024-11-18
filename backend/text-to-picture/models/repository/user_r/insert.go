@@ -18,7 +18,7 @@ func isValidEmail(email string) bool {
 }
 
 // 向用户信息表插入数据
-func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
+func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
