@@ -17,8 +17,8 @@ func isValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
-// 向用户注册表插入数据
-func InsertUserLogin(db *gorm.DB, user *userLogin.Register) error {
+// 向用户信息表插入数据
+func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
@@ -57,8 +57,8 @@ func InsertUserLogin(db *gorm.DB, user *userLogin.Register) error {
 	return nil
 }
 
-// 向用户查询表插入数据
-func InsertUserQuery(db *gorm.DB, user *image.QueryImage) error {
+// 向图片信息表插入数据
+func InsertImageInformation(db *gorm.DB, user *image.ImageInformation) error {
 	//if err := InsertUserLogin(db, &user.User); err != nil {
 	//	return err
 	//}
@@ -68,12 +68,12 @@ func InsertUserQuery(db *gorm.DB, user *image.QueryImage) error {
 	if user.Result == "" {
 		return fmt.Errorf("结果为空")
 	}
-	if user.Time.IsZero() {
+	if user.Create_time.IsZero() {
 		return fmt.Errorf("时间参数为空")
 	}
 
 	if err := db.Create(user).Error; err != nil {
-		return fmt.Errorf("插入用户查询表失败: %v", err)
+		return fmt.Errorf("插入图片信息表失败: %v", err)
 	}
 
 	return nil
@@ -81,7 +81,7 @@ func InsertUserQuery(db *gorm.DB, user *image.QueryImage) error {
 }
 
 // 向用户收藏表插入数据
-func InsertFavoritedImage(db *gorm.DB, user *image.Image) error {
+func InsertFavoritedImage(db *gorm.DB, user *image.ImageInformation) error {
 	//if err := InsertUserLogin(db, &user.User); err != nil {
 	//	return err
 	//}

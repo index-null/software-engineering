@@ -1,4 +1,4 @@
-package main//image_u
+package image_r
 
 import (
 	"net/http"
@@ -11,8 +11,8 @@ import (
 )
 
 // 根据用户ID查询相关图片
-func GetImagesByUserId(db *gorm.DB, userId int) ([]i.Image, error) {
-	var images []i.Image
+func GetImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
 	err := db.Table("images").Where("user_id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
@@ -22,8 +22,8 @@ func GetImagesByUserId(db *gorm.DB, userId int) ([]i.Image, error) {
 }
 
 // 根据用户ID查询收藏的图片
-func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.Image, error) {
-	var images []i.Image
+func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
 	err := db.Table("FavoritedImage").Where("user_id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
@@ -33,8 +33,8 @@ func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.Image, error) {
 }
 
 // 根据用户名查询相关图片
-func GetImagesByUsername(db *gorm.DB, username string) ([]i.Image, error) {
-	var images []i.Image
+func GetImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
 	err := db.Table("images").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
@@ -44,8 +44,8 @@ func GetImagesByUsername(db *gorm.DB, username string) ([]i.Image, error) {
 }
 
 // 根据用户名查询收藏的图片
-func GetFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.Image, error) {
-	var images []i.Image
+func GetFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
 	err := db.Table("FavoritedImage").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
@@ -112,11 +112,11 @@ func GetUserFavoritedImagesByUsername(c *gin.Context) {
 	c.JSON(http.StatusOK, images)
 }
 
-func main(){
+// func main(){
 
-	r :=gin.Default()
+// 	r :=gin.Default()
 
-	r.GET("/getuserimage/:user_name",GetUserImagesByUsername)
+// 	r.GET("/getuserimage/:user_name",GetUserImagesByUsername)
 
-	r.Run()
-}
+// 	r.Run()
+// }
