@@ -13,7 +13,6 @@ type UserInformation struct {
 	Token       string    `json:"token"`
 	Create_time time.Time `json:"create_time"`
 }
-gti
 func (UserInformation) TableName() string {
 	return "userinformation"
 }
