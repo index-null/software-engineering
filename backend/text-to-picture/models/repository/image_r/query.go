@@ -13,7 +13,7 @@ import (
 // 根据用户ID查询相关图片
 func GetImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	err := db.Table("images").Where("user_id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+	err := db.Table("imageinformation").Where("id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func GetImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
 // 根据用户ID查询收藏的图片
 func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	err := db.Table("FavoritedImage").Where("user_id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+	err := db.Table("favoritedimage").Where("id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func GetFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, 
 // 根据用户名查询相关图片
 func GetImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	err := db.Table("images").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
+	err := db.Table("imageinformation").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func GetImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, er
 // 根据用户名查询收藏的图片
 func GetFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	err := db.Table("FavoritedImage").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
+	err := db.Table("favoritedimage").Where("username = ?", username).Find(&images).Error // 使用 Find 而不是 First
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func GetFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageInform
 }
 //-------------------------------------------------------------------------------------------
 func GetUserImagesById(c *gin.Context) {
-	userIdStr := c.Param("user_id") // 从请求中获取用户ID（字符串）
+	userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
 	userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID"})
@@ -72,7 +72,7 @@ func GetUserImagesById(c *gin.Context) {
 }
 
 func GetUserFavoritedImagesById(c *gin.Context) {
-	userIdStr := c.Param("user_id") // 从请求中获取用户ID（字符串）
+	userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
 	userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID"})
@@ -89,7 +89,7 @@ func GetUserFavoritedImagesById(c *gin.Context) {
 }
 
 func GetUserImagesByUsername(c *gin.Context) {
-	username := c.Param("user_name") // 从请求中获取用户ID（字符串）
+	username := c.Query("username") // 从请求中获取用户名
 	//c.JSON(200,gin.H{"name":username})
 	images, err := GetImagesByUsername(d.DB, username)
 	if err != nil {
@@ -101,7 +101,7 @@ func GetUserImagesByUsername(c *gin.Context) {
 }
 
 func GetUserFavoritedImagesByUsername(c *gin.Context) {
-	username := c.Param("user_name") // 从请求中获取用户ID（字符串）
+	username := c.Query("username") // 从请求中获取用户名
 
 	images, err := GetFavoritedImagesByUsername(d.DB, username)
 	if err != nil {
@@ -112,11 +112,3 @@ func GetUserFavoritedImagesByUsername(c *gin.Context) {
 	c.JSON(http.StatusOK, images)
 }
 
-// func main(){
-
-// 	r :=gin.Default()
-
-// 	r.GET("/getuserimage/:user_name",GetUserImagesByUsername)
-
-// 	r.Run()
-// }
