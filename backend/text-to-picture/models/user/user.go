@@ -14,16 +14,6 @@ type UserInformation struct {
 	Create_time time.Time `json:"create_time"`
 }
 
-type Register struct {
-	ID          int       `json:"id" gorm:"primarykey"`
-	Email       string    `json:"email" gorm:"unique;not null"`
-	UserName    string    `json:"username" gorm:"column:username; not null"`
-	Password    string    `json:"password" gorm:"not null"`
-	Create_time time.Time `json:"create_time"`
-}
-func (Register) TableName() string {
-	return "userinformation"
-}
 func (UserInformation) TableName() string {
 	return "userinformation"
 }
