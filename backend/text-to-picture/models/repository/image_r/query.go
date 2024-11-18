@@ -1,4 +1,4 @@
-package image_u
+package main//image_u
 
 import (
 	"net/http"
@@ -90,7 +90,7 @@ func GetUserFavoritedImagesById(c *gin.Context) {
 
 func GetUserImagesByUsername(c *gin.Context) {
 	username := c.Param("user_name") // 从请求中获取用户ID（字符串）
-
+	//c.JSON(200,gin.H{"name":username})
 	images, err := GetImagesByUsername(d.DB, username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败"})
@@ -112,3 +112,11 @@ func GetUserFavoritedImagesByUsername(c *gin.Context) {
 	c.JSON(http.StatusOK, images)
 }
 
+func main(){
+
+	r :=gin.Default()
+
+	r.GET("/getuserimage/:user_name",GetUserImagesByUsername)
+
+	r.Run()
+}
