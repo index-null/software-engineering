@@ -38,6 +38,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 	if result.Error == nil {
 		return fmt.Errorf("用户名已存在")
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+
 		return fmt.Errorf("查询用户名时发生错误: %v", result.Error)
 	}
 
