@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
     params TEXT,
     result TEXT,
     create_time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (userName) REFERENCES user_login(username)
+    FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	userName VARCHAR(30) NOT NULL,
 	result TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
-	FOREIGN KEY (userName) REFERENCES user_login(username)
+	FOREIGN KEY (userName) REFERENCES UserInformation(username)
 )
 `
 
