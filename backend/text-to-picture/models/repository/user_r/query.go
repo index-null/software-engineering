@@ -13,7 +13,11 @@ import (
 // 根据用户名查询用户信息
 func GetUserByName(db *gorm.DB, username string) (*u.UserInformation, error) {
 	var user u.UserInformation
+<<<<<<< HEAD
 	err := db.Where("username = ?", username).First(&user).Error
+=======
+	err := db.Where("user_name = ?", username).First(&user).Error
+>>>>>>> ac4fe47363a36df8dfcc928c5a9fb8f8a736f491
 	if err != nil {
 		return nil, err
 	}
