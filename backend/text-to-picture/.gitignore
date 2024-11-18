@@ -124,6 +124,7 @@ coverage/
 *.lock
 
 # 忽略其他特定文件
+*.yaml
 *.md5
 *.sha1
 *.sha256

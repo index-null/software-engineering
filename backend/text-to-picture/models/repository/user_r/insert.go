@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"text-to-picture/models/image"
 	userLogin "text-to-picture/models/user"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -18,7 +19,7 @@ func isValidEmail(email string) bool {
 }
 
 // 向用户信息表插入数据
-func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
+func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 	if user.UserName == "" {
 		return fmt.Errorf("名字为空")
 	}
@@ -31,7 +32,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
 	if isValidEmail(user.Email) == false {
 		return fmt.Errorf("邮箱格式不正确")
 	}
-	var existingUserLogin userLogin.Register
+	var existingUserLogin userLogin.UserInformation
 
 	result := db.Where("UserName = ?", user.UserName).First(&existingUserLogin)
 	if result.Error == nil {
@@ -47,6 +48,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.Register) error {
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("查询邮箱时发生错误: %v", result.Error)
 	}
+	user.Create_time= time.Now()
 
 	if err := db.Create(user).Error; err != nil {
 		return fmt.Errorf("插入用户登录表失败: %v", err)

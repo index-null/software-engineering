@@ -13,7 +13,7 @@ import (
 
 // 注册处理函数
 func Register(c *gin.Context) {
-	var newUser user.Register // 使用 Register 结构体作为注册用户
+	var newUser user.UserInformation // 使用 UserInformation 结构体作为注册用户
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
