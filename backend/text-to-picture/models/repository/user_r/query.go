@@ -27,7 +27,7 @@ func GetUserByName(db *gorm.DB, username string) (*u.UserInformation, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return &user, err
 }
 
 // 根据电子邮件查询用户信息

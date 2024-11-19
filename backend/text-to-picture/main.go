@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"text-to-picture/api/auth"
 	"text-to-picture/api/generate"
+	middlewire "text-to-picture/middlewire/jwt"
 	db "text-to-picture/models/init"
 	image_r "text-to-picture/models/repository/image_r"
 	user_r "text-to-picture/models/repository/user_r"
-
+	auth_s "text-to-picture/services/auth_s/login"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -74,11 +74,14 @@ func main() {
 	imgGen := generate.NewImageGenerator()
 
 	// 注册路由
-	r.POST("/register", auth.Register) // 注册路由
-	r.POST("/login", auth.Login)       // 登录路由
-	r.POST("/generate", func(c *gin.Context) {
-		imgGen.ReturnImage(c)
-	})
+	r.POST("/register", auth_s.Register) // 注册路由
+	r.POST("/login", auth_s.Login)       // 登录路由
+	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
+	{
+		auth.POST("/generate", func(c *gin.Context) {
+			imgGen.ReturnImage(c)
+		})
+	}
 	r.GET("/user/info", user_r.GetUserInfo)                        // 查询用户信息（根据id或username或email）
 	r.GET("/user/images", image_r.GetUserImages)                   // 查询用户生成的所有图片（根据username或id）
 	r.GET("/user/favoritedimages", image_r.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
