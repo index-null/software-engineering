@@ -2,14 +2,19 @@ package generate_s
 
 import (
 	"fmt"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	"log"
+	//"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"time"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
+
+	i "text-to-picture/models/image"
+	db "text-to-picture/models/init"
 
 	"github.com/gin-gonic/gin"
 )
@@ -79,7 +84,25 @@ type ImageGeneratorImpl struct{}
 // @Failure 500 {object} map[string]interface{} "内部错误"
 // @Router /generate [post]
 func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
-	//校验参数
+	// 获取当前用户的用户名
+	// username, exists := c.Get("username")
+	// if !exists {
+	// 	fmt.Println("username is ",username)
+	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "未授权访问"})
+	// 	return
+	// }
+	/*
+	{
+    "prompt":"taiyang",
+    "width":400,
+    "height":400,
+    "steps":20,
+    "sampling_method":"DDIM",
+    "seed":"czh"
+	}
+	*/
+
+	// 校验参数
 	if err := AcceptParaments(c); err != nil {
 		log.Printf("参数错误: %v", err)
 		c.JSON(400, gin.H{
@@ -89,7 +112,8 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		return
 	}
 
-	imageUrl, err := GenerateImage()
+	// 生成图片并传递用户名
+	imageUrl, err := GenerateImage() // 将用户名作为参数传递
 
 	//校验生成图片
 	if err != nil {
@@ -120,6 +144,22 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 func GenerateImage() (string, error) {
 	//这里把图片上传到OSS,OSS会那里返回包含图片URL的json
 	urloss, err := SavetoOss()
+
+	// 创建 ImageInformation 实例
+	imageInfo := i.ImageInformation{
+		UserName:    "czh", // 使用种子作为用户名的示例，实际使用中请替换为真实用户名
+		Params:      fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+		imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		Result:      urloss, // 保存生成的图片 URL
+		Create_time: time.Now(),
+	}
+
+	// 保存到数据库
+	if err := db.DB.Create(&imageInfo).Error; err != nil {
+		log.Printf("Failed to save image information to database: %v", err)
+		return urloss, err
+	}
+
 	return urloss, err
 }
 
@@ -158,7 +198,7 @@ func SavetoOss() (string, error) {
 	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
 	objectName := "generate/" + encodedPrompt + "-" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
-	localFileName := "backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
+	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
 		log.Fatal("上传失败，error%v", err)
 	}

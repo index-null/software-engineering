@@ -1,7 +1,7 @@
 package image
 
 import (
-	u "text-to-picture/models/user"
+	//u "text-to-picture/models/user"
 	"time"
 )
 
@@ -22,9 +22,12 @@ import (
 
 type ImageInformation struct {
 	ID          int               `json:"id" gorm:"primarykey"`
-	UserName    string            `json:"user_name" gorm:"not null"`
+	UserName    string            `json:"user_name" gorm:"column:username;not null"`
 	Params      string            `json:"params"`
 	Result      string            `json:"result"`
 	Create_time time.Time         `json:"create_time"`
-	User        u.UserInformation `gorm:"foreignKey:UserName;references:Username"`
+	//User        u.UserInformation `gorm:"foreignKey:UserName;references:Username"`
+}
+func (ImageInformation) TableName() string {
+	return "imageinformation"
 }
