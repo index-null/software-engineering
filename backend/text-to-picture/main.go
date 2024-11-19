@@ -28,7 +28,7 @@ type DBConfig struct {
 func main() {
 
 	//读取DBConfig.yaml文件
-	yamlFile, err := os.ReadFile("config\\DBconfig\\DBconfig.yaml")
+	yamlFile, err := os.ReadFile("config/DBconfig/DBconfig.yaml")
 	if err != nil {
 		fmt.Printf("Error reading config.yaml file: %v\n", err)
 	}
