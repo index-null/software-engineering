@@ -17,7 +17,7 @@ func GetUserByName(db *gorm.DB, username string) (*u.UserInformation, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return &user, err
 }
 
 // 根据电子邮件查询用户信息
@@ -35,7 +35,7 @@ func GetUserInfo(c *gin.Context) {
 	username := c.Query("username") // 从查询参数中获取用户名
 	useremail := c.Query("email")
 
-	 var user *u.UserInformation
+	var user *u.UserInformation
 	// if err := c.ShouldBindJSON(&user); err != nil {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 	// 	return
@@ -45,7 +45,7 @@ func GetUserInfo(c *gin.Context) {
 		user, err = GetUserByName(d.DB, username)
 	} else if useremail != "" {
 		user, err = GetUserByEmail(d.DB, useremail)
-	}else{
+	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
