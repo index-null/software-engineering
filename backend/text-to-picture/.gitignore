@@ -20,6 +20,7 @@ dist/
 build/
 out/
 target/
+*.sum
 *.jar
 *.war
 *.class
@@ -44,8 +45,6 @@ yarn.lock
 package-lock.json
 
 # 忽略Go相关文件
-*.a
-*.exe
 *.out
 *.test
 *.prof
@@ -64,14 +63,12 @@ package-lock.json
 *.pb.gw.pb.validate.go
 *.pb.gw.pb.grpc.gateway.go
 *.pb.gw.pb.twirp.go
-*.pb.gw.pb.json.go
 *.pb.gw.pb.gw.json.go
 *.pb.gw.pb.gw.pb.go
 *.pb.gw.pb.gw.pb.json.go
 *.pb.gw.pb.gw.pb.validate.go
 *.pb.gw.pb.gw.pb.grpc.gateway.go
 *.pb.gw.pb.gw.pb.twirp.go
-*.pb.gw.pb.gw.pb.json.go
 
 # 忽略Docker相关文件
 .dockerignore
@@ -83,7 +80,6 @@ Dockerfile.*
 
 # 忽略日志文件
 logs/
-*.log
 
 # 忽略配置文件
 config.json
@@ -91,6 +87,7 @@ config.json
 *.env
 *.env.local
 *.env.example
+*.yaml
 
 # 忽略缓存文件
 .cache/
@@ -134,7 +131,7 @@ config/DBconfig/DBconfig.yaml
 *.key
 *.pem
 *.crt
-*.csr
+*.csrgit
 *.jks
 *.keystore
 *.p12
