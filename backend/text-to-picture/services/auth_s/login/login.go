@@ -1,24 +1,20 @@
-package login
+package auth_s
 
 import (
 	"errors"
+	"github.com/dgrijalva/jwt-go"
+	"log"
 	"net/http"
+	middlewire "text-to-picture/middlewire/jwt"
 	models "text-to-picture/models/init"
 	"text-to-picture/models/repository/user_r"
 	userLogin "text-to-picture/models/user"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 )
-
-type User struct {
-	ID         int
-	Name       string
-	Email      string
-	Password   string
-	IsVerified bool
-}
 
 // 注册
 func Register(c *gin.Context) {
@@ -47,7 +43,7 @@ func Register(c *gin.Context) {
 func Login(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
 	var input struct {
-		Name     string `json:"name"`
+		Name     string `json:"username"`
 		Password string `json:"password"`
 	}
 
@@ -58,13 +54,14 @@ func Login(c *gin.Context) {
 	}
 
 	// 查找用户
-	var user User
-	result := models.DB.Where("name = ?", input.Name).First(&user)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	user, err := user_r.GetUserByName(models.DB, input.Name)
+	if err != nil {
+		log.Printf("name:%v,%v", input.Name, err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "用户不存在"})
 			return
 		}
+		//
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询错误"})
 		return
 	}
@@ -75,25 +72,25 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// 生成 JWT
-	//expirationTime := time.Now().Add(24 * time.Hour)
-	//claims := &middlewire.Claims{
-	//	Username: input.Name,
-	//	StandardClaims: jwt.StandardClaims{
-	//		ExpiresAt: expirationTime.Unix(),
-	//	},
-	//}
-	//身份认证程序勿删
-	//token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	//tokenString, err := token.SignedString(middlewire.JwtKey)
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"message": "生成 token 错误"})
-	//	return
-	//}
+	//生成 JWT
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := &middlewire.Claims{
+		Username: input.Name,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(middlewire.JwtKey)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "生成 token 错误"})
+		return
+	}
 
 	// 登录成功
 	c.JSON(http.StatusOK, gin.H{
 		"message": "登录成功",
-		//"token":   tokenString,
+		"token":   tokenString,
 	})
 }
