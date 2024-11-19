@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	result TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
 	FOREIGN KEY (userName) REFERENCES UserInformation(username)
-)
+);
+
 `
 
 // UserImformation中avatar_url为头像图片url

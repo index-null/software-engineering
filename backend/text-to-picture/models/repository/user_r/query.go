@@ -13,7 +13,7 @@ import (
 // 根据用户名查询用户信息
 func GetUserByName(db *gorm.DB, username string) (*u.UserInformation, error) {
 	var user u.UserInformation
-	err := db.Where("user_name = ?", username).First(&user).Error
+	err := db.Table("userinformation").Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func GetUserByName(db *gorm.DB, username string) (*u.UserInformation, error) {
 // 根据电子邮件查询用户信息
 func GetUserByEmail(db *gorm.DB, email string) (*u.UserInformation, error) {
 	var user u.UserInformation
-	err := db.Where("email = ?", email).First(&user).Error
+	err := db.Table("userinformation").Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +32,22 @@ func GetUserByEmail(db *gorm.DB, email string) (*u.UserInformation, error) {
 
 func GetUserInfo(c *gin.Context) {
 
-	username := c.Query("user_name") // 从查询参数中获取用户名
-	useremail := c.Query("user_email")
+	username := c.Query("username") // 从查询参数中获取用户名
+	useremail := c.Query("email")
 
-	var user *u.UserInformation
+	 var user *u.UserInformation
+	// if err := c.ShouldBindJSON(&user); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+	// 	return
+	// }
 	var err error
 	if username != "" {
 		user, err = GetUserByName(d.DB, username)
 	} else if useremail != "" {
-		user, err = GetUserByEmail(d.DB, username)
+		user, err = GetUserByEmail(d.DB, useremail)
+	}else{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
 	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
