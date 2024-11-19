@@ -158,7 +158,7 @@ func SavetoOss() (string, error) {
 	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
 	objectName := "generate/" + encodedPrompt + "-" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
-	localFileName := "C:/Users/HUAWEI/Pictures/壁纸/desktop.png" //测试就换成自己要上传的图片即可
+	localFileName := "backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
 		log.Fatal("上传失败，error%v", err)
 	}
