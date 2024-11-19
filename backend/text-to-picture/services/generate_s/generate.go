@@ -84,23 +84,6 @@ type ImageGeneratorImpl struct{}
 // @Failure 500 {object} map[string]interface{} "内部错误"
 // @Router /generate [post]
 func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
-	// 获取当前用户的用户名
-	// username, exists := c.Get("username")
-	// if !exists {
-	// 	fmt.Println("username is ",username)
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"message": "未授权访问"})
-	// 	return
-	// }
-	/*
-	{
-    "prompt":"taiyang",
-    "width":400,
-    "height":400,
-    "steps":20,
-    "sampling_method":"DDIM",
-    "seed":"czh"
-	}
-	*/
 
 	// 校验参数
 	if err := AcceptParaments(c); err != nil {

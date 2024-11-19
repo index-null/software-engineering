@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 
 	db "text-to-picture/models/init"           // 给 init 包设置别名为 db
@@ -54,8 +53,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Incorrect password"})
 		return
 	}
-	c.Set("username", dbUser.UserName)// 保存用户名到当前会话
-	fmt.Println(c.Get("username"))
 
 	// 返回登录成功
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
