@@ -96,7 +96,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	}
 
 	// 生成图片并传递用户名
-	imageUrl, err := GenerateImage() // 将用户名作为参数传递
+	imageUrl, err := GenerateImage() 
 
 	//校验生成图片
 	if err != nil {
