@@ -10,27 +10,27 @@ import (
 	"gorm.io/gorm"
 )
 
-// 根据用户ID查询相关图片
-func GetUserImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
-	var images []i.ImageInformation
-	err := db.Table("imageinformation").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
-	if err != nil {
-		return nil, err
-	}
+// // 根据用户ID查询相关图片
+// func GetUserImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
+// 	var images []i.ImageInformation
+// 	err := db.Table("imageinformation").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return images, nil
-}
+// 	return images, nil
+// }
 
-// 根据用户ID查询收藏的图片
-func GetUserFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
-	var images []i.ImageInformation
-	err := db.Table("favoritedimage").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
-	if err != nil {
-		return nil, err
-	}
+// // 根据用户ID查询收藏的图片
+// func GetUserFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
+// 	var images []i.ImageInformation
+// 	err := db.Table("favoritedimage").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return images, nil
-}
+// 	return images, nil
+// }
 
 // 根据用户名查询相关图片
 func GetUserImagesByUsername(db *gorm.DB, username string) ([]i.ImageInformation, error) {
@@ -75,7 +75,7 @@ func GetUserImages(c *gin.Context) {
 		var user u.UserInformation
 		err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
 			if err != nil {
-				images, err := GetUserImagesByUserId(d.DB, user.ID)
+				images, err := GetUserImagesByUsername(d.DB, user.UserName)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","err":err})
 					return
@@ -110,7 +110,7 @@ func GetUserFavoritedImages(c *gin.Context) {
 		var user u.UserInformation
 		err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
 			if err != nil {
-				images, err := GetUserFavoritedImagesByUserId(d.DB, user.ID)
+				images, err := GetUserFavoritedImagesByUsername(d.DB, user.UserName)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户收藏的图片失败","err":err})
 					return
