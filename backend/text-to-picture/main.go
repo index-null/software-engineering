@@ -81,7 +81,7 @@ func main() {
 	})
 	r.GET("/user/info",user_r.GetUserInfo)	// 查询用户信息（根据id或username或email）
 	r.GET("/user/images",image_r.GetUserImages)	// 查询用户生成的所有图片（根据username或id）
-	r.GET("/user/favoritedimage",image_r.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
+	r.GET("/user/favoritedimages",image_r.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
 	r.GET("/image",image_r.GetImages)	// 查询指定的一张图片 (根据id或图片的username属性)
 
 	// 添加静态文件服务，指向 docs 目录

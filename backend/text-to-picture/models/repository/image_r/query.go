@@ -75,16 +75,16 @@ func GetUserImages(c *gin.Context) {
 		var user u.UserInformation
 		err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
 			if err != nil {
-				images, err := GetUserImagesByUsername(d.DB, user.UserName)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","err":err})
-					return
-				}
-				c.JSON(http.StatusOK, images)
-				return
-			}else{
 				c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id"})
 			}
+			
+			images, err := GetUserImagesByUsername(d.DB, user.UserName)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","err":err})
+				return
+			}
+			c.JSON(http.StatusOK, images)
+			return
 
 	}else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户名或用户id"})
@@ -110,16 +110,16 @@ func GetUserFavoritedImages(c *gin.Context) {
 		var user u.UserInformation
 		err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
 			if err != nil {
-				images, err := GetUserFavoritedImagesByUsername(d.DB, user.UserName)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户收藏的图片失败","err":err})
-					return
-				}
-				c.JSON(http.StatusOK, images)
-				return
-			}else{
 				c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id"})
 			}
+
+			images, err := GetUserFavoritedImagesByUsername(d.DB, user.UserName)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户收藏的图片失败","err":err})
+				return
+			}
+			c.JSON(http.StatusOK, images)
+			return
 
 	}else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID或用户名"})
