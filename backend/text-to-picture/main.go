@@ -9,9 +9,10 @@ import (
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
-	"text-to-picture/api/auth"
 	"text-to-picture/api/generate"
+	middlewire "text-to-picture/middlewire/jwt"
 	db "text-to-picture/models/init"
+	auth_s "text-to-picture/services/auth_s/login"
 )
 
 type DBConfig struct {
@@ -71,11 +72,14 @@ func main() {
 	imgGen := generate.NewImageGenerator()
 
 	// 注册路由
-	r.POST("/register", auth.Register) // 注册路由
-	r.POST("/login", auth.Login)       // 登录路由
-	r.POST("/generate", func(c *gin.Context) {
-		imgGen.ReturnImage(c)
-	})
+	r.POST("/register", auth_s.Register) // 注册路由
+	r.POST("/login", auth_s.Login)       // 登录路由
+	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
+	{
+		auth.POST("/generate", func(c *gin.Context) {
+			imgGen.ReturnImage(c)
+		})
+	}
 
 	// 添加静态文件服务，指向 docs 目录
 	r.Static("/docs", "./docs")
