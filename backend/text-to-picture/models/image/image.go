@@ -22,7 +22,7 @@ import (
 
 type ImageInformation struct {
 	ID          int               `json:"id" gorm:"primarykey"`
-	UserName    string            `json:"user_name" gorm:"column:username;not null"`
+	UserName    string            `json:"username" gorm:"column:username;not null"`
 	Params      string            `json:"params"`
 	Result      string            `json:"result"`
 	Create_time time.Time         `json:"create_time"`
