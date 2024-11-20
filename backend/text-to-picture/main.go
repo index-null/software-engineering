@@ -62,7 +62,7 @@ func main() {
 
 	// 配置 CORS 中间件
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"} // 允许的源，可以根据需要修改
+	config.AllowOrigins = []string{"http://localhost:8081"} // 允许的源，可以根据需要修改
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 

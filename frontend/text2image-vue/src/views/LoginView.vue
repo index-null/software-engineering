@@ -55,8 +55,7 @@ export default {
   },
   methods: {
     checkUsername() {
-      if (this.ruleForm.uname.trim().length > 0) {
-        const username = this.ruleForm.uname;
+      const username = this.ruleForm.uname;
       axios.post('/api/check-username', { username })
         .then(response => {
           if (response.data.registered) {
@@ -69,7 +68,6 @@ export default {
           console.error('检查用户名时发生错误:', error);
           this.$message.error('在检查用户名过程中发生错误', { duration: 2000 });
         });
-      }
     },
     submitForm(formName) {
       /* eslint-enable no-unreachable */
