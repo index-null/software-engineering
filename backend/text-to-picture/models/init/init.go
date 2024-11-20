@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS UserInformation (
     id SERIAL PRIMARY KEY,
 	email VARCHAR(50) UNIQUE NOT NULL,
 	username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(30) NOT NULL,
+    password VARCHAR(300) NOT NULL,
 	avatar_url VARCHAR(255) NOT NULL,
 	create_time TIMESTAMP DEFAULT NOW(),
     token VARCHAR(255)
