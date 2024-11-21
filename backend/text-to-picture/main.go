@@ -77,15 +77,21 @@ func main() {
 	r.POST("/register", auth_s.Register) // 注册路由
 	r.POST("/login", auth_s.Login)       // 登录路由
 	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
-	{
+	{	//Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
 	}
+
 	r.GET("/user/info", user_r.GetUserInfo)                        // 查询用户信息（根据id或username或email）
 	r.GET("/user/images", image_r.GetUserImages)                   // 查询用户生成的所有图片（根据username或id）
 	r.GET("/user/favoritedimages", image_r.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
 	r.GET("/image", image_r.GetImages)                             // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
+
+	r.GET("/user/all",user_r.GetAllUsersInfo)	//获取所有用户信息
+	r.GET("/image/all",image_r.GetAllImages)	//获取所有图像信息
+	
+	r.PUT("/user/:username",user_r.UpdateUser)	//更新用户信息(拒绝改用户名)
 
 	// 添加静态文件服务，指向 docs 目录
 	r.Static("/docs", "./docs")

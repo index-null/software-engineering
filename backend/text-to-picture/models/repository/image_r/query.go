@@ -1,11 +1,13 @@
 package image_r
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	i "text-to-picture/models/image"
 	d "text-to-picture/models/init"
 	u "text-to-picture/models/user"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -13,7 +15,7 @@ import (
 // // 根据用户ID查询相关图片
 // func GetUserImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
 // 	var images []i.ImageInformation
-// 	err := db.Table("imageinformation").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+// 	err := db.Table("imageinformation").Where("userid = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 // 	if err != nil {
 // 		return nil, err
 // 	}
@@ -24,7 +26,7 @@ import (
 // // 根据用户ID查询收藏的图片
 // func GetUserFavoritedImagesByUserId(db *gorm.DB, userId int) ([]i.ImageInformation, error) {
 // 	var images []i.ImageInformation
-// 	err := db.Table("favoritedimage").Where("user.id = ?", userId).Find(&images).Error // 使用 Find 而不是 First
+// 	err := db.Table("favoritedimage").Where("userid = ?", userId).Find(&images).Error // 使用 Find 而不是 First
 // 	if err != nil {
 // 		return nil, err
 // 	}
@@ -51,6 +53,16 @@ func GetUserFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageIn
 		return nil, err
 	}
 
+	return images, nil
+}
+
+// 获取所有图像信息并按id排序
+func GetAllImagesInfo(db *gorm.DB) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
+	result := db.Order("id ASC").Find(&images)
+	if result.Error != nil {
+		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
+	}
 	return images, nil
 }
 
@@ -127,6 +139,22 @@ func GetUserFavoritedImages(c *gin.Context) {
 	}
 	
 }
+
+// 获取所有图像信息
+func GetAllImages(c *gin.Context) {
+	images, err := GetAllImagesInfo(d.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取图像列表失败", "error": err.Error()})
+		return
+	}
+
+	// 返回结果
+	c.JSON(http.StatusOK, gin.H{
+		"message": "获取图像列表成功",
+		"images":  images,
+	})
+}
+
 
 	// else if err == nil{
 	// 	images, err := GetUserImagesByUserId(d.DB, userId)
