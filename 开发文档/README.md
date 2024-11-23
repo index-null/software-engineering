@@ -63,20 +63,21 @@
         "username": "root1",
         "password": "sssssss"
      }
-   2. **文生图接口**
-      - 部署本地的文生图模型，编写接口进行传参和调用
-      - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-      - 假文生图url：http://localhost:8080/auth/generate
-      - 参数格式：
-      - ```json
-        {
-          "height": 200,
-          "width": 220,
-          "prompt": "string",
-          "sampling_method": "DDIM",
-          "seed": "string",
-          "steps": 100
-        }
+
+2. **文生图接口**
+  - 部署本地的文生图模型，编写接口进行传参和调用
+  - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
+  - 假文生图url：http://localhost:8080/auth/generate
+  - 参数格式：
+  - ```json
+    {
+      "height": 200,
+      "width": 220,
+      "prompt": "string",
+      "sampling_method": "DDIM",
+      "seed": "string",
+      "steps": 100
+    }
 
 3. **个人信息界面**
    - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
@@ -93,9 +94,9 @@
    - 查询展示出用户的收藏图片
 
 6. **数据库设计**
-   - 用户登录表：id，email，user，password，token
-   - 用户查询表：id，user（外键），params，result，time
-   - 收藏表：id，user（外键），result
+   - 用户登录表：id，email，usernaem，password，avatar_url, create_time, token
+   - 用户查询表：id，username（外键），params，result，create_time
+   - 收藏表：id，username（外键），result, create_time
 
 
   

@@ -90,6 +90,8 @@ func main() {
 
 	r.GET("/user/all",user_r.GetAllUsersInfo)	//获取所有用户信息
 	r.GET("/image/all",image_r.GetAllImages)	//获取所有图像信息
+	r.GET("/image/timeRange",image_r.GetImagesWithinTimeRange)	//获取指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
+																//或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 	
 	r.PUT("/user/:username",user_r.UpdateUser)	//更新用户信息(拒绝改用户名)
 

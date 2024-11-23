@@ -3,10 +3,12 @@ package image_r
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	i "text-to-picture/models/image"
 	d "text-to-picture/models/init"
 	u "text-to-picture/models/user"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -56,10 +58,22 @@ func GetUserFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageIn
 	return images, nil
 }
 
+//查询指定时间段内的所有图像
+func GetImagesInfoWithinTimeRange(db *gorm.DB, startTime, endTime time.Time) ([]i.ImageInformation, error) {
+	var images []i.ImageInformation
+	err := db.Table("imageinformation").
+		Where("create_time BETWEEN ? AND ?", startTime, endTime).
+		Find(&images).Error
+	if err != nil {
+		return nil, fmt.Errorf("查询图像列表时发生错误: %v", err)
+	}
+	return images, nil
+}
+
 // 获取所有图像信息并按id排序
 func GetAllImagesInfo(db *gorm.DB) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	result := db.Order("id ASC").Find(&images)
+	result := db.Table("imageinformation").Order("id ASC").Find(&images)
 	if result.Error != nil {
 		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
 	}
@@ -138,6 +152,68 @@ func GetUserFavoritedImages(c *gin.Context) {
 		return
 	}
 	
+}
+
+//查询指定时间段内的所有图像
+func GetImagesWithinTimeRange(c *gin.Context) {
+	startTimeStr := c.Query("start_time")
+	endTimeStr := c.Query("end_time")
+
+	//定义正则表达式来检测时间字符串是否包含时间部分
+	timeRegex := regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(\.\d+)?Z$`)
+	dateRegex := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
+
+	var startTime, endTime time.Time
+	var err error
+
+	//检查 start_time 是否包含时间部分
+	if timeRegex.MatchString(startTimeStr) {//含时间部分
+		startTime, err = time.Parse("2006-01-02T15:04:05Z", startTimeStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式", "error": err.Error()})
+			return
+		}
+	} else if dateRegex.MatchString(startTimeStr) {//不含时间部分
+		startTime, err = time.Parse("2006-01-02", startTimeStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式", "error": err.Error()})
+			return
+		}
+		startTime = time.Date(startTime.Year(), startTime.Month(), startTime.Day(), 0, 0, 0, 0, time.UTC)
+	} else {//都不符合
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式"})
+		return
+	}
+
+	//检查 end_time 是否包含时间部分
+	if timeRegex.MatchString(endTimeStr) {//含时间部分
+		endTime, err = time.Parse("2006-01-02T15:04:05Z", endTimeStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式", "error": err.Error()})
+			return
+		}
+	} else if dateRegex.MatchString(endTimeStr) {//不含时间部分
+		endTime, err = time.Parse("2006-01-02", endTimeStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式", "error": err.Error()})
+			return
+		}
+		endTime = time.Date(endTime.Year(), endTime.Month(), endTime.Day(), 23, 59, 59, 999999999, time.UTC)
+	} else {//都不符合
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式"})
+		return
+	}
+
+	images, err := GetImagesInfoWithinTimeRange(d.DB, startTime, endTime)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询图像列表失败", "error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "查询图像列表成功",
+		"images":  images,
+	})
 }
 
 // 获取所有图像信息
