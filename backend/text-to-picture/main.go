@@ -2,6 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"text-to-picture/api/generate"
@@ -9,12 +14,8 @@ import (
 	db "text-to-picture/models/init"
 	image_r "text-to-picture/models/repository/image_r"
 	user_r "text-to-picture/models/repository/user_r"
+	"text-to-picture/services/auth_s/avator"
 	auth_s "text-to-picture/services/auth_s/login"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"gopkg.in/yaml.v3"
 )
 
 type DBConfig struct {
@@ -81,6 +82,8 @@ func main() {
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
+		auth.POST("/setavator", avator.SetAvator) // 设置头像
+		auth.GET("/getavator", avator.GetAvator)  // 获取头像
 	}
 	r.GET("/user/info", user_r.GetUserInfo)                        // 查询用户信息（根据id或username或email）
 	r.GET("/user/images", image_r.GetUserImages)                   // 查询用户生成的所有图片（根据username或id）
