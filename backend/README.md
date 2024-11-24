@@ -123,7 +123,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - ```json
       携带一个"Authorization"的token
       "token": "string"(jwt生成的token)
-      "url": "string"(更换头像的url，是Query参数，得要 ?url= )
+      "url": "string"(更换头像的url)
     - 响应格式：
     - ```json
       Code: 401（Unauthorized）,
@@ -141,7 +141,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       Code: 200(Success),
       Msg:  "头像更新成功",
       Data: newURL
-      
     - 获取头像url：http://localhost:8080/auth/getavatar
     - 参数格式：
     - ```json
