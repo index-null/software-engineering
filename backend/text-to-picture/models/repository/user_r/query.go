@@ -2,6 +2,7 @@ package user_r
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	d "text-to-picture/models/init"
@@ -40,6 +41,17 @@ func GetUserByEmail(db *gorm.DB, email string) (*u.UserInformation, error) {
 	return &user, nil
 }
 
+// 获取所有用户信息并id升序
+func GetAllUsers(db *gorm.DB) ([]u.UserInformation, error) {
+	var users []u.UserInformation
+	result := db.Table("userinformation").Order("id ASC").Find(&users)
+	if result.Error != nil {
+		return nil, fmt.Errorf("查询用户列表时发生错误: %v", result.Error)
+	}
+	return users, nil
+}
+
+//-----------------------------------------------------------------------------------------------
 func GetUserInfo(c *gin.Context) {
 
 	username := c.Query("username") // 从查询参数中获取用户名
@@ -69,4 +81,18 @@ func GetUserInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func GetAllUsersInfo(c *gin.Context){
+	users, err := GetAllUsers(d.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取用户列表失败", "error": err.Error()})
+		return
+	}
+
+	// 返回结果
+	c.JSON(http.StatusOK, gin.H{
+		"message": "获取用户列表成功",
+		"users":   users,
+	})
 }

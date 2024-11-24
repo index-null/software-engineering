@@ -11,8 +11,8 @@
         label-width="70px"
         class="login-form"
       >
-        <el-form-item label="用户名" prop="uname">
-          <el-input v-model="ruleForm.uname" @blur="checkUsername"></el-input>
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="ruleForm.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input
@@ -40,46 +40,43 @@ export default {
   data() {
     return {
       ruleForm: {
-        uname: localStorage.getItem('registeredUsername') || '', // 从localStorage获取注册的账号
+        username: '',
         password: '',
       },
       rules: {
-        uname: [
+        username: [
           { required: true, message: "用户名不能为空！", trigger: "blur" },
         ],
         password: [
-          { required: true, message: "密码不能为空！", trigger: "blur" },
-        ],
+        { required: true, message: "密码不能为空！", trigger: "blur" },
+        { min: 6, max: 16, message: '密码长度必须在6到16个字符之间', trigger: 'change' }
+      ],
       },
     };
   },
   methods: {
-    checkUsername() {
-      const username = this.ruleForm.uname;
-      axios.post('/api/check-username', { username })
-        .then(response => {
-          if (response.data.registered) {
-            this.$message.success('该用户名已注册，可以登录');
-          } else {
-            this.$message.error('该用户名未注册，请先注册');
-          }
-        })
-        .catch(error => {
-          console.error('检查用户名时发生错误:', error);
-          this.$message.error('在检查用户名过程中发生错误', { duration: 2000 });
-        });
+    async hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+      return hashHex;
     },
-    submitForm(formName) {
-      /* eslint-enable no-unreachable */
-      //测试代码
-      this.$router.push('/home');
-      /* eslint-enable no-unreachable */
-      this.$refs[formName].validate((valid) => {
+    async submitForm(formName) {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          axios.post('/api/login', this.ruleForm)
+          let hashedPassword = await this.hashPassword(this.ruleForm.password);
+          let formData={
+            username: this.ruleForm.username,
+            password: hashedPassword
+          }
+          axios.post('http://localhost:8080/login', formData)
             .then(response => {
-              if (response.data.success) {
+              if (response.data.message === '登录成功') {
+                this.$message.success('登录成功');
                 this.$router.push('/home');
+                
               } else {
                 this.$message.error(response.data.message);
               }
