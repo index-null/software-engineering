@@ -136,6 +136,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Code：400（StatusBadRequest）,
      Msg："缺乏种子"
    - ```json
+     Code：401（StatusInternalServerError）,
+     Msg："未找到用户信息"
+   - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
    3. **个人信息界面**
