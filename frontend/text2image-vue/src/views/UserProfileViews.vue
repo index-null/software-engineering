@@ -6,9 +6,10 @@
         <div class="avatar-overlay" v-show="isEditing"></div>
       </div>
       <div class="profile-info" v-if="!isEditing">
-        <p class="username">{{ user.username }}</p>
-        <p class="email">{{ user.email }}</p>
-        <p class="account">{{ user.account }}</p>
+        <p class="username">昵称: {{ user.username }}</p>
+        <p class="email">邮箱: {{ user.email }}</p>
+        <p class="personal-signature">个签: {{ user.personalSignature }}</p>
+        <p class="collected-pictures">已收藏图片数: {{ user.collectedPictures }}</p>
       </div>
     </div>
     <el-button type="primary" @click="toggleEdit" class="edit-button" v-show="!isEditing">
@@ -16,13 +17,16 @@
     </el-button>
     <el-form v-if="isEditing" label-width="80px" class="edit-form">
       <el-form-item label="昵称">
-        <el-input v-model="user.username"></el-input>
+        <el-input v-model="user.username" disabled></el-input>
       </el-form-item>
       <el-form-item label="邮箱">
         <el-input v-model="user.email"></el-input>
       </el-form-item>
-      <el-form-item label="账号">
-        <el-input v-model="user.account" disabled></el-input>
+      <el-form-item label="个签">
+        <el-input v-model="user.personalSignature"></el-input>
+      </el-form-item>
+      <el-form-item label="收藏">
+        <el-input v-model="user.collectedPictures" disabled></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="success" @click="saveChanges" class="save-button">保存</el-button>
@@ -43,7 +47,8 @@ export default {
         avatar: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347060.jpg',
         username: 'Chuhsing',
         email: 'zhuxing.halcyon@gmail.com',
-        account: 'index-null'
+        personalSignature: 'People go, memories stay.',
+        collectedPictures : 100
       },
       isEditing: false,
       client: null
@@ -156,9 +161,9 @@ export default {
   margin-top: 10px;
 }
 
-.username, .email, .account {
+.username, .email, .personal-signature {
   font-size: 16px;
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .edit-button {
