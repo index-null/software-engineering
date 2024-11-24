@@ -17,14 +17,8 @@
           <el-button type="text" @click="viewImage(record)">查看</el-button>
           <el-button type="text" @click="downloadImage(record)">下载</el-button>
         </div>
-        </div>
       </div>
-      <br>
-      <div class="pagination">
-        <el-button type="info" plain icon="el-icon-arrow-left" @click="fetchHistoryRecords(currentPage - 1, pageSize)" :disabled="currentPage <= 1">上一页</el-button>
-        <span style="margin:0 20px">第 {{ currentPage }} 页，共 {{ Math.ceil(totalRecords / pageSize) }} 页</span>
-        <el-button type="info" plain @click="fetchHistoryRecords(currentPage + 1, pageSize)" :disabled="currentPage >= Math.ceil(totalRecords / pageSize)">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-      </div>
+    </div>
     <div class="pagination">
       <el-button @click="fetchHistoryRecords(currentPage - 1, pageSize)" :disabled="currentPage <= 1">上一页</el-button>
       <span>第 {{ currentPage }} 页，共 {{ Math.ceil(totalRecords / pageSize) }} 页</span>

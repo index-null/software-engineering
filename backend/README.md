@@ -113,34 +113,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
        "seed": "string",
        "steps": 100
      }
-    - 响应格式：
-   - ```json
-     Code：200（StatusOK）,
-     Msg："成功响应"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："缺乏提示词"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："宽度不在范围内"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："高度不在范围内"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："步数不在范围内"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："采样方法不在范围内"
-   - ```json
-     Code：400（StatusBadRequest）,
-     Msg："缺乏种子"
-   - ```json
-     Code：401（StatusInternalServerError）,
-     Msg："未找到用户信息"
-   - ```json
-     Code：500（StatusInternalServerError）,
-     Msg："图片生成失败"
+
    3. **个人信息界面**
       - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
       - 头像上传功能，获取功能set，get

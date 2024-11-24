@@ -1,6 +1,6 @@
 <template>
-   <section>
-  <div class="main-container">  
+  <div class="main-container">
+    
     <el-card class="image-container">
       <img :src="imageUrl" alt="Generated Image" v-if="imageUrl" class="generated-image" />
       <p v-else>生成的图片将显示在这里</p>
@@ -48,14 +48,12 @@
       </el-form>
     </el-card>
   </div>
-  </section>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
-
   data() {
     return {
       imageUrl: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335308.gif',
@@ -66,13 +64,10 @@ export default {
         steps: 50,
         samplingMethod: 'ddim',
         seed: ''
-      },
+      }
     };
   },
   methods: {
-    goToHistory() {
-      this.$router.push('/HistoryPage');
-    },
     generateImage() {
       const params = {
         prompt: this.form.prompt,

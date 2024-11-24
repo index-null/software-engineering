@@ -3,7 +3,6 @@ package generate_s
 import (
 	"fmt"
 	"log"
-
 	//"net/http"
 	"net/url"
 	"os"
@@ -92,7 +91,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		c.JSON(400, gin.H{
 			"code":    400,
 			"success": false,
-			"message": err.Error(),
+			"message": err,
 		})
 		return
 	}
@@ -109,7 +108,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	}
 
 	// 生成图片并传递用户名
-	imageUrl, err := GenerateImage(username.(string))
+	imageUrl, err := GenerateImage(username.(string)) 
 	//校验生成图片
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
@@ -144,9 +143,9 @@ func GenerateImage(username string) (string, error) {
 
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
-		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
-			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		UserName:    username, // 实际使用时应该从会话信息中获取真实用户名
+		Params:      fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+		imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
 		Result:      urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
@@ -197,7 +196,7 @@ func SavetoOss() (string, error) {
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		log.Fatalf("上传失败，error%v", err)
+		log.Fatal("上传失败，error%v", err)
 	}
 	return objectName, err
 }
