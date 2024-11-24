@@ -96,9 +96,19 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		return
 	}
 
-	// 生成图片并传递用户名
-	imageUrl, err := GenerateImage()
+	// 从上下文中获取用户名
+	username, exists := c.Get("username")
+	if !exists {
+		log.Printf("未找到用户名")
+		c.JSON(401, gin.H{
+			"success": false,
+			"message": "未找到用户信息",
+		})
+		return
+	}
 
+	// 生成图片并传递用户名
+	imageUrl, err := GenerateImage(username.(string)) 
 	//校验生成图片
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
@@ -127,15 +137,15 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	})
 }
 
-func GenerateImage() (string, error) {
+func GenerateImage(username string) (string, error) {
 	//这里把图片上传到OSS,OSS会那里返回包含图片URL的json
 	urloss, err := SavetoOss()
 
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
-		UserName: "czh", // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
-			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		UserName:    username, // 实际使用时应该从会话信息中获取真实用户名
+		Params:      fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+		imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
 		Result:      urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}

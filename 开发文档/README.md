@@ -41,8 +41,3 @@
 - "gorm.io/gorm"
 - "golang.org/x/crypto/bcrypt"
 - 目前的功能需要这些依赖，后续会增加
-
-
-
-
-  
