@@ -88,6 +88,15 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// 更新用户的 token
+	updates := map[string]interface{}{
+		"token": tokenString,
+	}
+	if err := user_r.UpdateUserInfo(models.DB, user.UserName, updates); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "登录时更新用户 token 失败", "error": err.Error()})
+		return
+	}
+
 	// 登录成功
 	c.JSON(http.StatusOK, gin.H{
 		"message": "登录成功",

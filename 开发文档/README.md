@@ -43,6 +43,59 @@
 - 目前的功能需要这些依赖，后续会增加
 
 
+1. **登陆注册接口**
+   - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
+   - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
+   - jwt返回token用于登录验证
+   - 登录访问url：http://localhost:8080/register
+   - 登录数据格式：
+   - ```json
+     {
+        “email": "root@qq.com",
+        "username": "root1",
+        "password": "sssssss"
+     }
+   - 登录访问url：http://localhost:8080/login
+   - 登录数据格式：
+   - ```json
+     {
+        "username": "root1",
+        "password": "sssssss"
+     }
+
+2. **文生图接口**
+  - 部署本地的文生图模型，编写接口进行传参和调用
+  - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
+  - 假文生图url：http://localhost:8080/auth/generate
+  - 参数格式：
+  - ```json
+    {
+      "height": 200,
+      "width": 220,
+      "prompt": "string",
+      "sampling_method": "DDIM",
+      "seed": "string",
+      "steps": 100
+    }
+
+3. **个人信息界面**
+   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
+
+4. **文生图历史记录**
+   - 总的记录
+   - 按照时间排序，可以列出一段时间内的查询信息
+   - 按照参数排序，可以列出所需查询参数的查询信息
+   - 按照结果排序，可以列出所需结果图片的查询信息
+   - 按照用户排序，可以列出所需用户查询的查询信息
+   - 待定   
+
+5. **图片收藏界面**
+   - 查询展示出用户的收藏图片
+
+6. **数据库设计**
+   - 用户登录表：id，email，usernaem，password，avatar_url, create_time, token
+   - 用户查询表：id，username（外键），params，result，create_time
+   - 收藏表：id，username（外键），result, create_time
 
 
   
