@@ -14,6 +14,9 @@
         <el-form-item label="用户名" prop="uname">
           <el-input v-model="registerForm.uname"></el-input>
         </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="registerForm.email"></el-input>
+        </el-form-item>
         <el-form-item label="密码" prop="pass">
           <el-input
             type="password"
@@ -43,12 +46,14 @@ import axios from 'axios';
 
 export default {
   data() {
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"));
+    const validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'));
+      } else if (value.length < 6 || value.length > 16) {
+        callback(new Error('密码长度必须在6到16个字符之间'));
       } else {
-        if (this.registerForm.password !== "") {
-          this.$refs.registerForm.validateField("password");
+        if (this.registerForm.password !== '') {
+          this.$refs.registerForm.validateField('password');
         }
         callback();
       }
@@ -65,12 +70,15 @@ export default {
     return {
       registerForm: {
         uname: "",
+        email: "",
         pass: "",
         password: "",
       },
       rules: {
-        uname: [
-          { required: true, message: "用户名不能为空！", trigger: "blur" },
+        uname: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        email: [
+          { required: true, message: "请输入邮箱地址", trigger: "blur" },
+          { type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] },
         ],
         pass: [{ required: true, validator: validatePass, trigger: "blur" }],
         password: [
@@ -80,28 +88,42 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+    async hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    },
+    async submitForm(formName) {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          axios.post('/api/register', this.registerForm)
-            .then(response => {
-              if (response.data.success) {
-                localStorage.setItem('registeredUsername', this.registerForm.uname);
-                this.$router.push('/login');
-              } else {
-                this.$message.error(response.data.message);
-              }
-            })
-            .catch(error => {
-              console.error('注册失败:', error);
-              if (error.response) {
-                this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-              } else if (error.request) {
-                this.$message.error('请求未响应，请检查网络连接');
-              } else {
-                this.$message.error('请求发送失败，请稍后再试');
-              }
-            });
+          try {
+            const hashedPassword = await this.hashPassword(this.registerForm.password);
+            const formattedFormData = {
+              email: this.registerForm.email,
+              username: this.registerForm.uname,
+              password: hashedPassword
+            };
+            console.log(formattedFormData);
+            const response = await axios.post('http://localhost:8080/register', formattedFormData);
+            if (response.data.message === '注册成功') {
+              console.log('注册成功');
+              this.$router.push('/login');
+            } else {
+              this.$message.error(response.data.message);
+            }
+          } catch (error) {
+            console.error('注册失败:', error);
+            if (error.response) {
+              this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
+            } else if (error.request) {
+              this.$message.error('请求未响应，请检查网络连接');
+            } else {
+              this.$message.error('请求发送失败，请稍后再试');
+            }
+          }
         }
       });
     },
@@ -125,7 +147,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5; /* 纯色背景 */
+  background-color: #f9f9f9; /* 纯色背景 */
 }
 
 .box-card {
@@ -143,8 +165,12 @@ h2 {
 }
 
 .register-form {
-  margin: 0 auto;
-  width: 100%;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
 
 .btn-group {
@@ -160,5 +186,11 @@ h2 {
 
 .el-button + .el-button {
   margin-left: 10px;
+}
+.el-input {
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
 }
 </style>

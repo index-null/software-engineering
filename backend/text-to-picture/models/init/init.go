@@ -1,4 +1,4 @@
-package init
+package models
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS UserInformation (
     id SERIAL PRIMARY KEY,
 	email VARCHAR(50) UNIQUE NOT NULL,
 	username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(30) NOT NULL,
+    password VARCHAR(256) NOT NULL,
 	avatar_url VARCHAR(255) NOT NULL,
 	create_time TIMESTAMP DEFAULT NOW(),
     token VARCHAR(255)
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
     params TEXT,
     result TEXT,
     create_time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (userName) REFERENCES user_login(username)
+    FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
@@ -33,8 +33,9 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	userName VARCHAR(30) NOT NULL,
 	result TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
-	FOREIGN KEY (userName) REFERENCES user_login(username)
-)
+	FOREIGN KEY (userName) REFERENCES UserInformation(username)
+);
+
 `
 
 // UserImformation中avatar_url为头像图片url

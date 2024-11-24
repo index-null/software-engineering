@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import RegisterView from '../views/RegisterView.vue';
 import LoginView from '../views/LoginView.vue';
-import HistoryPage from '../views/HistoryPage.vue'; 
+import HistoryPage from '../views/HistoryPage.vue';
 
 Vue.use(VueRouter)
 
@@ -25,21 +25,27 @@ const routes = [{
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-        import ( /* webpackChunkName: "about" */ '../views/AboutView.vue')
+        import( /* webpackChunkName: "about" */ '../views/AboutView.vue')
 }, {
     path: '/history',
     name: 'History',
-    component: HistoryPage 
+    component: HistoryPage
 }, {
     path: '/home',
     name: 'home',
     component: () =>
-        import ('../views/MainView.vue')
+        import('../views/MainView.vue')
 }, {
     path: '/info',
     name: 'info',
     component: () =>
-        import ('../views/UserProfileViews.vue')
+        import('../views/UserProfileViews.vue')
+
+}, {
+    path: '/background',
+    name: 'background',
+    component: () =>
+        import('../views/background.vue')
 
 }]
 
