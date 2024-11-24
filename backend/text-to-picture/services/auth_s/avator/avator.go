@@ -4,7 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"text-to-picture/middlewire/jwt"
-	"text-to-picture/models/init"
+	models "text-to-picture/models/init"
 	"text-to-picture/models/user"
 )
 
