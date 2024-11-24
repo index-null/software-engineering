@@ -2,6 +2,8 @@ package auth
 
 import (
 	"net/http"
+	"os"
+	"path/filepath"
 
 	db "text-to-picture/models/init"           // 给 init 包设置别名为 db
 	"text-to-picture/models/repository/user_r" // 本地引用插入和查询函数
@@ -56,4 +58,62 @@ func Login(c *gin.Context) {
 
 	// 返回登录成功
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+}
+
+// 获取用户信息处理函数
+func GetUserInfo(c *gin.Context) {
+	userID := c.MustGet("userID").(int) // 从上下文中获取用户ID
+
+	var userInfo user.UserInformation
+	err := db.DB.Where("id = ?", userID).First(&userInfo).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query user"})
+		}
+		return
+	}
+
+	// 返回用户信息，包括头像
+	c.JSON(http.StatusOK, gin.H{
+		"id":          userInfo.ID,
+		"email":       userInfo.Email,
+		"user_name":   userInfo.UserName,
+		"avatar_url":  userInfo.Avatar_nul, // 返回头像字段
+		"create_time": userInfo.Create_time,
+	})
+}
+
+// 上传头像处理函数
+func UploadAvatar(c *gin.Context) {
+	// 获取上传的文件
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upload avatar"})
+		return
+	}
+
+	// 保存文件到服务器指定路径
+	uploadDir := "uploads/avatars"
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		os.MkdirAll(uploadDir, os.ModePerm) // 创建目录
+	}
+
+	savePath := filepath.Join(uploadDir, file.Filename)
+	if err := c.SaveUploadedFile(file, savePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save avatar"})
+		return
+	}
+
+	// 获取用户ID
+	userID := c.MustGet("userID").(int)
+
+	// 更新数据库中的头像路径
+	if err := db.DB.Model(&user.UserInformation{}).Where("id = ?", userID).Update("avatar_nul", savePath).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update avatar"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Avatar uploaded successfully", "avatar_url": savePath})
 }
