@@ -89,6 +89,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	if err := AcceptParaments(c); err != nil {
 		log.Printf("参数错误: %v", err)
 		c.JSON(400, gin.H{
+			"code":    400,
 			"success": false,
 			"message": err,
 		})
@@ -112,6 +113,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
 		c.JSON(500, gin.H{
+			"code":    500,
 			"success": false,
 			"message": "图片生成失败",
 		})
@@ -129,6 +131,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	//}
 
 	c.JSON(200, gin.H{
+		"code":      200,
 		"success":   true,
 		"image_url": imageUrl,
 	})
