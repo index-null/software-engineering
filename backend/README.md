@@ -56,8 +56,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
    - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
    - jwt返回token用于登录验证
-   - 登录访问url：http://localhost:8080/register
-   - 登录数据格式：
+   - 注册访问url：http://localhost:8080/register
+   - 注册数据格式：
    - ```json
      {
         “email": "root@qq.com",
@@ -66,18 +66,16 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      }
    - 响应格式：
         - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "Token已过期"
+          Code: 400（StatusBadRequest）,
+          Msg:  "请求数据格式错误"
         - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "无效的Token"
-        - ```json
-          Code: Error,
-          Msg:  "查询头像失败"
+          Code: 500（StatusInternalServerError,
+          message: "用户创建失败",
+          error:   err.Error()
         - ```json  
-          Code: Success,
-		  Msg:  "获取头像成功",
-		  Data: usera.Avatar_url
+          Code: 200（StatusOK）,
+		  Msg:  "注册成功",
+
    - 登录访问url：http://localhost:8080/login
    - 登录数据格式：
    - ```json
@@ -85,6 +83,22 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
         "username": "root1",
         "password": "sssssss"
      }
+   - 响应格式：
+   - ```json
+     Code：400（StatusBadRequest）,
+     Msg："请求数据格式错误"
+   - ```json
+     Code：401（Unauthorized）,
+     Msg: "用户不存在"
+   - ```json
+     Code：500（StatusInternalServerError）,
+     Msg: "数据库查询错误"
+   - ```json
+     Code：401（Unauthorized）,
+     Msg: "密码错误"
+   - ```json
+     Code：200（StatusOK）,
+     Msg："登录成功",
 2. **文生图接口**
    - 部署本地的文生图模型，编写接口进行传参和调用
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
