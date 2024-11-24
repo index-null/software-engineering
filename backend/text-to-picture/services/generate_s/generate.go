@@ -89,6 +89,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	if err := AcceptParaments(c); err != nil {
 		log.Printf("参数错误: %v", err)
 		c.JSON(400, gin.H{
+			"code":    400,
 			"success": false,
 			"message": err,
 		})
@@ -96,12 +97,13 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	}
 
 	// 生成图片并传递用户名
-	imageUrl, err := GenerateImage() 
+	imageUrl, err := GenerateImage()
 
 	//校验生成图片
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
 		c.JSON(500, gin.H{
+			"code":    500,
 			"success": false,
 			"message": "图片生成失败",
 		})
@@ -119,6 +121,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	//}
 
 	c.JSON(200, gin.H{
+		"code":      200,
 		"success":   true,
 		"image_url": imageUrl,
 	})
@@ -130,9 +133,9 @@ func GenerateImage() (string, error) {
 
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
-		UserName:    "czh", // 实际使用时应该从会话信息中获取真实用户名
-		Params:      fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
-		imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		UserName: "czh", // 实际使用时应该从会话信息中获取真实用户名
+		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
 		Result:      urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}

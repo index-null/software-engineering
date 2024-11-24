@@ -64,6 +64,20 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
         "username": "root1",
         "password": "sssssss"
      }
+   - 响应格式：
+        - ```json
+          Code: 401（Unauthorized）,
+          Msg:  "Token已过期"
+        - ```json
+          Code: 401（Unauthorized）,
+          Msg:  "无效的Token"
+        - ```json
+          Code: Error,
+          Msg:  "查询头像失败"
+        - ```json  
+          Code: Success,
+		  Msg:  "获取头像成功",
+		  Data: usera.Avatar_url
    - 登录访问url：http://localhost:8080/login
    - 登录数据格式：
    - ```json
