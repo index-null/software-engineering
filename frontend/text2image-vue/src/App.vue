@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/about" class="nav-link" :class="{ active: isActive('/about') }">About</router-link>
-      <router-link to="/login" class="nav-link" :class="{ active: isActive('/login') }">立即登录</router-link>
-      <router-link to="/home" class="nav-link" :class="{ active: isActive('/home') }">文字作画</router-link>
-      <router-link to="/history" class="nav-link" :class="{ active: isActive('/history') }">作画历史</router-link>
-      <router-link to="/info" class="nav-link" :class="{ active: isActive('/info') }">个人中心</router-link>
-      
+      <router-link to="/about" class="nav-link">梗概</router-link>
+      <router-link to="/login" class="nav-link">登录</router-link>
+      <router-link to="/home" class="nav-link">文生图</router-link>
+      <router-link to="/history" class="nav-link">历史记录</router-link>
+      <router-link to="/info" class="nav-link">个人资料</router-link>
+      <router-link to="/background" class="nav-link">背景</router-link>
     </nav>
     <router-view/>
   </div>
@@ -24,6 +24,7 @@ export default {
 </script>
 
 <style>
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -32,6 +33,7 @@ export default {
   display: flex;
   height: 100vh;
   background-color: #f0f8ff;
+  
 }
 
 nav {
@@ -45,6 +47,9 @@ nav {
   border-radius: 30px;
   padding: 20px 0;
   box-shadow: none;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 为导航栏增加阴影 */
+  background-color: #e3f0f8; /* 设置导航栏背景颜色 */
 }
 
 .nav-link {
@@ -62,11 +67,14 @@ nav {
   cursor: pointer;
   padding: 0 10px; /* 减少内边距以避免超出边界 */
   text-align: center;
+  margin: 0 100px;
+  transition: color 0.3s ease;
 }
 
 .nav-link:hover, .nav-link.router-link-exact-active {
   color: #42b983;
   background-color: #e0f7fa;
+  text-decoration: underline;
 }
 
 .nav-link.active {
