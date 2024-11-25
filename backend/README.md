@@ -239,8 +239,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url: http:localhost:8080/user/:username
     - 参数格式：/username （PUT方法）
     - ```json
-    （所有参数都是可选的，而且无法更新用户名和id）
     {
+      //所有参数都是可选的，而且无法更新用户名和id
       "id":
       "username":
       "email":
