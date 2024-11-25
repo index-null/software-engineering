@@ -30,10 +30,10 @@ func GetUserImages(c *gin.Context) {
 	if username != ""{
 		images, err := image_r.GetUserImagesByUsername(d.DB, username)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","err":err})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","error":err})
 			return
 		}
-		c.JSON(http.StatusOK, images)
+		c.JSON(http.StatusOK, gin.H{"message":"获取用户的图像成功","images":images})
 		return
 
 	}else if err == nil{// id转username
@@ -45,10 +45,10 @@ func GetUserImages(c *gin.Context) {
 			
 			images, err := image_r.GetUserImagesByUsername(d.DB, user.UserName)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","err":err})
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","error":err})
 				return
 			}
-			c.JSON(http.StatusOK, images)
+			c.JSON(http.StatusOK, gin.H{"message":"获取用户的图像成功","images":images})
 			return
 
 	}else {
@@ -76,7 +76,7 @@ func GetUserFavoritedImages(c *gin.Context) {
 		var user u.UserInformation
 		err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id"})
+				c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id","error":err})
 			}
 
 			images, err := image_r.GetUserFavoritedImagesByUsername(d.DB, user.UserName)
@@ -107,7 +107,7 @@ func GetImage(c *gin.Context) {
 			if err == gorm.ErrRecordNotFound {
 				c.JSON(http.StatusNotFound, gin.H{"message": "未找到相关图片"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户的图片失败", "err": "可能无该用户名的image"})
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户的图片失败", "error": err})
 			}
 			return
 		}
@@ -120,13 +120,13 @@ func GetImage(c *gin.Context) {
 			if err == gorm.ErrRecordNotFound {
 				c.JSON(http.StatusNotFound, gin.H{"message": "未找到相关图片"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户的图片失败", "err": "可能id不存在"})
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户的图片失败", "error": err})
 			}
 			return
 		}
-		c.JSON(http.StatusOK, image)
+		c.JSON(http.StatusOK, gin.H{"message": "查询图像成功","image":image})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID或用户名"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的图像ID或用户名"})
 	}
 }
 

@@ -18,7 +18,7 @@ func UpdateUser(c *gin.Context) {//不能更新用户名
 
 	// 解析 JSON 数据
 	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "请求数据格式错误"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "请求数据格式错误","error":err})
 		return
 	}
 

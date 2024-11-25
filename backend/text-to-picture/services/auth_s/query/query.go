@@ -28,7 +28,7 @@ func GetUserInfo(c *gin.Context) {
 	} else if useremail != "" {
 		user, err = user_r.GetUserByEmail(d.DB, useremail)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request data"})
 		return
 	}
 	if err != nil {
@@ -36,11 +36,11 @@ func GetUserInfo(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "用户未找到"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询失败"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询失败","error":err})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{"user":user})
 }
 
 func GetAllUsersInfo(c *gin.Context) {
