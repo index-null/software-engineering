@@ -229,9 +229,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       message: "获取用户列表成功"
       users: [
         {
-          用户信息
+          //用户信息
         },{
-          ……
+          //……
         }
       ]
 
@@ -239,16 +239,16 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url: http:localhost:8080/user/:username
     - 参数格式：/username （PUT方法）
     - ```json
-    {
-      //所有参数都是可选的，而且无法更新用户名和id
-      "id":
-      "username":
-      "email":
-      "password":
-      "avator_url":
-      "token":
-      "create_time":
-    }
+      {
+        //所有参数都是可选的，而且无法更新用户名和id
+        "id":,
+        "username":,
+        "email":,
+        "password":,
+        "avator_url":,
+        "token":,
+        "create_time":
+      }
     - 响应格式
     - ```json
       Code: StatusBadRequest
@@ -283,9 +283,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
-              ……
-            }
-            ……
+              //……
+            },
+            //……
         ]
       }
 
@@ -320,9 +320,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
-              ……
-            }
-            ……
+              //……
+            },
+            //……
         ]
       }
 
@@ -382,9 +382,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
-              ……
-            }
-            ……
+              //……
+            },
+            //……
         ]
       }
 
