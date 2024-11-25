@@ -100,6 +100,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Code：200（StatusOK）,
      Msg："登录成功",
      
+
+
 2. **文生图接口**
    - 部署本地的文生图模型，编写接口进行传参和调用
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
@@ -142,52 +144,259 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
-   3. **个人信息界面**
-      - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
-      - 头像上传功能，获取功能set，get
-        - 修改头像url：http://localhost:8080/auth/setavatar
-        - 参数格式：
-        - ```json
-          携带一个"Authorization"的token
-          "token": "string"(jwt生成的token)
-          "url": "string"(更换头像的url)
-        - 响应格式：
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "请求头中缺少Token"
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "无效的Token"
-        - ```json
-          Code: 500(Error),
-          Msg:  "更新头像失败"
-        - ```json
-          Code: 200(Success),
-          Msg:  "头像更新成功",
-          Data: newURL
-        - 获取头像url：http://localhost:8080/auth/getavatar
-        - 参数格式：
-        - ```json
-          携带一个"Authorization"的token
-          "token": "string"(jwt生成的token)
-        - 响应格式：
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "Token已过期"
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "无效的Token"
-        - ```json
-          Code: Error,
-          Msg:  "查询头像失败"
-        - ```json  
-          Code: Success,
-		  Msg:  "获取头像成功",
-		  Data: usera.Avatar_url
+  
+
+
+3. **个人信息界面**
+  - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
+  - 头像上传功能，获取功能set，get
+    - 修改头像url：http://localhost:8080/auth/setavatar
+    - 参数格式：
+    - ```json
+      携带一个"Authorization"的token
+      "token": "string"(jwt生成的token)
+      "url": "string"(更换头像的url)
+    - 响应格式：
+    - ```json
+      Code: 401（Unauthorized）,
+      Msg:  "请求头中缺少Token"
+    - ```json
+      Code: 401（Unauthorized）,
+      Msg:  "无效的Token"
+    - ```json
+      Code: 500(Error),
+      Msg:  "更新头像失败"
+    - ```json
+      Code: 200(Success),
+      Msg:  "头像更新成功",
+      Data: newURL
+    - 获取头像url：http://localhost:8080/auth/getavatar
+    - 参数格式：
+    - ```json
+      携带一个"Authorization"的token
+      "token": "string"(jwt生成的token)
+    - 响应格式：
+    - ```json
+      Code: 401（Unauthorized）,
+      Msg:  "Token已过期"
+    - ```json
+      Code: 401（Unauthorized）,
+      Msg:  "无效的Token"
+    - ```json
+      Code: Error,
+      Msg:  "查询头像失败"
+    - ```json  
+      Code: Success,
+      Msg:  "获取头像成功",
+      Data: usera.Avatar_url
+
+  - 用户信息查询
+  - 查询某个用户
+    - url: http:localhost:8080/user/info
+    - 参数格式 ?username 或?id 或?email
+    - 响应格式：
+    - ```json
+      Code: StatusBadRequest
+      message: "Invalid request data"
+    - ```json
+      Code: StatusNotFound
+      message: "用户未找到"
+    - ```json
+      Code: StatusInternalServerError
+      message: "查询失败"
+      error: 
+    - ```json
+      Code: StatusOK
+      user:{
+      "id": 6,
+      "email": "czh@qq.com",
+      "username": "czh",
+      "password": "chenzanhong",
+      "avatar_url": "https://www.chen.com",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImN6aCIsImV4cCI6MTczMjU0MjU3NH0.IoDSg08xnSNK9jlJBr_xdVyYKUIXIbEZm_UsXk0vPmM",
+      "create_time": "2024-11-24T21:49:24.78802Z"
+      }
+    
+  - 查询所有用户信息
+    - url: http:localhost:8080/user/all
+    - 参数格式：无
+    - 响应格式
+    - ```json
+      Code: StatusInternalServerError
+      message: "获取用户列表失败"
+    - ```json
+      Code: StatusOK
+      message: "获取用户列表成功"
+      users: [
+        {
+          //用户信息
+        },{
+          //……
+        }
+      ]
+
+  - 更新用户信息
+    - url: http:localhost:8080/user/:username
+    - 参数格式：/username （PUT方法）
+    - ```json
+      {
+        //所有参数都是可选的，而且无法更新用户名和id
+        "id":,
+        "username":,
+        "email":,
+        "password":,
+        "avator_url":,
+        "token":,
+        "create_time":
+      }
+    - 响应格式
+    - ```json
+      Code: StatusBadRequest
+      message: "请求数据格式错误"
+      error:
+    - ```json
+      Code: StatusInternalServerError
+      message: "更新用户信息失败"
+      error: 可能为：
+        "用户不存在" "查询用户时发生错误" "用户名不可修改" "邮箱为空" "密码少于6位" "邮箱格式不正确" "更新用户信息失败"
+      
+    
+
 4. **文生图历史记录**
-   - 总的记录
+   - 总的记录，获取所有的图像信息（按id/create_time升序）：
+    - url: localhost:8080/image/all 
+    - 参数格式： 无（GET方法）
+    - 响应格式：
+    - ```json
+      Code: StatusInternalServerError
+      message: "获取图像列表失败"
+    - ```json
+      Code: StatusInternalServerError
+      message: "查询失败"
+      images: {
+        "images": [
+            {
+                "id": 1,
+                "username": "czh0",
+                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
+                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "create_time": "2024-11-21T23:31:25.924231Z"
+            },
+            {
+              //……
+            },
+            //……
+        ]
+      }
+
+
    - 按照时间排序，可以列出一段时间内的查询信息
+    - url: localhost:8080/image/timeRange
+    - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
+      （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
+    - 响应格式：
+    - ```json
+      Code: StatusBadRequest
+      message: "无效的开始时间格式", 
+      error:
+    - ```json
+      Code: StatusBadRequest
+      message: "无效的结束时间格式", 
+      error:
+    - ```json
+      Code: StatusInternalServerError
+      message: "查询图像列表失败", 
+      error:
+    - ```json
+      Code: StatusOK
+      message: "查询图像列表成功", 
+      images: {
+        "images": [
+            {
+                "id": 1,
+                "username": "czh0",
+                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
+                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "create_time": "2024-11-21T23:31:25.924231Z"
+            },
+            {
+              //……
+            },
+            //……
+        ]
+      }
+
+
+   - 获取指定的某张图像
+    - url: localhost:8080/image
+    - 参数格式：?username= 或?id= 
+    - 响应格式：
+    - ```json
+      Code: StatusNotFound
+      message: "未找到相关图片"
+    - ```json
+      Code: StatusInternalServerError
+      message: "查询用户的图片失败"
+      error: 
+    - ```json
+      Code: StatusBadRequest
+      message: "无效的图像id或用户名"
+      error:  
+    - ```json
+      Code: StatusOK
+      message: "查询图像成功"
+      image:  {
+                "id": 1,
+                "username": "czh0",
+                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
+                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "create_time": "2024-11-21T23:31:25.924231Z"
+      }
+
+
+   - 获取指定用户的图像
+    - url: localhost:8080/user/images
+    - 参数格式：?username= 或?id= 
+    - 响应格式：
+    - ```json
+      Code: StatusInternalServerError
+      message: "查询用户图像失败"
+      error:  
+    - ```json
+      Code: StatusBadRequest
+      message: "无效的用户id"
+      error:  
+    - ```json
+      Code: StatusBadRequest
+      message: "无效的用户ID或用户名"
+    - ```json
+      Code: StatusOK
+      message: "获取用户的图像成功"
+      images: {
+        "images": [
+            {
+                "id": 1,
+                "username": "czh0",
+                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
+                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "create_time": "2024-11-21T23:31:25.924231Z"
+            },
+            {
+              //……
+            },
+            //……
+        ]
+      }
+
+
+  - 获取指定用户收藏的图像
+    - url: localhost:8080/user/favoritedimages
+    - 参数格式：?username= 或?id= 
+    - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
+
    - 按照参数排序，可以列出所需查询参数的查询信息
+
+
    - 按照结果排序，可以列出所需结果图片的查询信息
    - 按照用户排序，可以列出所需用户查询的查询信息
    - 待定   
