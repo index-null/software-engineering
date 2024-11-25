@@ -159,9 +159,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
           Code: 401（Unauthorized）,
           Msg:  "无效的Token"
         - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "请求头中缺少Token"
-        - ```json
           Code: 500(Error),
           Msg:  "更新头像失败"
         - ```json
