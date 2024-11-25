@@ -49,7 +49,7 @@ func SetAvator(c *gin.Context) {
 
 	// 更新数据库中的头像 URL
 	result := models.DB.Model(&user.UserInformation{}).Where("username = ?", username).Update("avatar_url", newURL)
-	if result.Error != nil {
+	if result.Error != nil || result.RowsAffected == 0{
 		c.JSON(Error, AvatorResponse{
 			Code: Error,
 			Msg:  "更新头像失败",
