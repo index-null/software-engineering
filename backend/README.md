@@ -105,9 +105,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 2. **文生图接口**
    - 部署本地的文生图模型，编写接口进行传参和调用
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-   - 假文生图url：http://localhost:8080/auth/generate
+   - 文生图url：http://localhost:8080/auth/generate
    - 参数格式：
    - ```json
+     请求头携带一个"Authorization"的token
+     参数：
      {
        "height": 200,
        "width": 220,
@@ -119,7 +121,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 响应格式：
    - ```json
      Code：200（StatusOK）,
-     Msg："成功响应"
+     image_url: "New_Image_Url" 
    - ```json
      Code：400（StatusBadRequest）,
      Msg："缺乏提示词"
@@ -139,8 +141,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Code：400（StatusBadRequest）,
      Msg："缺乏种子"
    - ```json
-     Code：401（StatusInternalServerError）,
-     Msg："未找到用户信息"
+     Code：401（StatusUnauthorized）,
+     Msg："请求头中缺少Token"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Msg："无效的Token"
    - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
