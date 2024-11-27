@@ -95,7 +95,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Msg: "数据库查询错误"
    - ```json
      Code：401（Unauthorized）,
-     Msg: "密码错误"
+     Msg: "密码错误"git
    - ```json
      Code：200（StatusOK）,
      Msg："登录成功",
@@ -141,51 +141,51 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
-   3. **个人信息界面**
-      - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
-      - 头像上传功能，获取功能set，get
-        - 修改头像url：http://localhost:8080/auth/setavatar
-        - 参数格式：
-        - ```json
-          携带一个"Authorization"的token
-          "token": "string"(jwt生成的token)
-          "url": "string"(更换头像的url)
-        - 响应格式：
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "请求头中缺少Token"
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "无效的Token"
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "请求头中缺少Token"
-        - ```json
-          Code: 500(Error),
-          Msg:  "更新头像失败"
-        - ```json
-          Code: 200(Success),
-          Msg:  "头像更新成功",
-          Data: newURL
-        - 获取头像url：http://localhost:8080/auth/getavatar
-        - 参数格式：
-        - ```json
-          携带一个"Authorization"的token
-          "token": "string"(jwt生成的token)
-        - 响应格式：
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "Token已过期"
-        - ```json
-          Code: 401（Unauthorized）,
-          Msg:  "无效的Token"
-        - ```json
-          Code: Error,
-          Msg:  "查询头像失败"
-        - ```json  
-          Code: Success,
-		  Msg:  "获取头像成功",
-		  Data: usera.Avatar_url
+3. **个人信息界面**
+   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
+   - 头像上传功能，获取功能set，get
+     - 修改头像url：http://localhost:8080/auth/setavatar
+     - 参数格式：
+     - ```json
+       携带一个"Authorization"的token
+       "token": "string"(jwt生成的token)
+       "url": "string"(更换头像的url)
+     - 响应格式：
+     - ```json
+       Code: 401（Unauthorized）,
+       Msg:  "请求头中缺少Token"
+     - ```json
+       Code: 401（Unauthorized）,
+       Msg:  "无效的Token"
+     - ```json
+       Code: 401（Unauthorized）,
+       Msg:  "请求头中缺少Token"
+     - ```json
+       Code: 500(Error),
+       Msg:  "更新头像失败"
+     - ```json
+       Code: 200(Success),
+       Msg:  "头像更新成功",
+       Data: newURL
+     - 获取头像url：http://localhost:8080/auth/getavatar
+     - 参数格式：
+     - ```json
+       携带一个"Authorization"的token
+       "token": "string"(jwt生成的token)
+     - 响应格式：
+     - ```json
+       Code: 401（Unauthorized）,
+       Msg:  "Token已过期"
+     - ```json
+       Code: 401（Unauthorized）,
+       Msg:  "无效的Token"
+     - ```json
+       Code: Error,
+       Msg:  "查询头像失败"
+     - ```json  
+       Code: Success,
+       Msg:  "获取头像成功",
+       Data: usera.Avatar_url
 4. **文生图历史记录**
    - 总的记录
    - 按照时间排序，可以列出一段时间内的查询信息
