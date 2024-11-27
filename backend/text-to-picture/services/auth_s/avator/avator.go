@@ -22,7 +22,15 @@ const (
 
 func SetAvator(c *gin.Context) {
 	tokenStr := c.GetHeader("Authorization")
-	newURL := c.Query("url")
+	//newURL := c.Query("url")
+
+    var reqBody struct {
+        URL string `json:"url"`
+    }
+    
+	c.BindJSON(&reqBody)
+
+    newURL := reqBody.URL
 
 	if tokenStr == "" {
 		c.JSON(Unauthorized, AvatorResponse{
