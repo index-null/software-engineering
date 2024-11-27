@@ -196,13 +196,13 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式 ?username 或?id 或?email
     - 响应格式：
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "Invalid request data"
     - ```json
-      Code: StatusNotFound
+      Code: StatusNotFound (404)
       message: "用户未找到"
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "查询失败"
       error: 
     - ```json
@@ -251,11 +251,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
     - 响应格式
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "请求数据格式错误"
       error:
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "更新用户信息失败"
       error: 可能为：
         "用户不存在" "查询用户时发生错误" "用户名不可修改" "邮箱为空" "密码少于6位" "邮箱格式不正确" "更新用户信息失败"
@@ -263,15 +263,15 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     
 
 4. **文生图历史记录**
-   - 总的记录，获取所有的图像信息（按id/create_time升序）：
+  - 总的记录，获取所有的图像信息（按id/create_time升序）：
     - url: localhost:8080/image/all 
     - 参数格式： 无（GET方法）
     - 响应格式：
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "获取图像列表失败"
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "查询失败"
       images: {
         "images": [
@@ -290,21 +290,21 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-   - 按照时间排序，可以列出一段时间内的查询信息
+  - 按照时间排序，可以列出一段时间内的查询信息
     - url: localhost:8080/image/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
     - 响应格式：
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "无效的开始时间格式", 
       error:
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "无效的结束时间格式", 
       error:
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "查询图像列表失败", 
       error:
     - ```json
@@ -327,19 +327,19 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-   - 获取指定的某张图像
+  - 获取指定的某张图像
     - url: localhost:8080/image
     - 参数格式：?username= 或?id= 
     - 响应格式：
     - ```json
-      Code: StatusNotFound
+      Code: StatusNotFound (404)
       message: "未找到相关图片"
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "查询用户的图片失败"
       error: 
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "无效的图像id或用户名"
       error:  
     - ```json
@@ -354,20 +354,20 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-   - 获取指定用户的图像
+  - 获取指定用户的图像
     - url: localhost:8080/user/images
     - 参数格式：?username= 或?id= 
     - 响应格式：
     - ```json
-      Code: StatusInternalServerError
+      Code: StatusInternalServerError (500)
       message: "查询用户图像失败"
       error:  
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "无效的用户id"
       error:  
     - ```json
-      Code: StatusBadRequest
+      Code: StatusBadRequest (400)
       message: "无效的用户ID或用户名"
     - ```json
       Code: StatusOK
@@ -389,11 +389,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-  - 获取指定用户收藏的图像
-    - url: localhost:8080/user/favoritedimages
-    - 参数格式：?username= 或?id= 
-    - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
-
+  
    - 按照参数排序，可以列出所需查询参数的查询信息
 
 
@@ -402,7 +398,50 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - 待定   
 
 5. **图片收藏界面**
-   - 查询展示出用户的收藏图片
+  - 查询展示出用户的收藏图片
+  - 获取指定用户收藏的图像
+    - url: localhost:8080/user/favoritedimages
+    - 参数格式：?username= 或?id= 
+    - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
+
+  - 收藏图片
+  - 收藏指定图片
+    - url：localhost:8080/auth/addFavoritedImage
+    - 参数格式：
+    - ```json
+      {
+        //两个参数有一个就行
+        "url":,//图像url
+        "id":,//图像id
+      }
+    - 响应格式
+    - ```json
+      Code: StatusBadRequest (400)
+      message: "无有效的图像id或url"
+      error: "id 必须大于 0 或者 url 不得为空"
+    - ```json
+      Code: StatusNotFound (404)
+      message: "未找到对应的图像"
+      error:  
+    - ```json
+      Code:  401
+      message: "未找到用户信息"//没有token时
+      error:  
+    - ```json
+      Code:  StatusInternalServerError （500）
+      message: "检查收藏状态失败"
+      error:  
+    - ```json
+      Code:  StatusConflict
+      message: "该图像已经被收藏过"
+    - ```json
+      Code:  StatusInternalServerError （500）
+      message: "收藏图像失败"
+      error:  
+    - ```json
+      Code:  200
+      message: "收藏图像成功"
+
 
 6. **数据库设计**
    - 用户登录表：id，email，user，password，token
