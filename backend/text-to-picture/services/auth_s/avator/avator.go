@@ -4,7 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"text-to-picture/middlewire/jwt"
-	"text-to-picture/models/init"
+	models "text-to-picture/models/init"
 	"text-to-picture/models/user"
 )
 
@@ -22,7 +22,15 @@ const (
 
 func SetAvator(c *gin.Context) {
 	tokenStr := c.GetHeader("Authorization")
-	newURL := c.Query("url")
+	//newURL := c.Query("url")
+
+    var reqBody struct {
+        URL string `json:"url"`
+    }
+    
+	c.BindJSON(&reqBody)
+
+    newURL := reqBody.URL
 
 	if tokenStr == "" {
 		c.JSON(Unauthorized, AvatorResponse{
@@ -49,7 +57,7 @@ func SetAvator(c *gin.Context) {
 
 	// 更新数据库中的头像 URL
 	result := models.DB.Model(&user.UserInformation{}).Where("username = ?", username).Update("avatar_url", newURL)
-	if result.Error != nil {
+	if result.Error != nil || result.RowsAffected == 0{
 		c.JSON(Error, AvatorResponse{
 			Code: Error,
 			Msg:  "更新头像失败",
