@@ -94,14 +94,15 @@ func main() {
 		auth.POST("/addFavoritedImage", image_a.AddFavoritedImage)        // 收藏（参数：图像id或url）
 		auth.GET("/user/info", user_q.GetUserInfo)                        // 查询用户信息（根据id或username或email）
 		auth.GET("/user/images", image_q.GetUserImages)                   // 查询用户生成的所有图片（根据username或id）
+		auth.GET("/image/all", image_q.GetAllImages)                      // 获取所有图像信息
 		auth.GET("/user/favoritedimages", image_q.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
 
 		auth.PUT("/user/:username", user_up.UpdateUser) // 更新用户信息(拒绝改用户名)
 	}
 	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
 
-	r.GET("/image", image_q.GetImage)                           // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
-	r.GET("/image/all", image_q.GetAllImages)                   // 获取所有图像信息
+	r.GET("/image", image_q.GetImage) // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
+
 	r.GET("/image/timeRange", image_q.GetImagesWithinTimeRange) // 获取指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
 	//或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 	// 添加静态文件服务，指向 docs 目录

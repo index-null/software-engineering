@@ -1,179 +1,459 @@
-swagger: '2.0'
-info:
-  title: 登录注册与图片生成
-  version: "1.0.0"
-  description: 包含用户登录、注册以及图片生成的 API 文档。
-paths:
-  /register:
-    post:
-      tags:
-        - 登录注册
-      summary: 用户注册
-      description: 创建一个新的用户。
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: 用户注册信息
-          required: true
-          schema:
-            $ref: '#/definitions/UserRegister'
-      responses:
-        '201':
-          description: 用户注册成功
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 用户注册成功
-        '400':
-          description: 请求数据无效
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: 请求数据无效
-  /login:
-    post:
-      tags:
-        - 登录注册
-      summary: 用户登录
-      description: 验证用户身份并返回成功信息。
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: 用户登录信息
-          required: true
-          schema:
-            $ref: '#/definitions/UserLogin'
-      responses:
-        '200':
-          description: 登录成功
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 登录成功
-        '401':
-          description: 未授权 - 用户不存在或密码错误
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: 用户不存在
-  /generate:
-    post:
-      tags:
-        - 图片生成
-      summary: 生成图片
-      description: 根据传入的参数生成图片并返回图片的URL。
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: imageParaments
-          description: 图片参数
-          required: true
-          schema:
-            $ref: '#/definitions/ImageParaments'
-      responses:
-        '200':
-          description: 成功响应
-          schema:
-            type: object
-            additionalProperties: true
-        '400':
-          description: 参数错误
-          schema:
-            type: object
-            additionalProperties: true
-        '500':
-          description: 内部错误
-          schema:
-            type: object
-            additionalProperties: true
 definitions:
-  UserRegister:
-    type: object
-    required:
-      - email
-      - user_name
-      - password
+  avator.AvatorResponse:
     properties:
-      email:
+      code:
+        type: integer
+      data: {}
+      msg:
         type: string
-        description: 用户的邮箱
-        example: user@example.com
-      user_name:
-        type: string
-        description: 用户的昵称
-        example: 张三
-      password:
-        type: string
-        description: 用户的密码
-        example: mypassword
-  UserLogin:
     type: object
-    required:
-      - email
-      - password
+  favorites_s.RequestBody:
     properties:
-      email:
+      id:
+        type: integer
+      url:
         type: string
-        description: 用户的邮箱
-        example: user@example.com
-      password:
-        type: string
-        description: 用户的密码
-        example: mypassword
-  ImageParaments:
-    type: object
     required:
-      - height
-      - prompt
-      - sampling_method
-      - seed
-      - steps
-      - width
+    - id
+    - url
+    type: object
+  generate_s.ImageParaments:
     properties:
       height:
-        type: integer
-        description: 图片高度
         maximum: 1024
         minimum: 128
-      width:
         type: integer
-        description: 图片宽度
-        maximum: 1024
-        minimum: 128
       prompt:
         type: string
-        description: 图片生成的文本提示
       sampling_method:
-        type: string
-        description: 图片生成的采样方法
         enum:
-          - DDIM
-          - PLMS
-          - K-LMS
+        - DDIM
+        - PLMS
+        - K-LMS
+        type: string
       seed:
         type: string
-        description: 随机种子
       steps:
-        type: integer
-        description: 生成图片的迭代步数
         maximum: 100
         minimum: 1
+        type: integer
+      width:
+        maximum: 1024
+        minimum: 128
+        type: integer
+    required:
+    - height
+    - prompt
+    - sampling_method
+    - seed
+    - steps
+    - width
+    type: object
+  image.ImageInformation:
+    properties:
+      create_time:
+        type: string
+      id:
+        type: integer
+      params:
+        type: string
+      picture:
+        type: string
+      username:
+        type: string
+    type: object
+  user.UserInformation:
+    properties:
+      avatar_url:
+        type: string
+      create_time:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      token:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /generate:
+    post:
+      consumes:
+      - application/json
+      description: 根据传入的参数生成图片并返回图片的URL
+      parameters:
+      - description: 图片参数
+        in: body
+        name: imageParaments
+        required: true
+        schema:
+          $ref: '#/definitions/generate_s.ImageParaments'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 参数错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 生成图片
+      tags:
+      - 图片生成
+  /getallimages:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中所有图像的信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取图像列表成功
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 获取图像列表失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取所有图像信息
+      tags:
+      - images
+  /getavator:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户头像接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取头像成功
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+        "401":
+          description: 名字解析出错
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+        "500":
+          description: 查询头像失败
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+      summary: 获取用户头像
+      tags:
+      - user
+  /getuserfavoritedimages:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户名或用户ID获取用户收藏的图片
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        type: string
+      - description: 用户ID
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取用户收藏的图片成功
+          schema:
+            items:
+              $ref: '#/definitions/image.ImageInformation'
+            type: array
+        "400":
+          description: 无效的用户ID或用户名
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 查询用户收藏的图片失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取用户收藏的图片
+      tags:
+      - images
+  /getuserimages:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户名或用户ID获取用户生成的图像
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        type: string
+      - description: 用户ID
+        in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取用户的图像成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 无效的用户名或用户id
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 查询用户图片失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取用户生成的图像
+      tags:
+      - user
+  /getuserinfo:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户名、邮箱或用户ID获取用户信息
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        type: string
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 用户ID
+        in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取用户信息成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 无效的请求数据
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: 用户未找到
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 查询失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取用户信息
+      tags:
+      - user
+  /like:
+    get:
+      consumes:
+      - application/json
+      description: 点赞图片接口
+      parameters:
+      - description: 图片 URL
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 点赞成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 缺少图片 URL
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 名字解析出错
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: 用户已点赞该图片
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 数据库操作错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 点赞图片
+      tags:
+      - image
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录接口
+      parameters:
+      - description: 用户名和密码
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserInformation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求数据格式错误
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 用户不存在或密码错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 生成 token 错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 用户登录
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: 用户注册接口
+      parameters:
+      - description: 用户信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserInformation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 注册成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求数据格式错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 用户创建失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 用户注册
+      tags:
+      - auth
+  /setavator:
+    post:
+      consumes:
+      - application/json
+      description: 设置用户头像接口
+      parameters:
+      - description: 头像 URL
+        in: body
+        name: url
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 头像更新成功
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+        "401":
+          description: 名字解析出错
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+        "500":
+          description: 更新头像失败
+          schema:
+            $ref: '#/definitions/avator.AvatorResponse'
+      summary: 设置用户头像
+      tags:
+      - user
+  /users/{username}:
+    put:
+      consumes:
+      - application/json
+      description: 根据用户名更新用户信息（不包括用户名）
+      parameters:
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: 更新的用户信息
+        in: body
+        name: input
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息更新成功
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求数据格式错误
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 更新用户信息失败
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 更新用户信息
+      tags:
+      - users
+swagger: "2.0"
