@@ -9,8 +9,8 @@
         <h1 class="app-name" @click="this.$router.push('login')">{{ appName }}</h1>
       </div>
       <div class="right-section">
-        <a href="#" class="link" @click.prevent="this.$router.push('login')">登录</a>
-        <a href="#" class="link" @click.prevent="this.$router.push('register')">注册</a>
+        <a href="/login" class="link">登录</a>
+        <a href="/register" class="link">注册</a>
       </div>
     </header>
 
