@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// AddFavoritedImage 添加收藏的图像
+// 添加收藏的图像
 func AddFavoritedImage(db *gorm.DB, userName string, imageUrl string, create_time time.Time) error {
 	favoritedImage := i.FavoritedImages{
 		UserName: userName,

@@ -9,5 +9,5 @@ func IsImageFavoritedByUser(db *gorm.DB, username string, url string) (bool, err
     if err != nil {
         return false, err
     }
-    return count > 0, nil
+    return true, nil
 }
