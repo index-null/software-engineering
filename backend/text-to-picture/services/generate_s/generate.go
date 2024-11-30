@@ -147,7 +147,7 @@ func GenerateImage(username string) (string, error) {
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
 		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
 			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
-		Result:      urloss, // 保存生成的图片 URL
+		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
 

@@ -1,9 +1,8 @@
 package avator
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"text-to-picture/middlewire/jwt"
+	"net/http"
 	models "text-to-picture/models/init"
 	"text-to-picture/models/user"
 )
@@ -21,43 +20,25 @@ const (
 )
 
 func SetAvator(c *gin.Context) {
-	tokenStr := c.GetHeader("Authorization")
-	//newURL := c.Query("url")
+	var reqBody struct {
+		URL string `json:"url"`
+	}
 
-    var reqBody struct {
-        URL string `json:"url"`
-    }
-    
 	c.BindJSON(&reqBody)
 
-    newURL := reqBody.URL
-
-	if tokenStr == "" {
-		c.JSON(Unauthorized, AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "请求头中缺少Token",
-		})
+	newURL := reqBody.URL
+	usernames, _ := c.Get("username")
+	if usernames == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  Unauthorized,
+			"error": "名字解析出错"})
 		return
 	}
-
-	claims := &middlewire.Claims{}
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return middlewire.JwtKey, nil
-	})
-
-	if err != nil || !token.Valid {
-		c.JSON(Unauthorized, AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "无效的Token",
-		})
-		return
-	}
-
-	username := claims.Username
+	username, _ := usernames.(string)
 
 	// 更新数据库中的头像 URL
 	result := models.DB.Model(&user.UserInformation{}).Where("username = ?", username).Update("avatar_url", newURL)
-	if result.Error != nil || result.RowsAffected == 0{
+	if result.Error != nil || result.RowsAffected == 0 {
 		c.JSON(Error, AvatorResponse{
 			Code: Error,
 			Msg:  "更新头像失败",
@@ -72,39 +53,13 @@ func SetAvator(c *gin.Context) {
 	})
 }
 func GetAvator(c *gin.Context) {
-	tokenStr := c.GetHeader("Authorization")
-
-	if tokenStr == "" {
-		c.JSON(Unauthorized, AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "请求头中缺少Token",
-		})
+	username, _ := c.Get("username")
+	if username == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  Unauthorized,
+			"error": "名字解析出错"})
 		return
 	}
-
-	claims := &middlewire.Claims{}
-	_, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return middlewire.JwtKey, nil
-	})
-
-	if err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorExpired > 0 {
-				c.JSON(Unauthorized, AvatorResponse{
-					Code: Unauthorized,
-					Msg:  "Token已过期",
-				})
-				return
-			}
-		}
-		c.JSON(Unauthorized, AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "无效的Token",
-		})
-		return
-	}
-
-	username := claims.Username
 
 	// 查询数据库中的头像 URL
 	var usera user.UserInformation

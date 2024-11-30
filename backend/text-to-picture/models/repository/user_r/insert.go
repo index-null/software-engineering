@@ -48,7 +48,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("查询邮箱时发生错误: %v", result.Error)
 	}
-	user.Create_time= time.Now()
+	user.Create_time = time.Now()
 
 	if err := db.Create(user).Error; err != nil {
 		return fmt.Errorf("插入用户登录表失败: %v", err)
@@ -65,7 +65,7 @@ func InsertImageInformation(db *gorm.DB, user *image.ImageInformation) error {
 	if user.Params == "" {
 		return fmt.Errorf("参数为空")
 	}
-	if user.Result == "" {
+	if user.Picture == "" {
 		return fmt.Errorf("结果为空")
 	}
 	if user.Create_time.IsZero() {
@@ -85,7 +85,7 @@ func InsertFavoritedImage(db *gorm.DB, user *image.ImageInformation) error {
 	//if err := InsertUserLogin(db, &user.User); err != nil {
 	//	return err
 	//}
-	if user.Result == "" {
+	if user.Picture == "" {
 		return fmt.Errorf("结果为空")
 	}
 

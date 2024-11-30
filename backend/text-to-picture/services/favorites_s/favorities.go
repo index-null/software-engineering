@@ -53,7 +53,7 @@ func AddFavoritedImage(c *gin.Context) {
 	}
 
 	// 在添加收藏之前检查用户是否已收藏该图像
-	isFavorited, err := image_r.IsImageFavoritedByUser(d.DB, username.(string), imageInfo.Result)
+	isFavorited, err := image_r.IsImageFavoritedByUser(d.DB, username.(string), imageInfo.Picture)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "检查收藏状态失败", "error": err.Error()})
 		return
@@ -65,7 +65,7 @@ func AddFavoritedImage(c *gin.Context) {
 	}
 
 	// 添加收藏图像
-	err = image_r.AddFavoritedImage(d.DB, username.(string), imageInfo.Result, imageInfo.Create_time)
+	err = image_r.AddFavoritedImage(d.DB, username.(string), imageInfo.Picture, imageInfo.Create_time)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "收藏图像失败", "error": err.Error()})
 		return
