@@ -3,7 +3,7 @@ package image
 import (
 	"net/http"
 	"strconv"
-	services "text-to-picture/services/image_s" // 引入services模块，处理核心业务逻辑
+	services "text-to-picture/services/image_s/ImageList"
 
 	"github.com/gin-gonic/gin"
 )
