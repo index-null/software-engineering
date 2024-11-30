@@ -168,8 +168,12 @@ h2 {
 }
 
 .register-form {
-  margin: 0 auto;
-  width: 100%;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
 
 .btn-group {
@@ -185,5 +189,11 @@ h2 {
 
 .el-button + .el-button {
   margin-left: 10px;
+}
+.el-input {
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
 }
 </style>

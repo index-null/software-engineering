@@ -1,0 +1,76 @@
+package favorites_s
+
+import (
+	"log"
+	"net/http"
+	i "text-to-picture/models/image"
+
+	d "text-to-picture/models/init"
+	"text-to-picture/models/repository/image_r"
+
+	"github.com/gin-gonic/gin"
+)
+
+// 收藏图像
+func AddFavoritedImage(c *gin.Context) {
+	var requestBody struct {
+		ImageUrl string `json:"url"`
+		Id       int    `json:"id`
+	}
+
+	// 解析请求体
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的请求格式", "error": err.Error()})
+		return
+	}
+
+	var imageInfo *i.ImageInformation
+	var err error
+	// 查询图像信息
+	if requestBody.ImageUrl != "" {
+		imageInfo, err = image_r.GetImageByUrl(d.DB, requestBody.ImageUrl)
+	} else if requestBody.Id > 0 {
+		imageInfo, err = image_r.GetImageById(d.DB, requestBody.Id)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "未找到对应的图像", "error": err.Error()})
+		return
+	}
+
+	// 从上下文中获取用户名
+	username, exists := c.Get("username")
+	if !exists {
+		log.Printf("未找到用户名")
+		c.JSON(401, gin.H{
+			"success": false,
+			"message": "未找到用户信息",
+		})
+		return
+	}
+
+	// 在添加收藏之前检查用户是否已收藏该图像
+	isFavorited, err := image_r.IsImageFavoritedByUser(d.DB, username.(string), imageInfo.Result)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "检查收藏状态失败", "error": err.Error()})
+		return
+	}
+
+	if isFavorited {
+		c.JSON(http.StatusConflict, gin.H{"message": "该图像已经被收藏过"})
+		return
+	}
+
+	// 添加收藏图像
+	err = image_r.AddFavoritedImage(d.DB, username.(string), imageInfo.Result, imageInfo.Create_time)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "收藏图像失败", "error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "图像收藏成功"})
+
+}

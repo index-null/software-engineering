@@ -5,13 +5,18 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
+  methods: {
+    isActive(path) {
+      return this.$route.path === path;
+    }
+  }
 };
 </script>
 
 <style>
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

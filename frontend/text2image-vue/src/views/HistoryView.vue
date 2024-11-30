@@ -14,12 +14,12 @@
           <el-button type="text" @click="downloadImage(record)">下载</el-button>
       </div>
       </div>
-    </div>
     <div class="pagination">
       <el-button @click="fetchHistoryRecords(currentPage - 1, pageSize)" :disabled="currentPage <= 1">上一页</el-button>
       <span>第 {{ currentPage }} 页，共 {{ Math.ceil(totalRecords / pageSize) }} 页</span>
       <el-button @click="fetchHistoryRecords(currentPage + 1, pageSize)" :disabled="currentPage >= Math.ceil(totalRecords / pageSize)">下一页</el-button>
     </div>
+  </div>
   </div>
 </template>
 
