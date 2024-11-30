@@ -55,8 +55,20 @@ func GetUserFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageIn
 
 //-------------------------------------------------获取指定图像 或 （指定时间段内）所有图像
 
+// 根据图片url查询相关图片
+func GetImageByUrl(db *gorm.DB, url string) (*i.ImageInformation, error) {
+	var image i.ImageInformation
+	err := db.Table("imageinformation").Where("result = ?", url).First(&image).Error
+	if err != nil {
+		return nil, err // 返回错误
+	}
+
+	return &image, nil // 返回指向image的指针
+}
+
 // 根据图片ID查询相关图片
-func GetImagesById(db *gorm.DB, id int) (*i.ImageInformation, error) {
+func GetImageById(db *gorm.DB, id int) (*i.ImageInformation, error) {
+	
 	var image i.ImageInformation
 	err := db.Table("imageinformation").Where("id = ?", id).First(&image).Error
 	if err != nil {
@@ -67,7 +79,7 @@ func GetImagesById(db *gorm.DB, id int) (*i.ImageInformation, error) {
 }
 
 // 根据图片的username查询图片
-func GetImagesByUsername(db *gorm.DB, username string) (*i.ImageInformation, error) {
+func GetImageByUsername(db *gorm.DB, username string) (*i.ImageInformation, error) {
 	var image i.ImageInformation
 	err := db.Table("imageinformation").Where("username = ?", username).First(&image).Error
 	if err != nil {

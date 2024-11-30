@@ -96,12 +96,25 @@ func GetUserFavoritedImages(c *gin.Context) {
 
 // 查询指定的某张图像
 func GetImage(c *gin.Context) {
+	url := c.Query("url")
 	username := c.Query("username") // 从请求中获取用户名
 	imageIdStr := c.Query("id")      // 从请求中获取图片ID（字符串）
 	imageId, err := strconv.Atoi(imageIdStr) // 将字符串转换为整数
 
-	if username != "" {
-		image, err := image_r.GetImagesByUsername(d.DB, username)
+	if url != ""{
+		image, err := image_r.GetImageByUrl(d.DB,url)
+		if err != nil {
+			// 检查错误类型
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"message": "未找到相关图片"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户的图片失败", "error": err})
+			}
+			return
+		}
+		c.JSON(http.StatusOK, image)
+	}else if username != "" {
+		image, err := image_r.GetImageByUsername(d.DB, username)
 		if err != nil {
 			// 检查错误类型
 			if err == gorm.ErrRecordNotFound {
@@ -114,7 +127,7 @@ func GetImage(c *gin.Context) {
 		c.JSON(http.StatusOK, image)
 
 	} else if err == nil {
-		image, err := image_r.GetImagesById(d.DB, imageId)
+		image, err := image_r.GetImageById(d.DB, imageId)
 		if err != nil {
 			// 检查错误类型
 			if err == gorm.ErrRecordNotFound {

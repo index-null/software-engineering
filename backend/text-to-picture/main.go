@@ -18,6 +18,7 @@ import (
 	user_q "text-to-picture/services/auth_s/query"
 	image_q "text-to-picture/services/image_s/query"
 	user_up "text-to-picture/services/auth_s/update"
+	image_a "text-to-picture/services/favorites_s"
 )
 
 type DBConfig struct {
@@ -87,6 +88,7 @@ func main() {
 		})
 		auth.POST("/setavator", avator.SetAvator) // 设置头像
 		auth.GET("/getavator", avator.GetAvator)  // 获取头像
+		auth.POST("/addFavoritedImage",image_a.AddFavoritedImage)	// 收藏（参数：图像id或url）
 	}
 
 	r.GET("/user/info", user_q.GetUserInfo)                        // 查询用户信息（根据id或username或email）
