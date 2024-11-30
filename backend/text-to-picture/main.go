@@ -18,7 +18,7 @@ import (
 	auth_s "text-to-picture/services/auth_s/login"
 	user_q "text-to-picture/services/auth_s/query"
 	user_up "text-to-picture/services/auth_s/update"
-	image_a "text-to-picture/services/favorites_s"
+	favorited "text-to-picture/services/favorites_s"
 	image_q "text-to-picture/services/image_s/query"
 )
 
@@ -89,8 +89,8 @@ func main() {
 		auth.POST("/setavator", avator.SetAvator) // 设置头像
 		auth.GET("/getavator", avator.GetAvator)  // 获取头像
 
-		auth.POST("/addFavoritedImage", image_a.AddFavoritedImage)         // 收藏（参数：图像id或url）
-		auth.DELETE("/deleteFavoritedImage", image_a.DeleteFavoritedImage) // 取消收藏（参数：?id或?url）
+		auth.POST("/addFavoritedImage", favorited.AddFavoritedImage)         // 收藏（参数：图像id或url）
+		auth.DELETE("/deleteFavoritedImage", favorited.DeleteFavoritedImage) // 取消收藏（参数：?id或?url）
 
 		// 下面3个Get请求无需参数
 		auth.GET("/user/info", user_q.GetUserInfo)                        // 查询当前用户信息
