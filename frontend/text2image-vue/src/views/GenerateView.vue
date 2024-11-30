@@ -161,6 +161,10 @@ export default {
   align-items: center;
   height: 100vh;
   padding: 20px;
+  background-color: #f5f5f5;
+  /* background-image: url('https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411251503682.png');
+  background-size: cover;
+  background-position: center; */
 }
 
 .image-container {
