@@ -76,8 +76,8 @@ func TestSetAvator(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		
 		//创建一个POST请求
-		body := bytes.NewBuffer([]byte(`{}`))
-		request , _ := http.NewRequest("POST", "/auth/setavator?url=https://example.com/new-avatar.jpg", body)
+		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
+		request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Authorization", tokenString)
 
@@ -111,8 +111,8 @@ func TestSetAvator(t *testing.T) {
 		router := setupRouter()
 
 		//创建一个POST请求
-		body := bytes.NewBuffer([]byte(`{}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator?url=https://example.com/new-avatar.jpg", body)
+		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
+	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		
 		//创建一个响应器
@@ -144,8 +144,8 @@ func TestSetAvator(t *testing.T) {
 		router := setupRouter()
 
 		// 创建一个POST请求
-		body := bytes.NewBuffer([]byte(`{}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator?url=https://example.com/new-avatar.jpg", body)
+		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
+	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 
 		//放入一个无效令牌
@@ -179,7 +179,7 @@ func TestSetAvator(t *testing.T) {
 		//创建一个路由
 		router := setupRouter()
 	
-		// 创建一个有效的Token
+		// 创建一个有效的Token,但是该用户不存在
 		claims := &middlewire.Claims{
 			Username: "nonexistentuser", 
 			StandardClaims: jwt.StandardClaims{
@@ -190,8 +190,8 @@ func TestSetAvator(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		
 		//创建一个POST请求
-		body := bytes.NewBuffer([]byte(`{}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator?url=https://example.com/new-avatar.jpg", body)
+		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
+	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Authorization", tokenString)
 
