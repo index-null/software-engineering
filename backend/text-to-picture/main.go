@@ -7,6 +7,7 @@ import (
 	"text-to-picture/api/generate"
 	middlewire "text-to-picture/middlewire/jwt"
 	db "text-to-picture/models/init"
+<<<<<<< HEAD
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,16 @@ import (
 	user_up "text-to-picture/services/auth_s/update"
 	favorited "text-to-picture/services/favorites_s"
 	image_q "text-to-picture/services/image_s/query"
+=======
+	user_q "text-to-picture/services/auth_s/query"
+	user_up "text-to-picture/services/auth_s/update"
+	"text-to-picture/services/image_s/like"
+	image_q "text-to-picture/services/image_s/query"
+
+	"text-to-picture/services/auth_s/avator"
+	auth_s "text-to-picture/services/auth_s/login"
+	image_a "text-to-picture/services/favorites_s"
+>>>>>>> 2d1496e25639ff263c4dc08bb4daf7e3a63c19e1
 )
 
 type DBConfig struct {
@@ -86,6 +97,8 @@ func main() {
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
+		auth.POST("/like", like.LikeImage)
+
 		auth.POST("/setavator", avator.SetAvator) // 设置头像
 		auth.GET("/getavator", avator.GetAvator)  // 获取头像
 
@@ -101,6 +114,7 @@ func main() {
 		auth.GET("/image/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
 		                                                               // 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 	}
+	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
 
 	// 以下三个暂时未需要
 	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息

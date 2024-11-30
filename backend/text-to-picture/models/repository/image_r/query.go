@@ -2,9 +2,9 @@ package image_r
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	i "text-to-picture/models/image"
 	"time"
-	"gorm.io/gorm"
 )
 
 // // 根据用户ID查询相关图片
@@ -58,7 +58,7 @@ func GetUserFavoritedImagesByUsername(db *gorm.DB, username string) ([]i.ImageIn
 // 根据图片url查询相关图片
 func GetImageByUrl(db *gorm.DB, url string) (*i.ImageInformation, error) {
 	var image i.ImageInformation
-	err := db.Table("imageinformation").Where("result = ?", url).First(&image).Error
+	err := db.Table("imageinformation").Where("picture = ?", url).First(&image).Error
 	if err != nil {
 		return nil, err // 返回错误
 	}
@@ -68,7 +68,7 @@ func GetImageByUrl(db *gorm.DB, url string) (*i.ImageInformation, error) {
 
 // 根据图片ID查询相关图片
 func GetImageById(db *gorm.DB, id int) (*i.ImageInformation, error) {
-	
+
 	var image i.ImageInformation
 	err := db.Table("imageinformation").Where("id = ?", id).First(&image).Error
 	if err != nil {

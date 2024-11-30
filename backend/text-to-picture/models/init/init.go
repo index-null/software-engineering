@@ -23,15 +23,23 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
     params TEXT,
-    result TEXT,
+    picture TEXT UNIQUE,
+    likcount INT,
     create_time TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
-
+CREATE TABLE IF NOT EXISTS ImagLike (
+    id SERIAL PRIMARY KEY,
+    picture TEXT,
+    username TEXT,
+    num INT,
+    create_time TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (picture) REFERENCES ImageInformation(picture)
+);
 CREATE TABLE IF NOT EXISTS FavoritedImage (
 	id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
-	result TEXT,
+	picture TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
 	FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
