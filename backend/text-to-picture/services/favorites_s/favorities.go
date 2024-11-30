@@ -42,7 +42,6 @@ func AddFavoritedImage(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"message": "未找到对应的图像", "error": err.Error()})
 		return
 	}
-	log.Println(imageInfo)
 
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")

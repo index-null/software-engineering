@@ -104,7 +104,6 @@ func main() {
 		auth.GET("/image/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
 		                                                               // 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 	}
-	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
 
 	// 以下三个暂时未需要
 	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息

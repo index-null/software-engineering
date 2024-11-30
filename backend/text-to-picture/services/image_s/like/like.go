@@ -59,7 +59,7 @@ func LikeImage(c *gin.Context) {
 
 	// 获取当前点赞数
 	var currentLikeCount int
-	if err := tx.Model(&image.ImageInformation{}).Where("result = ?", imageURL).Select("likecount").Row().Scan(&currentLikeCount); err != nil {
+	if err := tx.Model(&image.ImageInformation{}).Where("picture = ?", imageURL).Select("likecount").Row().Scan(&currentLikeCount); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": err.Error()})
