@@ -122,7 +122,7 @@ func DeleteFavoritedImage(c *gin.Context) {
 
 	// 在取消收藏之前检查用户是否已收藏该图像
 	var isFavorited bool
-	isFavorited, err = image_r.IsImageFavoritedByUser(d.DB, username.(string), imageInfo.Result)
+	isFavorited, err = image_r.IsImageFavoritedByUser(d.DB, username.(string), imageInfo.Picture)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "检查收藏状态失败", "error": err.Error()})
 		return
@@ -134,7 +134,7 @@ func DeleteFavoritedImage(c *gin.Context) {
 	}
 
 	// 取消收藏
-	err = image_r.DeleteFavoritedImage(d.DB, username.(string), imageInfo.Result, imageInfo.Create_time)
+	err = image_r.DeleteFavoritedImage(d.DB, username.(string), imageInfo.Picture, imageInfo.Create_time)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "取消图像收藏失败", "error": err.Error()})
 		return

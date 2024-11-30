@@ -7,7 +7,6 @@ import (
 	"text-to-picture/api/generate"
 	middlewire "text-to-picture/middlewire/jwt"
 	db "text-to-picture/models/init"
-<<<<<<< HEAD
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -20,17 +19,8 @@ import (
 	user_q "text-to-picture/services/auth_s/query"
 	user_up "text-to-picture/services/auth_s/update"
 	favorited "text-to-picture/services/favorites_s"
-	image_q "text-to-picture/services/image_s/query"
-=======
-	user_q "text-to-picture/services/auth_s/query"
-	user_up "text-to-picture/services/auth_s/update"
 	"text-to-picture/services/image_s/like"
 	image_q "text-to-picture/services/image_s/query"
-
-	"text-to-picture/services/auth_s/avator"
-	auth_s "text-to-picture/services/auth_s/login"
-	image_a "text-to-picture/services/favorites_s"
->>>>>>> 2d1496e25639ff263c4dc08bb4daf7e3a63c19e1
 )
 
 type DBConfig struct {
