@@ -147,7 +147,10 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f9f9f9; /* 纯色背景 */
+  background-color: #f0f2f5; /* 纯色背景 */
+  background-image: url(https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411251503682.png);
+  background-size: cover;
+  background-position: center;
 }
 
 .box-card {

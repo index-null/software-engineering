@@ -7,18 +7,19 @@ Text2Image 是一个文本到图片的 Web 应用，实现了账号的注册与�
 ### 配置
 
 1. **切换到前端项目目录**：
+   
    ```bash
    cd frontend/text2image-vue
    ```
-
+   
 2. **创建 `.env.oss.local` 文件**：
    ```bash
-   touch .env.oss.local
-   vim .env.oss.local
+   touch .env
+   vim .env
    ```
 
-3. **编辑 `.env.oss.local` 文件**：
-   在 `.env.oss.local` 文件中，填入阿里云OSS的密钥。以下是一个示例配置：
+3. **编辑 `.env` 文件**：
+   在 `.env` 文件中，填入阿里云OSS的密钥。以下是一个示例配置：
    ```plaintext
    VUE_APP_OSS_REGION=oss-cn-shenzhen
    VUE_APP_OSS_ACCESS_KEY_ID=your_access_key_id
