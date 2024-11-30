@@ -284,7 +284,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "id": 1,
                 "username": "czh0",
                 "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "picture": "generate/sun-2024-11-21 23:31:24.png",
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
@@ -321,7 +321,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "id": 1,
                 "username": "czh0",
                 "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "picture": "generate/sun-2024-11-21 23:31:24.png",
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
@@ -477,5 +477,5 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 6. **数据库设计**
    - 用户登录表：id，email，user，password，token
-   - 用户查询表：id，user（外键），params，result，time
-   - 收藏表：id，user（外键），result
+   - 用户查询表：id，user（外键），params，picture，time
+   - 收藏表：id，user（外键），picture
