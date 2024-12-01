@@ -1,6 +1,7 @@
 package like
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"text-to-picture/models/image"
@@ -21,7 +22,12 @@ import (
 // @Router /like [get]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
-	imageURL := c.Query("url")
+	var reqBody struct {
+		URL string `json:"url"`
+	}
+
+	c.BindJSON(&reqBody)
+	imageURL := reqBody.URL
 
 	if imageURL == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -65,7 +71,9 @@ func LikeImage(c *gin.Context) {
 
 	// 获取当前点赞数
 	var currentLikeCount int
+	fmt.Printf("%v  %v", username, imageURL)
 	if err := tx.Model(&image.ImageInformation{}).Where("picture = ?", imageURL).Select("likecount").Row().Scan(&currentLikeCount); err != nil {
+		fmt.Printf("%v  %v %v", username, imageURL, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": err.Error()})
