@@ -89,10 +89,11 @@ func GetImageByUsername(db *gorm.DB, username string) (*i.ImageInformation, erro
 	return &image, nil // 返回指向image的指针
 }
 
-// 查询指定时间段内的所有图像
-func GetImagesInfoWithinTimeRange(db *gorm.DB, startTime, endTime time.Time) ([]i.ImageInformation, error) {
+//查询指定时间段内的所有图像
+func GetImagesInfoWithinTimeRange(db *gorm.DB, username string, startTime, endTime time.Time) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
 	err := db.Table("imageinformation").
+		Where("username = ?", username).
 		Where("create_time BETWEEN ? AND ?", startTime, endTime).
 		Find(&images).Error
 	if err != nil {
@@ -102,9 +103,9 @@ func GetImagesInfoWithinTimeRange(db *gorm.DB, startTime, endTime time.Time) ([]
 }
 
 // 获取所有图像信息并按id排序
-func GetAllImagesInfo(db *gorm.DB) ([]i.ImageInformation, error) {
+func GetAllImagesInfo(db *gorm.DB, username string) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	result := db.Table("imageinformation").Order("id ASC").Find(&images)
+	result := db.Table("imageinformation").Where("username = ?", username).Order("id ASC").Find(&images)
 	if result.Error != nil {
 		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
 	}

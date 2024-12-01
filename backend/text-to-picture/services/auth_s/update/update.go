@@ -1,6 +1,7 @@
 package update
 
 import (
+	"log"
 	"net/http"
 	d "text-to-picture/models/init"
 	"text-to-picture/models/repository/user_r"
@@ -22,7 +23,17 @@ import (
 // @Router /users/{username} [put]
 func UpdateUser(c *gin.Context) { //不能更新用户名
 	// 获取用户名
-	username := c.Param("username")
+	//username := c.Param("username")
+	// 从上下文中获取用户名
+	username, exists := c.Get("username")
+	if !exists {
+		log.Printf("未找到用户名")
+		c.JSON(401, gin.H{
+			"success": false,
+			"message": "未找到用户信息",
+		})
+		return
+	}
 
 	// 定义用于接收 JSON 数据的结构体
 	var input map[string]interface{}
@@ -34,7 +45,7 @@ func UpdateUser(c *gin.Context) { //不能更新用户名
 	}
 
 	// 更新用户信息
-	if err := user_r.UpdateUserInfo(d.DB, username, input); err != nil {
+	if err := user_r.UpdateUserInfo(d.DB, username.(string), input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "更新用户信息失败", "error": err.Error()})
 		return
 	}
