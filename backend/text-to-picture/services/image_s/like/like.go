@@ -13,13 +13,13 @@ import (
 // @Tags image
 // @Accept json
 // @Produce json
-// @Param url query string true "图片 URL"
+// @Param requestBody body struct { URL string `json:"url"` } true "图片 URL" 
 // @Success 200 {object} map[string]interface{} "点赞成功"
 // @Failure 400 {object} map[string]interface{} "缺少图片 URL"
 // @Failure 401 {object} map[string]interface{} "名字解析出错"
 // @Failure 409 {object} map[string]interface{} "用户已点赞该图片"
 // @Failure 500 {object} map[string]interface{} "数据库操作错误"
-// @Router /auth/like [get]
+// @Router /auth/like [put]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
 	var reqBody struct {
