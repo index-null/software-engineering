@@ -13,8 +13,8 @@ import (
 )
 
 type RequestBody struct {
-	ImageUrl string `json:"url" binding:"required"`
-	Id       int    `json:"id" binding:"required"`
+	ImageUrl string `json:"url"`
+	Id       int    `json:"id" `
 }
 
 // 收藏图像

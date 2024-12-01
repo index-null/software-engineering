@@ -87,9 +87,9 @@ func main() {
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
-		auth.POST("/like", like.LikeImage)
+		auth.POST("/like", like.LikeImage) // 参数?url=
 
-		auth.POST("/setavator", avator.SetAvator) // 设置头像
+		auth.POST("/setavator", avator.SetAvator) // 设置头像，参数json: url=
 		auth.GET("/getavator", avator.GetAvator)  // 获取头像
 
 		auth.POST("/addFavoritedImage", favorited.AddFavoritedImage)         // 收藏（参数：图像id或url）
@@ -102,7 +102,7 @@ func main() {
 
 		auth.PUT("/user/update", user_up.UpdateUser)                   // 更新当前用户信息(拒绝改用户名)
 		auth.GET("/image/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
-		                                                               // 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
+		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 	}
 
 	// 以下三个暂时未需要
