@@ -196,9 +196,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       Data: usera.Avatar_url
 
   - 用户信息查询
-  - 查询某个用户
-    - url: http:localhost:8080/user/info
-    - 参数格式 ?username 或?id 或?email
+  - 查询当前登录用户的信息
+    - url: http:localhost:8080/auth/user/info
+    - 参数格式 无 
     - 响应格式：
     - ```json
       Code: StatusBadRequest (400)
@@ -240,9 +240,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
         }
       ]
 
-  - 更新用户信息
-    - url: http:localhost:8080/user/:username
-    - 参数格式：/username （PUT方法）
+  - 更新当前登录用户的信息
+    - url: http:localhost:8080/auth/user/update
+    - 参数格式： （PUT方法）
     - ```json
       {
         //所有参数都是可选的，而且无法更新用户名和id
@@ -284,7 +284,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "id": 1,
                 "username": "czh0",
                 "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "picture": "generate/sun-2024-11-21 23:31:24.png",
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
@@ -295,8 +295,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-  - 按照时间排序，可以列出一段时间内的查询信息
-    - url: localhost:8080/image/timeRange
+  - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
+    - url: localhost:8080/auth/image/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
     - 响应格式：
@@ -321,7 +321,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
                 "id": 1,
                 "username": "czh0",
                 "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "result": "generate/sun-2024-11-21 23:31:24.png",
+                "picture": "generate/sun-2024-11-21 23:31:24.png",
                 "create_time": "2024-11-21T23:31:25.924231Z"
             },
             {
@@ -334,7 +334,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
   - 获取指定的某张图像
     - url: localhost:8080/image
-    - 参数格式：?username= 或?id= 
+    - 参数格式：?username= 或?id= 或?url=
     - 响应格式：
     - ```json
       Code: StatusNotFound (404)
@@ -359,21 +359,14 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-  - 获取指定用户的图像
-    - url: localhost:8080/user/images
-    - 参数格式：?username= 或?id= 
+  - 获取当前登录用户生成的所有图像
+    - url: localhost:8080/auth/user/images
+    - 参数格式：无
     - 响应格式：
     - ```json
       Code: StatusInternalServerError (500)
       message: "查询用户图像失败"
       error:  
-    - ```json
-      Code: StatusBadRequest (400)
-      message: "无效的用户id"
-      error:  
-    - ```json
-      Code: StatusBadRequest (400)
-      message: "无效的用户ID或用户名"
     - ```json
       Code: StatusOK
       message: "获取用户的图像成功"
@@ -427,15 +420,15 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 5. **图片收藏界面**
   - 查询展示出用户的收藏图片
-  - 获取指定用户收藏的图像
-    - url: localhost:8080/user/favoritedimages
-    - 参数格式：?username= 或?id= 
+  - 获取当前用户收藏的图像
+    - url: localhost:8080/auth/user/favoritedimages
+    - 参数格式：无参数（GET方法） 
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
 
-  - 收藏图片
-  - 收藏指定图片
+  - 收藏图像
+  - 收藏指定图像
     - url：localhost:8080/auth/addFavoritedImage
-    - 参数格式：
+    - 参数格式：（POST方法）
     - ```json
       {
         //两个参数有一个就行
@@ -471,7 +464,41 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       message: "收藏图像成功"
 
 
+  - 取消图像收藏
+  - 取消指定图像的收藏
+    - url：localhost:8080/auth/deleteFavoritedImage
+    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
+    - 响应格式
+    - ```json
+      Code: StatusBadRequest (400)
+      message: "无有效的图像id或url"
+      error: "id 必须大于 0 或者 url 不得为空"
+    - ```json
+      Code: StatusNotFound (404)
+      message: "未找到对应的图像"
+      error:  
+    - ```json
+      Code:  401
+      message: "未找到用户信息"//没有token时
+      error:  
+    - ```json
+      Code:  StatusInternalServerError （500）
+      message: "检查收藏状态失败"
+      error:  
+    - ```json
+      Code:  StatusConflict
+      message: "该图像未被收藏过"
+    - ```json
+      Code:  StatusInternalServerError （500）
+      message: "取消图像收藏失败"
+      error:  
+    - ```json
+      Code:  200
+      message: "取消图像收藏成功"
+
+
+
 6. **数据库设计**
    - 用户登录表：id，email，user，password，token
-   - 用户查询表：id，user（外键），params，result，time
-   - 收藏表：id，user（外键），result
+   - 用户查询表：id，user（外键），params，picture，time
+   - 收藏表：id，user（外键），picture

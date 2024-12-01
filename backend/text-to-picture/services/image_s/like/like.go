@@ -1,19 +1,12 @@
 package like
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"text-to-picture/models/image"
 	db "text-to-picture/models/init"
 )
-
-type ImageLike struct {
-	ID         int
-	Picture    string
-	Username   string
-	Num        int
-	CreateTime string
-}
 
 // @Summary 点赞图片
 // @Description 点赞图片接口
@@ -29,7 +22,12 @@ type ImageLike struct {
 // @Router /like [get]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
-	imageURL := c.Query("url")
+	var reqBody struct {
+		URL string `json:"url"`
+	}
+
+	c.BindJSON(&reqBody)
+	imageURL := reqBody.URL
 
 	if imageURL == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -61,7 +59,7 @@ func LikeImage(c *gin.Context) {
 		}
 	}()
 
-	var imageLike ImageLike
+	var imageLike image.ImageLike
 
 	// 查询用户是否有点赞记录
 	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
@@ -73,16 +71,18 @@ func LikeImage(c *gin.Context) {
 
 	// 获取当前点赞数
 	var currentLikeCount int
-	if err := tx.Model(&image.ImageInformation{}).Where("result = ?", imageURL).Select("likecount").Row().Scan(&currentLikeCount); err != nil {
+	fmt.Printf("%v  %v", username, imageURL)
+	if err := tx.Model(&image.ImageInformation{}).Where("picture = ?", imageURL).Select("likecount").Row().Scan(&currentLikeCount); err != nil {
+		fmt.Printf("%v  %v %v", username, imageURL, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": err.Error()})
 		return
 	}
 
-	newImageLike := ImageLike{
+	newImageLike := image.ImageLike{
 		Picture:  imageURL,
-		Username: username,
+		UserName: username,
 		Num:      1,
 	}
 
