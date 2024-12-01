@@ -3,8 +3,156 @@
     "info": {
         "contact": {}
     },
+    "host": "localhost:8080", 
+    "basePath": "/",            
+    "schemes": [
+        "http"                   
+    ],
     "paths": {
-        "/generate": {
+        "/auth/addFavoritedImage": {
+            "post": {
+                "description": "根据图像URL或ID收藏图像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "收藏图像",
+                "parameters": [
+                    {
+                        "description": "请求体",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/favorites_s.RequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "图像收藏成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "无效的请求格式",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "未找到用户信息",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "未找到对应的图像",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "该图像已经被收藏过",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "检查收藏状态失败",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/deleteFavoritedImage": {
+            "delete": {
+                "description": "根据图像URL或ID取消收藏图像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "取消图像收藏",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "图像URL",
+                        "name": "url",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "图像ID",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "取消图像收藏成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "无效的请求格式",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "未找到用户信息",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "未找到对应的图像",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "该图像未被收藏过，不可取消收藏",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "检查收藏状态失败",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/generate": {
             "post": {
                 "description": "根据传入的参数生成图片并返回图片的URL",
                 "consumes": [
@@ -53,38 +201,7 @@
                 }
             }
         },
-        "/getallimages": {
-            "get": {
-                "description": "获取系统中所有图像的信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "images"
-                ],
-                "summary": "获取所有图像信息",
-                "responses": {
-                    "200": {
-                        "description": "获取图像列表成功",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "获取图像列表失败",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/getavator": {
+        "/auth/getavator": {
             "get": {
                 "description": "获取用户头像接口",
                 "consumes": [
@@ -119,9 +236,9 @@
                 }
             }
         },
-        "/getuserfavoritedimages": {
+        "/auth/like": {
             "get": {
-                "description": "根据用户名或用户ID获取用户收藏的图片",
+                "description": "点赞图片接口",
                 "consumes": [
                     "application/json"
                 ],
@@ -129,35 +246,123 @@
                     "application/json"
                 ],
                 "tags": [
-                    "images"
+                    "image"
                 ],
-                "summary": "获取用户收藏的图片",
+                "summary": "点赞图片",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户ID",
-                        "name": "id",
-                        "in": "query"
+                        "description": "图片 URL",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "获取用户收藏的图片成功",
+                        "description": "点赞成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/image.ImageInformation"
-                            }
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "无效的用户ID或用户名",
+                        "description": "缺少图片 URL",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "名字解析出错",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "用户已点赞该图片",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "数据库操作错误",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/setavator": {
+            "post": {
+                "description": "设置用户头像接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "设置用户头像",
+                "parameters": [
+                    {
+                        "description": "头像 URL",
+                        "name": "url",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "头像更新成功",
+                        "schema": {
+                            "$ref": "#/definitions/avator.AvatorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "名字解析出错",
+                        "schema": {
+                            "$ref": "#/definitions/avator.AvatorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "更新头像失败",
+                        "schema": {
+                            "$ref": "#/definitions/avator.AvatorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/user/favoritedimages": {
+            "get": {
+                "description": "获取当前用户收藏的所有图像",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "获取当前登录用户的收藏图像",
+                "responses": {
+                    "200": {
+                        "description": "获取用户收藏的图像成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "未找到用户信息",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -173,33 +378,16 @@
                 }
             }
         },
-        "/getuserimages": {
+        "/auth/user/images": {
             "get": {
-                "description": "根据用户名或用户ID获取用户生成的图像",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "获取当前用户生成的所有图像",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "images"
                 ],
-                "summary": "获取用户生成的图像",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "id",
-                        "in": "query"
-                    }
-                ],
+                "summary": "获取当前登录用户生成的图像",
                 "responses": {
                     "200": {
                         "description": "获取用户的图像成功",
@@ -208,8 +396,8 @@
                             "additionalProperties": true
                         }
                     },
-                    "400": {
-                        "description": "无效的用户名或用户id",
+                    "401": {
+                        "description": "未找到用户信息",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -225,7 +413,65 @@
                 }
             }
         },
-        "/getuserinfo": {
+        "/auth/user/images/timeRange": {
+            "get": {
+                "description": "获取当前用户在指定时间范围内生成的图像列表",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "查询用户在指定时间段内生成的所有图像",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "开始时间 (格式: YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SSZ)",
+                        "name": "start_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (格式: YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SSZ)",
+                        "name": "end_time",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询图像列表成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "无效的开始或结束时间格式",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "401": {
+                        "description": "未找到用户信息",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "查询图像列表失败",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/user/info": {
             "get": {
                 "description": "根据用户名、邮箱或用户ID获取用户信息",
                 "consumes": [
@@ -290,9 +536,9 @@
                 }
             }
         },
-        "/like": {
-            "get": {
-                "description": "点赞图片接口",
+        "/auth/user/update": {
+            "put": {
+                "description": "更新用户的详细信息（不能更新用户名）",
                 "consumes": [
                     "application/json"
                 ],
@@ -300,49 +546,138 @@
                     "application/json"
                 ],
                 "tags": [
-                    "image"
+                    "users"
                 ],
-                "summary": "点赞图片",
+                "summary": "更新用户信息",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "图片 URL",
-                        "name": "url",
-                        "in": "query",
-                        "required": true
+                        "description": "用户信息更新数据",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "点赞成功",
+                        "description": "用户信息更新成功",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "缺少图片 URL",
+                        "description": "请求数据格式错误",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "401": {
-                        "description": "名字解析出错",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "409": {
-                        "description": "用户已点赞该图片",
+                        "description": "未找到用户信息",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "数据库操作错误",
+                        "description": "更新用户信息失败",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/image": {
+            "get": {
+                "description": "根据图像的 URL、用户名或 ID 查询某张图像",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "查询指定图像",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "图像的URL",
+                        "name": "url",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "图像ID",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查询图像成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "无效的图像ID或用户名",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "未找到相关图片",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "查询用户的图片失败",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/image/all": {
+            "get": {
+                "description": "获取系统中所有图像的信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "获取所有图像信息",
+                "responses": {
+                    "200": {
+                        "description": "获取图像列表成功",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "获取图像列表失败",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -456,101 +791,26 @@
                 }
             }
         },
-        "/setavator": {
-            "post": {
-                "description": "设置用户头像接口",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "设置用户头像",
-                "parameters": [
-                    {
-                        "description": "头像 URL",
-                        "name": "url",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "头像更新成功",
-                        "schema": {
-                            "$ref": "#/definitions/avator.AvatorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "名字解析出错",
-                        "schema": {
-                            "$ref": "#/definitions/avator.AvatorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "更新头像失败",
-                        "schema": {
-                            "$ref": "#/definitions/avator.AvatorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{username}": {
-            "put": {
-                "description": "根据用户名更新用户信息（不包括用户名）",
-                "consumes": [
-                    "application/json"
-                ],
+        "/user/all": {
+            "get": {
+                "description": "获取系统中所有用户的列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "更新用户信息",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "username",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "更新的用户信息",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                ],
+                "summary": "获取所有用户信息",
                 "responses": {
                     "200": {
-                        "description": "用户信息更新成功",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "请求数据格式错误",
+                        "description": "获取用户列表成功",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "更新用户信息失败",
+                        "description": "获取用户列表失败",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -575,10 +835,6 @@
         },
         "favorites_s.RequestBody": {
             "type": "object",
-            "required": [
-                "id",
-                "url"
-            ],
             "properties": {
                 "id": {
                     "type": "integer"
@@ -627,26 +883,6 @@
                     "type": "integer",
                     "maximum": 1024,
                     "minimum": 128
-                }
-            }
-        },
-        "image.ImageInformation": {
-            "type": "object",
-            "properties": {
-                "create_time": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "params": {
-                    "type": "string"
-                },
-                "picture": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },

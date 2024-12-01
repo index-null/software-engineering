@@ -8,19 +8,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
 // 更新用户信息
 // @Summary 更新用户信息
-// @Description 根据用户名更新用户信息（不包括用户名）
+// @Description 更新用户的详细信息（不能更新用户名）
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param username path string true "用户名"
-// @Param input body map[string]interface{} true "更新的用户信息"
+// @Param requestBody body map[string]interface{} true "用户信息更新数据"
 // @Success 200 {object} map[string]interface{} "用户信息更新成功"
 // @Failure 400 {object} map[string]interface{} "请求数据格式错误"
+// @Failure 401 {object} map[string]interface{} "未找到用户信息"
 // @Failure 500 {object} map[string]interface{} "更新用户信息失败"
-// @Router /users/{username} [put]
+// @Router /auth/user/update [put]
 func UpdateUser(c *gin.Context) { //不能更新用户名
 	// 获取用户名
 	//username := c.Param("username")

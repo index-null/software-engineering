@@ -24,18 +24,15 @@ import (
 	获取所有图像信息			GetAllImages
 */
 
-// 获取用户生成的图像
-// @Summary 获取用户生成的图像
-// @Description 根据用户名或用户ID获取用户生成的图像
-// @Tags user
-// @Accept json
+// 获取当前登录用户生成的图像
+// @Summary 获取当前登录用户生成的图像
+// @Description 获取当前用户生成的所有图像
+// @Tags images
 // @Produce json
-// @Param username query string false "用户名"
-// @Param id query int false "用户ID"
-// @Success 200 {object} map[string]interface{}  "获取用户的图像成功"
-// @Failure 400 {object} map[string]interface{} "无效的用户名或用户id"
+// @Success 200 {object} map[string]interface{} "获取用户的图像成功"
+// @Failure 401 {object} map[string]interface{} "未找到用户信息"
 // @Failure 500 {object} map[string]interface{} "查询用户图片失败"
-// @Router /getuserimages [get]
+// @Router /auth/user/images [get]
 func GetUserImages(c *gin.Context) {
 	// username := c.Query("username") // 从请求中获取用户名
 	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
@@ -81,18 +78,15 @@ func GetUserImages(c *gin.Context) {
 	// }
 }
 
-// 获取用户的收藏图像
-// @Summary 获取用户收藏的图片
-// @Description 根据用户名或用户ID获取用户收藏的图片
-// @Tags images
-// @Accept json
+// 获取当前登录用户的收藏图像
+// @Summary 获取当前登录用户的收藏图像
+// @Description 获取当前用户收藏的所有图像
+// @Tags favorites
 // @Produce json
-// @Param username query string false "用户名"
-// @Param id query string false "用户ID"
-// @Success 200 {array} image.ImageInformation "获取用户收藏的图片成功"
-// @Failure 400  {object} map[string]interface{} "无效的用户ID或用户名"
-// @Failure 500  {object} map[string]interface{} "查询用户收藏的图片失败"
-// @Router /getuserfavoritedimages [get]
+// @Success 200 {object} map[string]interface{} "获取用户收藏的图像成功"
+// @Failure 401 {object} map[string]interface{} "未找到用户信息"
+// @Failure 500 {object} map[string]interface{} "查询用户收藏的图片失败"
+// @Router /auth/user/favoritedimages [get]
 func GetUserFavoritedImages(c *gin.Context) {
 	// username := c.Query("username") // 从请求中获取用户名
 	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
@@ -141,6 +135,18 @@ func GetUserFavoritedImages(c *gin.Context) {
 }
 
 // 查询指定的某张图像
+// @Summary 查询指定图像
+// @Description 根据图像的 URL、用户名或 ID 查询某张图像
+// @Tags images
+// @Produce json
+// @Param url query string false "图像的URL"
+// @Param username query string false "用户名"
+// @Param id query int false "图像ID"
+// @Success 200 {object} map[string]interface{} "查询图像成功"
+// @Failure 400 {object} map[string]interface{} "无效的图像ID或用户名"
+// @Failure 404 {object} map[string]interface{} "未找到相关图片"
+// @Failure 500 {object} map[string]interface{} "查询用户的图片失败"
+// @Router /image [get]
 func GetImage(c *gin.Context) {
 	url := c.Query("url")
 	username := c.Query("username")          // 从请求中获取用户名
@@ -189,7 +195,18 @@ func GetImage(c *gin.Context) {
 	}
 }
 
-// 查询指定时间段内的所有图像
+// 查询当前登录用户在指定时间段内生成过的所有图像
+// @Summary 查询用户在指定时间段内生成的所有图像
+// @Description 获取当前用户在指定时间范围内生成的图像列表
+// @Tags images
+// @Produce json
+// @Param start_time query string true "开始时间 (格式: YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SSZ)"
+// @Param end_time query string true "结束时间 (格式: YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SSZ)"
+// @Success 200 {object} map[string]interface{} "查询图像列表成功"
+// @Failure 401 {object} map[string]interface{} "未找到用户信息"
+// @Failure 400 {object} map[string]interface{} "无效的开始或结束时间格式"
+// @Failure 500 {object} map[string]interface{} "查询图像列表失败"
+// @Router /auth/user/images/timeRange [get]
 func GetImagesWithinTimeRange(c *gin.Context) {
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
@@ -270,7 +287,7 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} map[string]interface{} "获取图像列表成功"
 // @Failure 500 {object} map[string]interface{} "获取图像列表失败"
-// @Router /getallimages [get]
+// @Router /image/all [get]
 func GetAllImages(c *gin.Context) {
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")

@@ -83,7 +83,7 @@ type ImageGeneratorImpl struct{}
 // @Success 200 {object} map[string]interface{} "成功响应"
 // @Failure 400 {object} map[string]interface{} "参数错误"
 // @Failure 500 {object} map[string]interface{} "内部错误"
-// @Router /generate [post]
+// @Router /auth/generate [post]
 func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 
 	// 校验参数
