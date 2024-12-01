@@ -1,11 +1,10 @@
 package image
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	services "text-to-picture/services/image_s/ImageList"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 获取图片广场中的图片列表
@@ -36,19 +35,9 @@ func GetImages(c *gin.Context) {
 
 func LikeImage(c *gin.Context) {
 	// 从上下文中获取用户名（JWT中提取的用户信息）
-	username, exists := c.Get("username")
+	_, exists := c.Get("username")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "用户未认证"})
-		return
-	}
-
-	// 获取请求中的图片ID
-	imageID := c.Param("image_id")
-
-	// 调用服务层的 LikeImage 函数处理点赞逻辑
-	err := services.LikeImage(imageID, username.(string))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "点赞失败", "error": err})
 		return
 	}
 

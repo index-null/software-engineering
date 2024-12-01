@@ -15,6 +15,18 @@ type ImageLike struct {
 	CreateTime string
 }
 
+// @Summary 点赞图片
+// @Description 点赞图片接口
+// @Tags image
+// @Accept json
+// @Produce json
+// @Param url query string true "图片 URL"
+// @Success 200 {object} map[string]interface{} "点赞成功"
+// @Failure 400 {object} map[string]interface{} "缺少图片 URL"
+// @Failure 401 {object} map[string]interface{} "名字解析出错"
+// @Failure 409 {object} map[string]interface{} "用户已点赞该图片"
+// @Failure 500 {object} map[string]interface{} "数据库操作错误"
+// @Router /like [get]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
 	imageURL := c.Query("url")
@@ -36,7 +48,9 @@ func LikeImage(c *gin.Context) {
 	username, _ := usernames.(string)
 	tx := db.DB.Begin()
 	if tx == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "点赞数据库开始出错"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "点赞数据库开始出错"})
 		return
 	}
 	defer func() {
@@ -53,7 +67,7 @@ func LikeImage(c *gin.Context) {
 	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
 		c.JSON(http.StatusConflict, gin.H{
 			"code":  409,
-			"error": "User has already liked this image"})
+			"error": "用户已经点赞过该图片"})
 		return
 	}
 
@@ -84,6 +98,6 @@ func LikeImage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-
-		"message": "Image liked successfully"})
+		"current_likes": currentLikeCount + 1,
+		"message":       "Image liked successfully"})
 }

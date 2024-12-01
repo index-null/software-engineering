@@ -12,16 +12,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 收藏图像
-func AddFavoritedImage(c *gin.Context) {
-	var requestBody struct {
-		ImageUrl string `json:"url"`
-		Id       int    `json:"id"`
-	}
+type RequestBody struct {
+	ImageUrl string `json:"url" binding:"required"`
+	Id       int    `json:"id" binding:"required"`
+}
 
+// 收藏图像
+// @Summary 收藏图像
+// @Description 根据图像URL或ID收藏图像
+// @Tags favorites
+// @Accept json
+// @Produce json
+// @Param requestBody body favorites_s.RequestBody true "请求体"
+// @Success 200  {object} map[string]interface{} "图像收藏成功"
+// @Failure 400  {object} map[string]interface{} "无效的请求格式"
+// @Failure 401  {object} map[string]interface{} "未找到用户信息"
+// @Failure 404  {object} map[string]interface{} "未找到对应的图像"
+// @Failure 409  {object} map[string]interface{} "该图像已经被收藏过"
+// @Failure 500  {object} map[string]interface{} "检查收藏状态失败"
+func AddFavoritedImage(c *gin.Context) {
+	var requestBody RequestBody
 	var imageInfo *i.ImageInformation
 	var err error
-
 	// 解析请求体
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的请求格式", "error": err.Error()})

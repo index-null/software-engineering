@@ -25,6 +25,17 @@ import (
 */
 
 // 获取用户生成的图像
+// @Summary 获取用户生成的图像
+// @Description 根据用户名或用户ID获取用户生成的图像
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param username query string false "用户名"
+// @Param id query int false "用户ID"
+// @Success 200 {object} map[string]interface{}  "获取用户的图像成功"
+// @Failure 400 {object} map[string]interface{} "无效的用户名或用户id"
+// @Failure 500 {object} map[string]interface{} "查询用户图片失败"
+// @Router /getuserimages [get]
 func GetUserImages(c *gin.Context) {
 	// username := c.Query("username") // 从请求中获取用户名
 	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
@@ -71,6 +82,17 @@ func GetUserImages(c *gin.Context) {
 }
 
 // 获取用户的收藏图像
+// @Summary 获取用户收藏的图片
+// @Description 根据用户名或用户ID获取用户收藏的图片
+// @Tags images
+// @Accept json
+// @Produce json
+// @Param username query string false "用户名"
+// @Param id query string false "用户ID"
+// @Success 200 {array} image.ImageInformation "获取用户收藏的图片成功"
+// @Failure 400  {object} map[string]interface{} "无效的用户ID或用户名"
+// @Failure 500  {object} map[string]interface{} "查询用户收藏的图片失败"
+// @Router /getuserfavoritedimages [get]
 func GetUserFavoritedImages(c *gin.Context) {
 	// username := c.Query("username") // 从请求中获取用户名
 	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
@@ -241,6 +263,14 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 }
 
 // 获取所有图像信息
+// @Summary 获取所有图像信息
+// @Description 获取系统中所有图像的信息
+// @Tags images
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{} "获取图像列表成功"
+// @Failure 500 {object} map[string]interface{} "获取图像列表失败"
+// @Router /getallimages [get]
 func GetAllImages(c *gin.Context) {
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")

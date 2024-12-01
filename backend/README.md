@@ -388,6 +388,29 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
   
+   - 点赞图片功能：
+   - url："localhost:8080/auth/like"
+   - 参数格式：
+      ’‘’json
+        {
+            “url":,//图像url
+        }
+   - 响应格式：
+   - ```json
+     "code":  400,
+     "error": "Missing image URL"
+   - ```json
+     "code":  409,
+     "error": "用户已经点赞过该图片"
+- ```json
+     "code":  500,
+     "error": “返回获取赞数错误的error"
+  - ```json
+     "code":  500,
+     "error": "点赞数据库开始出错"
+  - ```json
+     "current_likes": 当前赞数,
+     “message": "Image liked successfully"
    - 按照参数排序，可以列出所需查询参数的查询信息
 
 
