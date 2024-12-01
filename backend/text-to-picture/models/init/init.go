@@ -24,15 +24,15 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
 	userName VARCHAR(30) NOT NULL,
     params TEXT,
     picture TEXT UNIQUE,
-    likcount INT,
+    likecount INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (userName) REFERENCES UserInformation(username)
 );
-CREATE TABLE IF NOT EXISTS ImagLike (
+CREATE TABLE IF NOT EXISTS ImageLike (
     id SERIAL PRIMARY KEY,
     picture TEXT,
     username TEXT,
-    num INT,
+    num INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (picture) REFERENCES ImageInformation(picture)
 );

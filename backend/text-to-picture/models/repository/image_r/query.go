@@ -88,6 +88,17 @@ func GetImageByUsername(db *gorm.DB, username string) (*i.ImageInformation, erro
 
 	return &image, nil // 返回指向image的指针
 }
+// 根据图片ID查询相关图片
+func GetFavoritedImageById(db *gorm.DB, id int) (*i.ImageInformation, error) {
+
+	var image i.ImageInformation
+	err := db.Table("favoritedimage").Where("id = ?", id).First(&image).Error
+	if err != nil {
+		return nil, err // 返回错误
+	}
+
+	return &image, nil // 返回指向image的指针
+}
 
 //查询指定时间段内的所有图像
 func GetImagesInfoWithinTimeRange(db *gorm.DB, username string, startTime, endTime time.Time) ([]i.ImageInformation, error) {

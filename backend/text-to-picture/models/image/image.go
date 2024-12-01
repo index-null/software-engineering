@@ -43,3 +43,15 @@ type FavoritedImages struct {
 func (FavoritedImages) TableName() string {
 	return "favoritedimage"
 }
+
+type ImageLike struct {
+	ID          int       `json:"id" gorm:"primarykey"`
+	UserName    string    `json:"username" gorm:"column:username;not null"`
+	Picture     string    `json:"picture"`
+	Num         int       `json:"num"`
+	Create_time time.Time `json:"create_time" gorm:"default:CURRENT_TIMESTAMP"`
+}
+
+func (ImageLike) TableName() string {
+	return "imagelike"
+}

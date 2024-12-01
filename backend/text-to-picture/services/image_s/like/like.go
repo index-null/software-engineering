@@ -7,14 +7,6 @@ import (
 	db "text-to-picture/models/init"
 )
 
-type ImageLike struct {
-	ID         int
-	Picture    string
-	Username   string
-	Num        int
-	CreateTime string
-}
-
 // @Summary 点赞图片
 // @Description 点赞图片接口
 // @Tags image
@@ -61,7 +53,7 @@ func LikeImage(c *gin.Context) {
 		}
 	}()
 
-	var imageLike ImageLike
+	var imageLike image.ImageLike
 
 	// 查询用户是否有点赞记录
 	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
@@ -80,9 +72,9 @@ func LikeImage(c *gin.Context) {
 		return
 	}
 
-	newImageLike := ImageLike{
+	newImageLike := image.ImageLike{
 		Picture:  imageURL,
-		Username: username,
+		UserName: username,
 		Num:      1,
 	}
 
