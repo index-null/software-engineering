@@ -25,7 +25,7 @@ import (
 // @Failure 400 {object} map[string]interface{} "无效的请求数据"
 // @Failure 404 {object} map[string]interface{} "用户未找到"
 // @Failure 500 {object} map[string]interface{} "查询失败"
-// @Router /getuserinfo [get]
+// @Router /auth/user/info [get]
 func GetUserInfo(c *gin.Context) {
 
 	// 从上下文中获取用户名
@@ -69,6 +69,14 @@ func GetUserInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
+// 获取所有用户信息
+// @Summary 获取所有用户信息
+// @Description 获取系统中所有用户的列表
+// @Tags users
+// @Produce json
+// @Success 200 {object} map[string]interface{} "获取用户列表成功"
+// @Failure 500 {object} map[string]interface{} "获取用户列表失败"
+// @Router /user/all [get]
 func GetAllUsersInfo(c *gin.Context) {
 	users, err := user_r.GetAllUsers(d.DB)
 	if err != nil {

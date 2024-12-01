@@ -30,6 +30,7 @@ type RequestBody struct {
 // @Failure 404  {object} map[string]interface{} "未找到对应的图像"
 // @Failure 409  {object} map[string]interface{} "该图像已经被收藏过"
 // @Failure 500  {object} map[string]interface{} "检查收藏状态失败"
+// @Router /auth/addFavoritedImage [post]
 func AddFavoritedImage(c *gin.Context) {
 	var requestBody RequestBody
 	var imageInfo *i.ImageInformation
@@ -89,7 +90,21 @@ func AddFavoritedImage(c *gin.Context) {
 
 }
 
-// 取消图像收藏
+// @Summary 取消图像收藏
+// @Description 根据图像URL或ID取消收藏图像
+// @Tags favorites
+// @Accept json
+// @Produce json
+// @Param url query string false "图像URL"
+// @Param id query int false "图像ID"
+// @Success 200  {object} map[string]interface{} "取消图像收藏成功"
+// @Failure 400  {object} map[string]interface{} "无效的请求格式"
+// @Failure 401  {object} map[string]interface{} "未找到用户信息"
+// @Failure 404  {object} map[string]interface{} "未找到对应的图像"
+// @Failure 409  {object} map[string]interface{} "该图像未被收藏过，不可取消收藏"
+// @Failure 500  {object} map[string]interface{} "检查收藏状态失败"
+// @Router /auth/deleteFavoritedImage [delete]
+// 取消图像收藏 DELETE方法
 func DeleteFavoritedImage(c *gin.Context) {
 	var imageInfo *i.ImageInformation
 	var err error

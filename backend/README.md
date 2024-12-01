@@ -296,7 +296,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
   - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
-    - url: localhost:8080/auth/image/timeRange
+    - url: localhost:8080/auth/user/images/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
     - 响应格式：

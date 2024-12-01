@@ -18,7 +18,7 @@ import (
 // @Failure 401 {object} map[string]interface{} "名字解析出错"
 // @Failure 409 {object} map[string]interface{} "用户已点赞该图片"
 // @Failure 500 {object} map[string]interface{} "数据库操作错误"
-// @Router /like [get]
+// @Router /auth/like [get]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
 	imageURL := c.Query("url")

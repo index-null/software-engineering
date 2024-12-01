@@ -28,7 +28,7 @@ const (
 // @Success 200 {object} AvatorResponse "头像更新成功"
 // @Failure 401 {object} AvatorResponse"名字解析出错"
 // @Failure 500 {object} AvatorResponse "更新头像失败"
-// @Router /setavator [post]
+// @Router /auth/setavator [post]
 func SetAvator(c *gin.Context) {
 	var reqBody struct {
 		URL string `json:"url"`
@@ -71,7 +71,7 @@ func SetAvator(c *gin.Context) {
 // @Success 200 {object} AvatorResponse "获取头像成功"
 // @Failure 401 {object} AvatorResponse "名字解析出错"
 // @Failure 500 {object} AvatorResponse "查询头像失败"
-// @Router /getavator [get]
+// @Router /auth/getavator [get]
 func GetAvator(c *gin.Context) {
 	username, _ := c.Get("username")
 	if username == "" {
