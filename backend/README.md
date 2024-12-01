@@ -420,9 +420,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 5. **图片收藏界面**
   - 查询展示出用户的收藏图片
-  - 获取指定用户收藏的图像
+  - 获取当前用户收藏的图像
     - url: localhost:8080/auth/user/favoritedimages
-    - 参数格式：?username= 或?id= 
+    - 参数格式：无参数（GET方法） 
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
 
   - 收藏图像
@@ -467,7 +467,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 取消图像收藏
   - 取消指定图像的收藏
     - url：localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id  （DELETE方法）
+    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
     - 响应格式
     - ```json
       Code: StatusBadRequest (400)
