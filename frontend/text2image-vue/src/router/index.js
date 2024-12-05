@@ -10,7 +10,7 @@ Vue.use(VueRouter)
 
 const routes = [{
     path: '/',
-    redirect: '/about'
+    redirect: '/main'
 }, {
     path: '/about',
     name: 'about',
@@ -48,6 +48,23 @@ const routes = [{
         name: 'favorites',
         component: () =>
             import ('@/views/FavoritesView.vue')
+    }]
+}, {
+    path: '/log-reg',
+    component: () =>
+        import ('@/views/LogRegView.vue'),
+    children: [{
+        path: 'login',
+        name: 'login',
+        component: () =>
+            import ('@/views/LoginView.vue')
+    }, {
+        path: 'register',
+        name: 'register',
+        component: () =>
+            import ('@/views/RegisterView.vue')
+    }, {
+        path: 'about',
     }]
 }]
 

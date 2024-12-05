@@ -4,7 +4,7 @@
     <header class="header">
       <div class="left-section">
         <div class="logo-container">
-          <img src='../assets/文生图.svg' alt="Logo" class="logo" @click="this.$router.push('login')"/>
+          <img src='../assets/button-icon/文生图.svg' alt="Logo" class="logo" @click="this.$router.push('login')"/>
         </div>
         <h1 class="app-name" @click="this.$router.push('login')">{{ appName }}</h1>
       </div>
@@ -64,7 +64,7 @@
   <div class="github-container">
     <div class="github-icon">
       <a :href="githubLink" target="_blank">
-        <img src="@/assets/github-fill.svg" alt="github" class="github-icon-img">
+        <img src="@/assets/relevent-brand-logo/github-fill.svg" alt="github" class="github-icon-img">
       </a>
     </div>
     <div class="github-link">
@@ -72,12 +72,12 @@
     </div>
   </div>
   <div class="logo-bar">
-    <img src="@/assets/logo/1.png" alt="Hugging Face" class="logo-item" />
-    <img src="@/assets/logo/2.png" alt="Flux" class="logo-item" />
-    <img src="@/assets/logo/3.png" alt="Google" class="logo-item" />
-    <img src="@/assets/logo/4.png" alt="Google" class="logo-item" />
-    <img src="@/assets/logo/5.png" alt="Google" class="logo-item" />
-    <img src="@/assets/logo/6.png" alt="Google" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/1.png" alt="" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/2.png" alt="" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/3.png" alt="" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/4.png" alt="" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/5.png" alt="" class="logo-item" />
+    <img src="@/assets/relevent-brand-logo/6.png" alt="" class="logo-item" />
   </div>
 </footer>
   </div>
@@ -191,7 +191,7 @@ export default {
     for (let i = 1; i <= 9; i++) {
       this.carouselItems.push({
         id: i,
-        image: require(`@/assets/about-images/${i}.png`)
+        image: require(`@/assets/about-images/carousel-imgs/${i}.png`)
       });
     }
   },
