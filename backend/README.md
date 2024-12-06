@@ -103,7 +103,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
 2. **文生图接口**
-   - 部署本地的文生图模型，编写接口进行传参和调用
+   - 用户每次生成消耗20积分
+   - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
    - 文生图url：http://localhost:8080/auth/generate
    - 参数格式：
@@ -122,6 +123,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：200（StatusOK）,
      image_url: "New_Image_Url" 
+     Msg："用户当前积分"
    - ```json
      Code：400（StatusBadRequest）,
      Msg："缺乏提示词"
@@ -146,6 +148,22 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：401（StatusUnauthorized）,
      Msg："无效的Token"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户信息查询失败"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分不足"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分更新失败"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："积分记录创建失败"
    - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
@@ -507,9 +525,39 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       Code:  200
       message: "取消图像收藏成功"
 
+6. **签到增加积分接口**
+    - GET方法，用户每次签到增加100积分，并保存记录
+    - url：http://localhost:8080/auth/score
+    - 参数格式：
+    - ```json
+     请求头携带一个"Authorization"的token
+
+    - 响应格式：
+    - ```json
+     Code：200（StatusOK）,
+     Msg："用户当前积分"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Msg："请求头中缺少Token"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Msg："无效的Token"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户信息查询失败"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："积分记录创建失败"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分更新失败"
+    
 
 
-6. **数据库设计**
+7. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture
