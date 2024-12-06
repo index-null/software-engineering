@@ -3,6 +3,7 @@
 Thumbs.db
 
 # 忽略IDE和编辑器生成的文件
+*.sum
 *.swp
 *.swo
 *.swn

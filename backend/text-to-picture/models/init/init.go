@@ -18,7 +18,15 @@ CREATE TABLE IF NOT EXISTS UserInformation (
 	create_time TIMESTAMP DEFAULT NOW(),
     token VARCHAR(255)
 );
-
+CREATE TABLE IF NOT EXISTS User (
+    id SERIAL PRIMARY KEY,
+	email VARCHAR(50) UNIQUE NOT NULL,
+	username VARCHAR(30) UNIQUE NOT NULL,
+    password VARCHAR(256) NOT NULL,
+	avatar_url VARCHAR(255) NOT NULL,
+	create_time TIMESTAMP DEFAULT NOW(),
+    token VARCHAR(255)
+);
 CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
@@ -36,6 +44,7 @@ CREATE TABLE IF NOT EXISTS ImageLike (
     create_time TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (picture) REFERENCES ImageInformation(picture)
 );
+
 CREATE TABLE IF NOT EXISTS FavoritedImage (
 	id SERIAL PRIMARY KEY,
 	userName VARCHAR(30) NOT NULL,
