@@ -159,7 +159,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
-      "token": "string"(jwt生成的token)
       "url": "string"(更换头像的url)
     - 响应格式：
     - ```json
@@ -179,7 +178,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
-      "token": "string"(jwt生成的token)
     - 响应格式：
     - ```json
       Code: 401（Unauthorized）,
@@ -198,7 +196,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 用户信息查询
   - 查询当前登录用户的信息
     - url: http:localhost:8080/auth/user/info
-    - 参数格式 无 
+    - 参数格式 
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusBadRequest (400)
@@ -244,6 +244,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url: http:localhost:8080/auth/user/update
     - 参数格式： （PUT方法）
     - ```json
+      请求头携带一个"Authorization"的token
       {
         //所有参数都是可选的，而且无法更新用户名和id
         "id":,
@@ -296,9 +297,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
   - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
-    - url: localhost:8080/auth/image/timeRange
+    - url: localhost:8080/auth/user/images/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusBadRequest (400)
@@ -333,8 +336,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
   - 获取指定的某张图像
-    - url: localhost:8080/image
+    - url: localhost:8080/auth/image
     - 参数格式：?username= 或?id= 或?url=
+
     - 响应格式：
     - ```json
       Code: StatusNotFound (404)
@@ -361,7 +365,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
   - 获取当前登录用户生成的所有图像
     - url: localhost:8080/auth/user/images
-    - 参数格式：无
+    - 参数格式：
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusInternalServerError (500)
@@ -391,7 +397,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - 点赞图片功能：
    - url："localhost:8080/auth/like"
    - 参数格式：
-      ’‘’json
+   - ```json
+     请求头携带一个"Authorization"的token
         {
             “url":,//图像url
         }
@@ -422,7 +429,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 查询展示出用户的收藏图片
   - 获取当前用户收藏的图像
     - url: localhost:8080/auth/user/favoritedimages
-    - 参数格式：无参数（GET方法） 
+    - 参数格式：（GET方法）请求头携带一个"Authorization"的token
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
 
   - 收藏图像
@@ -430,6 +439,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url：localhost:8080/auth/addFavoritedImage
     - 参数格式：（POST方法）
     - ```json
+      请求头携带一个"Authorization"的token
       {
         //两个参数有一个就行
         "url":,//图像url
@@ -468,6 +478,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 取消指定图像的收藏
     - url：localhost:8080/auth/deleteFavoritedImage
     - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
+    - 请求头携带一个"Authorization"的token
     - 响应格式
     - ```json
       Code: StatusBadRequest (400)
