@@ -15,17 +15,16 @@ CREATE TABLE IF NOT EXISTS UserInformation (
 	username VARCHAR(30) UNIQUE NOT NULL,
     password VARCHAR(256) NOT NULL,
 	avatar_url VARCHAR(255) NOT NULL,
+    score INT DEFAULT 0,
 	create_time TIMESTAMP DEFAULT NOW(),
     token VARCHAR(255)
 );
-CREATE TABLE IF NOT EXISTS User (
+CREATE TABLE IF NOT EXISTS UserScore (
     id SERIAL PRIMARY KEY,
-	email VARCHAR(50) UNIQUE NOT NULL,
-	username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(256) NOT NULL,
-	avatar_url VARCHAR(255) NOT NULL,
+	username VARCHAR(30) NOT NULL,
+    record TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
-    token VARCHAR(255)
+    FOREIGN KEY (id) REFERENCES UserInformation(id)
 );
 CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
