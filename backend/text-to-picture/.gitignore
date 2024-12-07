@@ -72,6 +72,7 @@ package-lock.json
 *.pb.gw.pb.gw.pb.twirp.go
 
 # 忽略Docker相关文件
+*.conf
 .dockerignore
 .docker/
 .docker-compose.yml
