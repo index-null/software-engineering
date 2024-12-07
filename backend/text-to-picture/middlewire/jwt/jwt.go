@@ -18,22 +18,23 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
 		if tokenStr == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "请求头中缺少Token"})
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    401,
+				"message": "请求头中缺少Token"})
 			c.Abort()
 			return
 		}
-
 		claims := &Claims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return JwtKey, nil // jwtKey 是你的签名密钥
 		})
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "无效的Token"})
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    401,
+				"message": "无效的Token"})
 			c.Abort()
 			return
 		}
-
-		// 将用户名保存到上下文，供后续处理使用
 		c.Set("username", claims.Username)
 		c.Next()
 	}

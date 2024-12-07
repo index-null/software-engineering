@@ -3,6 +3,7 @@ package generate_s
 import (
 	"fmt"
 	"log"
+
 	//"net/http"
 	"net/url"
 	"os"
@@ -12,9 +13,9 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
-
 	i "text-to-picture/models/image"
 	db "text-to-picture/models/init"
+	u "text-to-picture/models/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -82,7 +83,7 @@ type ImageGeneratorImpl struct{}
 // @Success 200 {object} map[string]interface{} "成功响应"
 // @Failure 400 {object} map[string]interface{} "参数错误"
 // @Failure 500 {object} map[string]interface{} "内部错误"
-// @Router /generate [post]
+// @Router /auth/generate [post]
 func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 
 	// 校验参数
@@ -91,24 +92,64 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		c.JSON(400, gin.H{
 			"code":    400,
 			"success": false,
-			"message": err,
+			"message": err.Error(),
 		})
 		return
 	}
 
 	// 从上下文中获取用户名
-	username, exists := c.Get("username")
+	Username, exists := c.Get("username")
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{
+			"code":    401,
 			"success": false,
 			"message": "未找到用户信息",
 		})
 		return
 	}
+	username := Username.(string)
 
+	var user u.UserInformation
+	if err := db.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		log.Printf("Failed to query user information: %v", err)
+		c.JSON(401, gin.H{
+			"code":    401,
+			"success": false,
+			"message": "用户信息查询失败",
+		})
+	}
+
+	if user.Score < 20 {
+		c.JSON(401, gin.H{
+			"code":    401,
+			"success": false,
+			"message": "用户积分不足",
+		})
+	}
+
+	user.Score -= 20
+	if err := db.DB.Save(&user).Error; err != nil {
+		log.Printf("Failed to update user score: %v", err)
+		c.JSON(401, gin.H{
+			"code":    401,
+			"success": false,
+			"message": "用户积分更新失败",
+		})
+	}
+	var record u.UserScore
+	record.Username = username
+	record.Record = "积分-20"
+	if err := db.DB.Create(&record).Error; err != nil {
+		log.Printf("Failed to create record: %v", err)
+		c.JSON(401, gin.H{
+			"code":    401,
+			"success": false,
+			"message": "积分记录创建失败",
+		})
+	}
 	// 生成图片并传递用户名
-	imageUrl, err := GenerateImage(username.(string)) 
+	imageUrl, err := GenerateImage(username)
 	//校验生成图片
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
@@ -129,11 +170,12 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	//	})
 	//	return
 	//}
-
+	msg := fmt.Sprintf("用户当前积分为%v", user.Score)
 	c.JSON(200, gin.H{
 		"code":      200,
 		"success":   true,
 		"image_url": imageUrl,
+		"msg":       msg,
 	})
 }
 
@@ -143,10 +185,10 @@ func GenerateImage(username string) (string, error) {
 
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
-		UserName:    username, // 实际使用时应该从会话信息中获取真实用户名
-		Params:      fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
-		imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
-		Result:      urloss, // 保存生成的图片 URL
+		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
+		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
 
@@ -196,7 +238,7 @@ func SavetoOss() (string, error) {
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		log.Fatal("上传失败，error%v", err)
+		log.Fatalf("上传失败，error%v", err)
 	}
 	return objectName, err
 }

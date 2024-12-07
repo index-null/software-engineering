@@ -2,20 +2,25 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"text-to-picture/api/generate"
 	middlewire "text-to-picture/middlewire/jwt"
 	db "text-to-picture/models/init"
-	image_r "text-to-picture/models/repository/image_r"
-	user_r "text-to-picture/models/repository/user_r"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"gopkg.in/yaml.v3"
+
 	"text-to-picture/services/auth_s/avator"
 	auth_s "text-to-picture/services/auth_s/login"
+	user_q "text-to-picture/services/auth_s/query"
+	user_up "text-to-picture/services/auth_s/update"
+	favorited "text-to-picture/services/favorites_s"
+	"text-to-picture/services/image_s/like"
+	image_q "text-to-picture/services/image_s/query"
 )
 
 type DBConfig struct {
@@ -78,25 +83,33 @@ func main() {
 	r.POST("/register", auth_s.Register) // 注册路由
 	r.POST("/login", auth_s.Login)       // 登录路由
 	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
-	{	//Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
+	{ //Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
-		auth.POST("/setavator", avator.SetAvator) // 设置头像
+		auth.POST("/like", like.LikeImage) // 参数?url=
+
+		auth.POST("/setavator", avator.SetAvator) // 设置头像，参数json: url=
 		auth.GET("/getavator", avator.GetAvator)  // 获取头像
+
+		auth.POST("/addFavoritedImage", favorited.AddFavoritedImage)         // 收藏（参数：图像id或url）
+		auth.DELETE("/deleteFavoritedImage", favorited.DeleteFavoritedImage) // 取消收藏（参数：?id或?url）
+
+		// 下面3个Get请求无需参数
+		auth.GET("/user/info", user_q.GetUserInfo)                        // 查询当前用户信息
+		auth.GET("/user/images", image_q.GetUserImages)                   // 查询当前用户生成的所有图片
+		auth.GET("/user/favoritedimages", image_q.GetUserFavoritedImages) // 查询当前用户收藏的图片
+
+		auth.PUT("/user/update", user_up.UpdateUser)                         // 更新当前用户信息(拒绝改用户名)
+		auth.GET("/user/images/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
+		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
+		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 	}
 
-	r.GET("/user/info", user_r.GetUserInfo)                        // 查询用户信息（根据id或username或email）
-	r.GET("/user/images", image_r.GetUserImages)                   // 查询用户生成的所有图片（根据username或id）
-	r.GET("/user/favoritedimages", image_r.GetUserFavoritedImages) // 查询用户收藏的图片(根据username或id)
-	r.GET("/image", image_r.GetImages)                             // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
-
-	r.GET("/user/all",user_r.GetAllUsersInfo)	//获取所有用户信息
-	r.GET("/image/all",image_r.GetAllImages)	//获取所有图像信息
-	r.GET("/image/timeRange",image_r.GetImagesWithinTimeRange)	//获取指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
-																//或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
-	
-	r.PUT("/user/:username",user_r.UpdateUser)	//更新用户信息(拒绝改用户名)
+	// 以下三个暂时未需要
+	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
+	r.GET("/image", image_q.GetImage)          // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
+	r.GET("/image/all", image_q.GetAllImages)  // 获取所有图像信息
 
 	// 添加静态文件服务，指向 docs 目录
 	r.Static("/docs", "./docs")

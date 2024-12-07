@@ -1,15 +1,20 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import RegisterView from '../views/RegisterView.vue';
-import LoginView from '../views/LoginView.vue';
-import HistoryPage from '../views/HistoryPage.vue';
+import RegisterView from '@/views/RegisterView.vue';
+import LoginView from '@/views/LoginView.vue';
+import AboutView from '@/views/AboutView.vue';
+
+
 
 Vue.use(VueRouter)
 
 const routes = [{
     path: '/',
-    name: 'LoginView',
-    component: LoginView
+    redirect: '/main'
+}, {
+    path: '/about',
+    name: 'about',
+    component: AboutView
 }, {
     path: '/register',
     name: 'register',
@@ -19,34 +24,48 @@ const routes = [{
     name: 'login',
     component: LoginView
 }, {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: '/main',
+    name: 'main',
     component: () =>
-        import( /* webpackChunkName: "about" */ '../views/AboutView.vue')
+        import ('@/views/InnerView.vue'),
+    children: [{
+        path: 'generate',
+        name: 'generate',
+        component: () =>
+            import ('@/views/GenerateView.vue')
+    }, {
+        path: 'history',
+        name: 'history',
+        component: () =>
+            import ('@/views/HistoryView.vue')
+    }, {
+        path: 'explore',
+        name: 'explore',
+        component: () =>
+            import ('@/views/ExploreView.vue')
+    }, {
+        path: 'favorites',
+        name: 'favorites',
+        component: () =>
+            import ('@/views/FavoritesView.vue')
+    }]
 }, {
-    path: '/history',
-    name: 'History',
-    component: HistoryPage
-}, {
-    path: '/home',
-    name: 'home',
+    path: '/log-reg',
     component: () =>
-        import('../views/MainView.vue')
-}, {
-    path: '/info',
-    name: 'info',
-    component: () =>
-        import('../views/UserProfileViews.vue')
-
-}, {
-    path: '/background',
-    name: 'background',
-    component: () =>
-        import('../views/background.vue')
-
+        import ('@/views/LogRegView.vue'),
+    children: [{
+        path: 'login',
+        name: 'login',
+        component: () =>
+            import ('@/views/LoginView.vue')
+    }, {
+        path: 'register',
+        name: 'register',
+        component: () =>
+            import ('@/views/RegisterView.vue')
+    }, {
+        path: 'about',
+    }]
 }]
 
 const router = new VueRouter({

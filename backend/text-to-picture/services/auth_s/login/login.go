@@ -17,6 +17,16 @@ import (
 )
 
 // 注册
+// @Summary 用户注册
+// @Description 用户注册接口
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body userLogin.UserInformation true "用户信息"
+// @Success 200 {object} map[string]interface{} "注册成功"
+// @Failure 400 {object} map[string]interface{} "请求数据格式错误"
+// @Failure 500 {object} map[string]interface{} "用户创建失败"
+// @Router /register [post]
 func Register(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
 	var input userLogin.UserInformation
@@ -46,6 +56,17 @@ func Register(c *gin.Context) {
 }
 
 // 登录
+// @Summary 用户登录
+// @Description 用户登录接口
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body userLogin.UserInformation true "用户名和密码"
+// @Success 200  {object} map[string]interface{} "登录成功"
+// @Failure 400  {object} map[string]interface{} "请求数据格式错误"
+// @Failure 401  {object} map[string]interface{} "用户不存在或密码错误"
+// @Failure 500 {object} map[string]interface{} "生成 token 错误"
+// @Router /login [post]
 func Login(c *gin.Context) {
 	// 定义用于接收 JSON 数据的结构体
 	var input struct {

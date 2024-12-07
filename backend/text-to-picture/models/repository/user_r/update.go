@@ -3,11 +3,8 @@ package user_r
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	d "text-to-picture/models/init"
 	u "text-to-picture/models/user"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -80,30 +77,4 @@ func UpdateUserInfo(db *gorm.DB, username string, updates map[string]interface{}
 	}
 
 	return nil
-}
-
-// 更新用户信息
-func UpdateUser(c *gin.Context) {//不能更新用户名
-	// 获取用户名
-	username := c.Param("username")
-
-	// 定义用于接收 JSON 数据的结构体
-	var input map[string]interface{}
-
-	// 解析 JSON 数据
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "请求数据格式错误"})
-		return
-	}
-
-	// 更新用户信息
-	if err := UpdateUserInfo(d.DB, username, input); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "更新用户信息失败", "error": err.Error()})
-		return
-	}
-
-	// 返回结果
-	c.JSON(http.StatusOK, gin.H{
-		"message": "用户信息更新成功",
-	})
 }
