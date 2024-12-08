@@ -21,6 +21,7 @@ import (
 	favorited "text-to-picture/services/favorites_s"
 	"text-to-picture/services/image_s/like"
 	image_q "text-to-picture/services/image_s/query"
+	check_t "text-to-picture/services/auth_s/checkToken"
 )
 
 type DBConfig struct {
@@ -105,6 +106,7 @@ func main() {
 		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 	}
+	r.GET("/checkToken", check_t.CheckToken)//校验token是否有效
 
 	// 以下三个暂时未需要
 	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
