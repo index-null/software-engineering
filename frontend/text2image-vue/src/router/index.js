@@ -6,11 +6,12 @@ import AboutView from '@/views/AboutView.vue';
 
 
 
+
 Vue.use(VueRouter)
 
 const routes = [{
     path: '/',
-    redirect: '/main'
+    redirect: '/main',
 }, {
     path: '/about',
     name: 'about',
