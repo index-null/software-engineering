@@ -467,7 +467,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 取消图像收藏
   - 取消指定图像的收藏
     - url：localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
+    - 参数格式：?url 或?id（收藏记录的id）  （DELETE方法）
     - 响应格式
     - ```json
       Code: StatusBadRequest (400)
