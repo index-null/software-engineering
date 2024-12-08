@@ -3,6 +3,7 @@
 Thumbs.db
 
 # 忽略IDE和编辑器生成的文件
+*.sum
 *.swp
 *.swo
 *.swn
@@ -71,6 +72,7 @@ package-lock.json
 *.pb.gw.pb.gw.pb.twirp.go
 
 # 忽略Docker相关文件
+*.conf
 .dockerignore
 .docker/
 .docker-compose.yml

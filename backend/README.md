@@ -103,7 +103,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
 2. **文生图接口**
-   - 部署本地的文生图模型，编写接口进行传参和调用
+   - 用户每次生成消耗20积分
+   - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
    - 文生图url：http://localhost:8080/auth/generate
    - 参数格式：
@@ -122,6 +123,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：200（StatusOK）,
      image_url: "New_Image_Url" 
+     Msg："用户当前积分"
    - ```json
      Code：400（StatusBadRequest）,
      Msg："缺乏提示词"
@@ -147,6 +149,22 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Code：401（StatusUnauthorized）,
      Msg："无效的Token"
    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户信息查询失败"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分不足"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分更新失败"
+   - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："积分记录创建失败"
+   - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
   
@@ -159,7 +177,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
-      "token": "string"(jwt生成的token)
       "url": "string"(更换头像的url)
     - 响应格式：
     - ```json
@@ -179,7 +196,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
-      "token": "string"(jwt生成的token)
     - 响应格式：
     - ```json
       Code: 401（Unauthorized）,
@@ -198,7 +214,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 用户信息查询
   - 查询当前登录用户的信息
     - url: http:localhost:8080/auth/user/info
-    - 参数格式 无 
+    - 参数格式 
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusBadRequest (400)
@@ -244,6 +262,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url: http:localhost:8080/auth/user/update
     - 参数格式： （PUT方法）
     - ```json
+      请求头携带一个"Authorization"的token
       {
         //所有参数都是可选的，而且无法更新用户名和id
         "id":,
@@ -299,6 +318,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url: localhost:8080/auth/user/images/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusBadRequest (400)
@@ -333,8 +354,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
 
   - 获取指定的某张图像
-    - url: localhost:8080/image
+    - url: localhost:8080/auth/image
     - 参数格式：?username= 或?id= 或?url=
+
     - 响应格式：
     - ```json
       Code: StatusNotFound (404)
@@ -361,7 +383,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
   - 获取当前登录用户生成的所有图像
     - url: localhost:8080/auth/user/images
-    - 参数格式：无
+    - 参数格式：
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
       Code: StatusInternalServerError (500)
@@ -391,7 +415,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - 点赞图片功能：
    - url："localhost:8080/auth/like"
    - 参数格式：
-      ’‘’json
+   - ```json
+     请求头携带一个"Authorization"的token
         {
             “url":,//图像url
         }
@@ -422,7 +447,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 查询展示出用户的收藏图片
   - 获取当前用户收藏的图像
     - url: localhost:8080/auth/user/favoritedimages
-    - 参数格式：无参数（GET方法） 
+    - 参数格式：（GET方法）请求头携带一个"Authorization"的token
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
 
   - 收藏图像
@@ -430,6 +457,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url：localhost:8080/auth/addFavoritedImage
     - 参数格式：（POST方法）
     - ```json
+      请求头携带一个"Authorization"的token
       {
         //两个参数有一个就行
         "url":,//图像url
@@ -467,7 +495,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 取消图像收藏
   - 取消指定图像的收藏
     - url：localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id（收藏记录的id）  （DELETE方法）
+    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
+    - 请求头携带一个"Authorization"的token
     - 响应格式
     - ```json
       Code: StatusBadRequest (400)
@@ -496,9 +525,39 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       Code:  200
       message: "取消图像收藏成功"
 
+6. **签到增加积分接口**
+    - GET方法，用户每次签到增加100积分，并保存记录
+    - url：http://localhost:8080/auth/score
+    - 参数格式：
+    - ```json
+     请求头携带一个"Authorization"的token
+
+    - 响应格式：
+    - ```json
+     Code：200（StatusOK）,
+     Msg："用户当前积分"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Msg："请求头中缺少Token"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Msg："无效的Token"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户信息查询失败"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："积分记录创建失败"
+    - ```json
+     Code：401（StatusUnauthorized）,
+     Success：false,
+     Msg："用户积分更新失败"
+    
 
 
-6. **数据库设计**
+7. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture
