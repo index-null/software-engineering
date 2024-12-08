@@ -53,31 +53,26 @@ export default {
 .explore-container {
     display: flex;
     flex-direction: column;
-    gap: 2vh; /* 使用视口高度的相对单位 */
-    min-height: 100vh; /* 确保容器至少占满整个视口高度 */
-    padding: 2vh 5vw; /* 使用视口宽度的相对单位 */
+    min-height: 200vh; /* 确保容器至少占满整个视口高度 */
+    padding: 1vh 5vw; /* 使用视口宽度的相对单位 */
 }
 
 .carousel-img-container {
+    flex: 2;
     border-radius: 1.5rem; /* 使用相对单位 */
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* 使用相对单位 */
-    padding: 2rem; /* 使用相对单位 */
     position: relative; /* 使子元素可以绝对定位 */
     color: white; /* 设置文本颜色为白色 */
 }
 
 .generate-entry-container {
+    flex:1;
     border-radius: 1.5rem; /* 使用相对单位 */
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* 使用相对单位 */
-    padding: 2rem; /* 使用相对单位 */
     position: relative; /* 使子元素可以绝对定位 */
     color: white; /* 设置文本颜色为白色 */
 }
 .explore-ground-container{
     flex: 8;
     border-radius: 1.5rem; /* 使用相对单位 */
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* 使用相对单位 */
-    padding: 2rem; /* 使用相对单位 */
     position: relative; /* 使子元素可以绝对定位 */
     color: white; /* 设置文本颜色为白色 */
 }
@@ -88,7 +83,6 @@ export default {
     background-size: cover;
     width: 100%;
     height: auto;
-    position: absolute;
     top: 0;
     left: 0;
     border-radius: 1.5rem; /* 与容器圆角一致 */
@@ -125,9 +119,10 @@ export default {
     align-items: center; /* 垂直居中对齐 */
     margin-left: 6rem; /* 使用相对单位 */
     margin-right: 6rem; /* 使用相对单位 */
-    margin-bottom: 4rem; /* 使用相对单位 */
+    margin-bottom: rem; /* 使用相对单位 */
     position: relative; /* 确保生成按钮和其他元素不重叠 */
     z-index: 1; /* 确保生成按钮在背景之上 */
+    
 }
 
 .search-input {
@@ -141,6 +136,7 @@ export default {
     outline: none; /* 去掉聚焦时的默认边框 */
     text-align: left; /* 确保placeholder左侧对齐 */
     transition: background-color 0.3s; /* 添加过渡效果 */
+    margin-bottom: 2rem;
 }
 
 .search-input:focus {
@@ -156,6 +152,7 @@ export default {
     padding: 1rem 2rem;
     cursor: pointer;
     transition: background-color 0.3s; /* 添加过渡效果 */
+    margin-bottom: 2rem;
 }
 
 .generate-button:hover {
@@ -218,7 +215,9 @@ export default {
 .ground-title {
     font-size: 2rem; /* 使用相对单位 */
     margin-bottom: 2rem; /* 使用相对单位 */
-    text-align: center;
+    text-align: left;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .image-grid {
