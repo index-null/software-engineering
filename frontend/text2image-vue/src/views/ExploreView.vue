@@ -171,8 +171,10 @@ export default {
     width: 50%;
     height: 100%;
     background-image: url("@/assets/Picture-Square/it.gif");
-    background-size: cover;
-    border-radius: 3.5rem;
+    background-size: cover; /* 保持图片完整显示 */
+    background-repeat: no-repeat; /* 防止图片重复 */
+    background-position: center; /* 图片居中显示 */
+    border-radius: 2.5rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
