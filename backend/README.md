@@ -99,6 +99,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：200（StatusOK）,
      Msg："登录成功",
+     token: "fake-jwt-token"
      
 
 
