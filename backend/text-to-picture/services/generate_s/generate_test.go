@@ -3,6 +3,7 @@ package generate_s
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -132,6 +133,7 @@ func TestGenerateImageSuccessfulRequest(t *testing.T) {
 	assert.Equal(t, 200, response.Code)
 	assert.Equal(t, true, response.Success)
 	assert.NotEmpty(t, response.Image_url)
+	fmt.Println("response:", response)
 }
 
 func TestGenerateImageLackingKeyWordRequest(t *testing.T) {

@@ -204,7 +204,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 3. **个人信息界面**
   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
   - 头像上传功能，获取功能set，get
-    - 修改头像url：http://localhost:8080/auth/setavatar
+    - 修改头像url：http://localhost:8080/auth/setavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -220,10 +220,10 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       code: 500(Error),
       message:  "更新头像失败"
     - ```json
-      code: 200(success),
-      message:  "头像更新成功",
-      Data: newURL
-    - 获取头像url：http://localhost:8080/auth/getavatar
+      code: 200(Success),
+      msg:  "头像更新成功",
+      data: "newURL"
+    - 获取头像url：http://localhost:8080/auth/getavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -235,12 +235,12 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       code: 401（Unauthorized）,
       message:  "无效的Token"
     - ```json
-      code: Error,
+      code: 500 (Error),
       message:  "查询头像失败"
     - ```json  
-      code: success,
-      message:  "获取头像成功",
-      Data: usera.Avatar_url
+      code: 200 (Success),
+      msg:  "获取头像成功",
+      data: "user.Avator_url"  
 
   - 用户信息查询
   - 查询当前登录用户的信息
