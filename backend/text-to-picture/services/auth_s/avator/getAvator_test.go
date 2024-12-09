@@ -49,7 +49,7 @@ type DBConfig struct {
 // TestMain 是测试的入口函数
 func TestMain(m *testing.M) {
 	// 读取测试数据库配置
-	yamlFile, err := os.ReadFile("D:/软件工程项目/software-engineering/backend/text-to-picture/config/DBconfig/DBconfig.yaml")
+	yamlFile, err := os.ReadFile("D:/go project/src/gocode/software-engineering/backend/text-to-picture/config/DBconfig/DBconfig.yaml")
 	if err != nil {
 		fmt.Printf("Error reading DBconfig_test.yaml file: %v\n", err)
 		os.Exit(1)
@@ -88,7 +88,7 @@ func TestMain(m *testing.M) {
 // SetupRouter 设置 Gin 路由
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/auth/getavator", GetAvator)
+	r.GET("/auth/getavator",middlewire.JWTAuthMiddleware(), GetAvator)
 	return r
 }
 
@@ -102,7 +102,7 @@ func TestGetAvator_Success(t *testing.T) {
 
 	// 创建一个有效的Token
 	claims := &middlewire.Claims{
-		Username: "czh1", //根据自己数据库已有的用户
+		Username: "testuser", //根据自己数据库已有的用户
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
 		},
@@ -129,7 +129,7 @@ func TestGetAvator_Success(t *testing.T) {
 	expectedResponse := AvatorResponse{
 		Code: Success,
 		Msg:  "获取头像成功",
-		Data: "1234567890", //根据自己数据库已有的用户
+		Data: "https://example.com/new-avatar.jpg", //根据自己数据库已有的用户
 	}
 	var actualResponse AvatorResponse
 	json.Unmarshal(w.Body.Bytes(), &actualResponse)
@@ -159,12 +159,11 @@ func TestGetAvator_NoToken(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// 检查响应体
-	expectedResponse := AvatorResponse{
-		Code: Unauthorized,
-		Msg:  "请求头中缺少Token",
-		Data: nil,
+	expectedResponse := gin.H{
+		"code":    float64(401),
+		"message": "请求头中缺少Token",
 	}
-	var actualResponse AvatorResponse
+	var actualResponse gin.H
 	json.Unmarshal(w.Body.Bytes(), &actualResponse)
 	assert.Equal(t, expectedResponse, actualResponse)
 }
@@ -196,12 +195,11 @@ func TestGetAvator_InvalidToken(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// 检查响应体
-	expectedResponse := AvatorResponse{
-		Code: Unauthorized,
-		Msg:  "无效的Token",
-		Data: nil,
+	expectedResponse := gin.H{
+		"code":    float64(401),
+		"message": "无效的Token",
 	}
-	var actualResponse AvatorResponse
+	var actualResponse gin.H
 	json.Unmarshal(w.Body.Bytes(), &actualResponse)
 	assert.Equal(t, expectedResponse, actualResponse)
 }
@@ -243,6 +241,50 @@ func TestGetAvator_ExpiredToken(t *testing.T) {
 	expectedResponse := AvatorResponse{
 		Code: Unauthorized,
 		Msg:  "Token已过期",
+		Data: nil,
+	}
+	var actualResponse AvatorResponse
+	json.Unmarshal(w.Body.Bytes(), &actualResponse)
+	assert.Equal(t, expectedResponse, actualResponse)
+}
+
+// TestGetAvator_ExpiredToken 测试名字解析出错的情况
+func TestGetAvator_NameParseError(t *testing.T) {
+	// 设置 Gin 为测试模式
+	gin.SetMode(gin.TestMode)
+
+	// 创建一个新的路由器
+	router := SetupRouter()
+
+	// 创建一个有效的Token，但Username为空
+	claims := &middlewire.Claims{
+		Username: "",
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1*time.Hour).Unix(), 
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(middlewire.JwtKey)
+
+	// 创建一个 GET 请求
+	req, _ := http.NewRequest("GET", "/auth/getavator", nil)
+	req.Header.Set("Authorization", tokenString)
+
+	// 创建一个响应记录器
+	w := httptest.NewRecorder()
+
+	// 执行请求
+	router.ServeHTTP(w, req)
+
+	fmt.Printf("\nTestGetAvator_NameParseError-------------------Response Body: %s\n", w.Body.String())
+
+	// 检查响应状态码
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+	// 检查响应体
+	expectedResponse := AvatorResponse{
+		Code: Unauthorized,
+		Msg:  "名字解析出错",
 		Data: nil,
 	}
 	var actualResponse AvatorResponse

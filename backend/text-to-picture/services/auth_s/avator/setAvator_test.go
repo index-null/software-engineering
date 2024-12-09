@@ -22,7 +22,7 @@ import (
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
-	r.POST("/auth/setavator",SetAvator)
+	r.POST("/auth/setavator",middlewire.JWTAuthMiddleware(),SetAvator)
 	return r
 }
 
@@ -125,11 +125,11 @@ func TestSetAvator(t *testing.T) {
 		assert.Equal(t, Unauthorized , response.Code)
 	
 		//检查响应体
-		expectResponse := AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "请求头中缺少Token",
+		expectResponse := gin.H{
+			"code":    float64(http.StatusUnauthorized),
+			"message": "请求头中缺少Token",
 		}
-		var actualResponse AvatorResponse
+		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		assert.Equal(t, expectResponse, actualResponse)
 	})
@@ -161,11 +161,11 @@ func TestSetAvator(t *testing.T) {
 		assert.Equal(t, Unauthorized , response.Code)
 
 		//检查响应体
-		expectResponse := AvatorResponse{
-			Code: Unauthorized,
-			Msg:  "无效的Token",
+		expectResponse := gin.H{
+			"code":    float64(http.StatusUnauthorized),
+			"message": "无效的Token",
 		}
-		var actualResponse AvatorResponse
+		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		assert.Equal(t, expectResponse, actualResponse)
 	})
@@ -208,6 +208,50 @@ func TestSetAvator(t *testing.T) {
 		expectResponse := AvatorResponse{
 			Code: Error,
 			Msg:  "更新头像失败",
+		}
+		var actualResponse AvatorResponse
+		json.Unmarshal(response.Body.Bytes(), &actualResponse)
+		assert.Equal(t, expectResponse, actualResponse)
+	})
+
+	//名字解析出错的响应
+	t.Run("SetAvator_NameParseError",func(t *testing.T) {
+		
+		//设置gin为测试模式
+		gin.SetMode(gin.TestMode)
+
+		//创建一个路由
+		router := setupRouter()
+	
+		// 创建一个有效的Token,但Username = ""
+		claims := &middlewire.Claims{
+			Username: "", 
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), 
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, _ := token.SignedString(middlewire.JwtKey)
+		
+		//创建一个POST请求
+		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
+	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Authorization", tokenString)
+
+		//创建一个响应器
+		response := httptest.NewRecorder()
+
+		//执行请求
+		router.ServeHTTP(response, request)
+
+		//检查响应码
+		assert.Equal(t, http.StatusUnauthorized, response.Code)
+
+		//检查响应体
+		expectResponse := AvatorResponse{
+			Code: Unauthorized,
+			Msg:  "名字解析出错",
 		}
 		var actualResponse AvatorResponse
 		json.Unmarshal(response.Body.Bytes(), &actualResponse)
