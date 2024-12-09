@@ -4,13 +4,13 @@
     <header class="header">
       <div class="left-section">
         <div class="logo-container">
-          <img src='../assets/button-icon/文生图.svg' alt="Logo" class="logo" @click="this.$router.push('login')"/>
+          <img src='../assets/button-icon/文生图.svg' alt="Logo" class="logo" @click="this.$router.push('log-reg')"/>
         </div>
         <h1 class="app-name" @click="this.$router.push('login')">{{ appName }}</h1>
       </div>
       <div class="right-section">
-        <a href="/login" class="link">登录</a>
-        <a href="/register" class="link">注册</a>
+        <a href="/log-reg" class="link">登录</a>
+        <a href="/log-reg" class="link">注册</a>
       </div>
     </header>
 
