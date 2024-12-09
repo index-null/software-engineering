@@ -50,6 +50,11 @@ const routes = [{
         name: 'favorites',
         component: () =>
             import ('@/views/FavoritesView.vue')
+    }, {
+        path: 'setting',
+        name: 'setting',
+        component: () =>
+            import ('@/views/SettingView.vue')
     }]
 }, {
     path: '/log-reg',
