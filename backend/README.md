@@ -99,6 +99,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：200（StatusOK）,
      Msg："登录成功",
+     token: "fake-jwt-token"
      
 
 
@@ -555,9 +556,33 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      Success：false,
      Msg："用户积分更新失败"
     
+7. **token校验功能**
+    - 校验用户的token
+    - 参数格式：
+    - ```json
+     请求头携带一个"Authorization"的token
+
+    - 响应格式：
+    - ```json
+     Code：StatusUnauthorized(401)
+     Msg："令牌格式不正确"
+     - ```json
+     Code：StatusUnauthorized(401)
+     Msg："令牌过期或未激活"
+     - ```json
+     Code：StatusUnauthorized(401)
+     Msg："令牌无法处理"
+     - ```json
+     Code：StatusUnauthorized(401)
+     Msg："令牌无效"
+     - ```json
+     Code：StatusOK(200)
+     Msg："令牌有效"
+     Data: tokenStr
 
 
-7. **数据库设计**
+
+8. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

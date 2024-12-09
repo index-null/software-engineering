@@ -1,9 +1,12 @@
 <template>
+  <div class="container">
+   <div class="artistic-nav"></div>
   <div class="log-reg-container">
-    <!-- <div class="left-side-container">
-      <img src="https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347055.jpg" alt="#">
-    </div> -->
+    <div class="left-side-container">
+      <img src="https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412081939173.png" alt="#">
+    </div>
     <div class="right-side-container">
+      <LogoAndAppName />
       <el-tabs type="border-card">
         <el-tab-pane label="注册">
           <!-- <el-card class="box-card"> -->
@@ -76,12 +79,16 @@
       </el-tabs>
     </div>
   </div>
+</div>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
+  components: {
+    LogoAndAppName: () => import('../components/LogoAndAppName.vue')
+  },
   data() {
     const validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -138,75 +145,85 @@ export default {
     };
   },
   methods: {
-    async hashPassword(password) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    },
-    async submitLoginForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
-          let hashedPassword = await this.hashPassword(this.loginForm.password);
-          let formData = {
-            username: this.loginForm.username,
-            password: hashedPassword
-          };
-          axios.post('http://localhost:8080/login', formData)
-            .then(response => {
-              if (response.data.message === '登录成功') {
-                this.$message.success('登录成功');
-                this.$router.push('/home');
-              } else {
-                this.$message.error(response.data.message);
-              }
-            })
-            .catch(error => {
-              console.error('登录失败:', error);
-              this.$message.error('登录过程中发生错误');
-            });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    resetLoginForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-    async submitRegisterForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
-          try {
-            const hashedPassword = await this.hashPassword(this.registerForm.password);
-            const formattedFormData = {
-              email: this.registerForm.email,
-              username: this.registerForm.uname,
-              password: hashedPassword
-            };
-            console.log(formattedFormData);
-            const response = await axios.post('http://localhost:8080/register', formattedFormData);
-            if (response.data.message === '注册成功') {
-              console.log('注册成功');
-              this.$router.push('/login');
-            } else {
-              this.$message.error(response.data.message);
+  async hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  },
+  async submitLoginForm(formName) {
+    this.$refs[formName].validate(async (valid) => {
+      if (valid) {
+        let hashedPassword = await this.hashPassword(this.loginForm.password);
+        let formData = {
+          username: this.loginForm.username,
+          password: hashedPassword
+        };
+        try {
+          const response = await axios.post('http://localhost:8080/login', formData);
+          if (response.data.code === 200) {
+            localStorage.setItem('token', response.data.token);
+            this.$message.success('登录成功');
+            this.$router.push('/main');
+          } 
+        } catch (error) {
+          if (error.response) {
+            // 服务器返回了错误响应
+            switch (error.response.status) {
+              case 401:
+                this.$message.error('用户名或密码错误');
+                break;
+              default:
+                this.$message.error('登录过程中发生错误');
             }
-          } catch (error) {
-            console.error('注册失败:', error);
-            if (error.response) {
-              this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-            } else if (error.request) {
-              this.$message.error('请求未响应，请检查网络连接');
-            } else {
-              this.$message.error('请求发送失败，请稍后再试');
-            }
+          } else {
+            // 其他错误，如网络问题
+            this.$message.error('登录过程中发生错误');
           }
         }
-      });
-    },
+      } else {
+        console.log("error submit!!");
+        return false;
+      }
+    });
+  },
+  resetLoginForm(formName) {
+    this.$refs[formName].resetFields();
+  },
+  async submitRegisterForm(formName) {
+    this.$refs[formName].validate(async (valid) => {
+      if (valid) {
+        try {
+          const hashedPassword = await this.hashPassword(this.registerForm.password);
+          const formattedFormData = {
+            email: this.registerForm.email,
+            username: this.registerForm.uname,
+            password: hashedPassword
+          };
+          const response = await axios.post('http://localhost:8080/register', formattedFormData);
+          if (response.data.code === 200) {
+            this.$message.success('注册成功');
+          } 
+        } catch (error) {
+          if (error.response) {
+            // 服务器返回了错误响应
+            switch (error.response.status) {
+              case 401:
+                this.$message.error('用户名或密码错误');
+                break;
+              default:
+                this.$message.error('注册过程中发生错误');
+            }
+          } else {
+            // 其他错误，如网络问题
+            this.$message.error('注册过程中发生错误');
+          }
+        }
+      }
+    });
+  },
     resetRegisterForm(formName) {
       this.$refs[formName].resetFields();
     },
@@ -218,7 +235,7 @@ export default {
 .log-reg-container {
   display: flex;
   height: 100vh;
-  background-color: #ffffff;
+  background-color: #f8fffe;
 }
 
 .left-side-container {
@@ -232,7 +249,9 @@ export default {
   flex: 1;
   display: flex;
   justify-content: center;
+  gap: 00px;
   align-items: center;
+  flex-direction: column;
 }
 
 .box-card {
@@ -275,4 +294,22 @@ h2 {
   border-radius: 4px;
   transition: border-color 0.3s ease;
 }
+.artistic-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #7f7fd5);
+  background-size: 800% 800%;
+  animation: gradientAnimation 15s ease infinite;
+  z-index: 1000;
+}
+
+@keyframes gradientAnimation {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
 </style>
