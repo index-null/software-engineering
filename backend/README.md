@@ -181,11 +181,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       "url": "string"(更换头像的url)
     - 响应格式：
     - ```json
-      Code: 401（Unauthorized）,
-      Msg:  "请求头中缺少Token"
+      code: 401（Unauthorized）,
+      message:  "请求头中缺少Token"
     - ```json
-      Code: 401（Unauthorized）,
-      Msg:  "无效的Token"
+      code: 401（Unauthorized）,
+      message:  "无效的Token"
     - ```json
       Code: 500(Error),
       Msg:  "更新头像失败"
@@ -199,11 +199,11 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       携带一个"Authorization"的token
     - 响应格式：
     - ```json
-      Code: 401（Unauthorized）,
-      Msg:  "Token已过期"
+      code: 401（Unauthorized）,
+      message:  "Token已过期"
     - ```json
-      Code: 401（Unauthorized）,
-      Msg:  "无效的Token"
+      code: 401（Unauthorized）,
+      message:  "无效的Token"
     - ```json
       Code: Error,
       Msg:  "查询头像失败"
@@ -220,25 +220,20 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
-      Code: StatusBadRequest (400)
-      message: "Invalid request data"
-    - ```json
-      Code: StatusNotFound (404)
       message: "用户未找到"
     - ```json
-      Code: StatusInternalServerError (500)
       message: "查询失败"
       error: 
     - ```json
-      Code: StatusOK
-      user:{
-      "id": 6,
-      "email": "czh@qq.com",
-      "username": "czh",
-      "password": "chenzanhong",
-      "avatar_url": "https://www.chen.com",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImN6aCIsImV4cCI6MTczMjU0MjU3NH0.IoDSg08xnSNK9jlJBr_xdVyYKUIXIbEZm_UsXk0vPmM",
-      "create_time": "2024-11-24T21:49:24.78802Z"
+      user: {
+        "id": 1,
+        "email": "test@qq.com",
+        "username": "testuser",
+        "password": "123456",
+        "avatar_url": "https://example.com/new-avatar.jpg",
+        "score": -80,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiZXhwIjoxNzMzODM4NDUzfQ.Pn0e30ETZwn-KqKpBcHCCtn3ryWsNLsLIwICoVRidQM",
+        "create_time": "2024-12-09T15:36:19.212475Z"
       }
     
   - 查询所有用户信息
@@ -389,11 +384,12 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
-      Code: StatusInternalServerError (500)
+      success: false,
+      message: "未找到用户信息"
+    - ```json
       message: "查询用户图像失败"
       error:  
     - ```json
-      Code: StatusOK
       message: "获取用户的图像成功"
       images: {
         "images": [
@@ -451,7 +447,24 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 参数格式：（GET方法）请求头携带一个"Authorization"的token
     - ```json
       请求头携带一个"Authorization"的token
-    - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
+    - 响应格式：
+    - ```json
+      success: false,
+      message: "未找到用户信息"
+    - ```json
+      message: "查询用户收藏的图片失败"
+      err:  
+    - ```json
+       {
+        "id": 1,
+        "username": "testuser",
+        "params": "",
+        "picture": "generate/string-2024-12-09 20:12:59.png",
+        "create_time": "2024-12-09T20:13:01.596785Z"
+      },
+      {
+        //和上面相识
+      }
 
   - 收藏图像
   - 收藏指定图像
@@ -466,30 +479,26 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
     - 响应格式
     - ```json
-      Code: StatusBadRequest (400)
       message: "无有效的图像id或url"
       error: "id 必须大于 0 或者 url 不得为空"
     - ```json
-      Code: StatusNotFound (404)
       message: "未找到对应的图像"
-      error:  
+      error:  "record not found"
     - ```json
-      Code:  401
-      message: "未找到用户信息"//没有token时
-      error:  
+      code:  401
+      message: "请求头中缺少Token"//没有token时
+      ```json
+      code:  401
+      message: "无效的Token"
     - ```json
-      Code:  StatusInternalServerError （500）
       message: "检查收藏状态失败"
       error:  
     - ```json
-      Code:  StatusConflict
       message: "该图像已经被收藏过"
     - ```json
-      Code:  StatusInternalServerError （500）
       message: "收藏图像失败"
       error:  
     - ```json
-      Code:  200
       message: "收藏图像成功"
 
 
