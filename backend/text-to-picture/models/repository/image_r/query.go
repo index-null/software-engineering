@@ -89,9 +89,9 @@ func GetImageByUsername(db *gorm.DB, username string) (*i.ImageInformation, erro
 	return &image, nil // 返回指向image的指针
 }
 // 根据图片ID查询相关图片
-func GetFavoritedImageById(db *gorm.DB, id int) (*i.ImageInformation, error) {
+func GetFavoritedImageById(db *gorm.DB, id int) (*i.FavoritedImages, error) {
 
-	var image i.ImageInformation
+	var image i.FavoritedImages
 	err := db.Table("favoritedimage").Where("id = ?", id).First(&image).Error
 	if err != nil {
 		return nil, err // 返回错误

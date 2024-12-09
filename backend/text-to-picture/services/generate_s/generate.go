@@ -118,6 +118,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户信息查询失败",
 		})
+		return
 	}
 
 	if user.Score < 20 {
@@ -126,6 +127,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户积分不足",
 		})
+		return
 	}
 
 	user.Score -= 20
@@ -136,6 +138,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户积分更新失败",
 		})
+		return
 	}
 	var record u.UserScore
 	record.Username = username
@@ -147,6 +150,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "积分记录创建失败",
 		})
+		return
 	}
 	// 生成图片并传递用户名
 	imageUrl, err := GenerateImage(username)
@@ -175,7 +179,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		"code":      200,
 		"success":   true,
 		"image_url": imageUrl,
-		"msg":       msg,
+		"message":       msg,
 	})
 }
 

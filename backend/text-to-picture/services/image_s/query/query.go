@@ -1,6 +1,7 @@
 package query
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -95,6 +96,7 @@ func GetUserFavoritedImages(c *gin.Context) {
 	// if username != ""{
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
+	fmt.Println(username.(string))
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{

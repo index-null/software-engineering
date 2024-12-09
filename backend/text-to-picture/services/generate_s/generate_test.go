@@ -43,7 +43,7 @@ func TestGenerateImageValidRequest(t *testing.T) {
 	r.POST("/generate", generator.ReturnImage)
 
 	os.Setenv("DB_USER", "postgres")
-	os.Setenv("DB_PASSWORD", "07080031")
+	os.Setenv("DB_PASSWORD", "czh20040301")
 	os.Setenv("DB_HOST", "localhost")
 	os.Setenv("DB_PORT", "5432")
 	os.Setenv("DB_NAME", "postgres")
