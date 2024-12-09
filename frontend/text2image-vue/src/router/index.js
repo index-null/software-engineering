@@ -11,7 +11,7 @@ Vue.use(VueRouter)
 
 const routes = [{
     path: '/',
-    redirect: '/main',
+    redirect: '/about',
 }, {
     path: '/about',
     name: 'about',
@@ -27,6 +27,7 @@ const routes = [{
 }, {
     path: '/main',
     name: 'main',
+    redirect: '/main/explore',
     component: () =>
         import ('@/views/InnerView.vue'),
     children: [{
@@ -53,20 +54,7 @@ const routes = [{
 }, {
     path: '/log-reg',
     component: () =>
-        import ('@/views/LogRegView.vue'),
-    children: [{
-        path: 'login',
-        name: 'login',
-        component: () =>
-            import ('@/views/LoginView.vue')
-    }, {
-        path: 'register',
-        name: 'register',
-        component: () =>
-            import ('@/views/RegisterView.vue')
-    }, {
-        path: 'about',
-    }]
+        import ('@/views/LogRegView.vue')
 }]
 
 const router = new VueRouter({
