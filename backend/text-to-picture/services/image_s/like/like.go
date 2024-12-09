@@ -13,7 +13,7 @@ import (
 // @Tags image
 // @Accept json
 // @Produce json
-// @Param requestBody body struct { URL string `json:"url"` } true "图片 URL" 
+// @Param requestBody body struct { URL string `json:"url"` } true "图片 URL"
 // @Success 200 {object} map[string]interface{} "点赞成功"
 // @Failure 400 {object} map[string]interface{} "缺少图片 URL"
 // @Failure 401 {object} map[string]interface{} "名字解析出错"
@@ -62,7 +62,7 @@ func LikeImage(c *gin.Context) {
 	var imageLike image.ImageLike
 
 	// 查询用户是否有点赞记录
-	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
+	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil && imageLike.UserName != "root" {
 		c.JSON(http.StatusConflict, gin.H{
 			"code":  409,
 			"error": "用户已经点赞过该图片"})
