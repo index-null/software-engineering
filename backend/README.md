@@ -51,7 +51,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 项目的文档存放处，包含API文档、架构图、使用说明等。
 该目录帮助开发者和使用者理解项目的功能和使用方法。（我们好像没有，先建着吧）
 ### 开发内容
-
+#### 管理员账号：
+- username:root
+- password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
 1. **登陆注册接口**
    - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
    - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
@@ -276,25 +278,32 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
     - 响应格式
     - ```json
-      Code: StatusBadRequest (400)
-      message: "请求数据格式错误"
+       "code": 400,
+       "message":"请求数据格式错误"
       error:
     - ```json
-      Code: StatusInternalServerError (500)
-      message: "更新用户信息失败"
+      "code": 401,
+      "message": "未找到用户信息"
+    - ```json
+      "code": 500,
+      "message": "更新用户信息失败"
       error: 可能为：
         "用户不存在" "查询用户时发生错误" "用户名不可修改" "邮箱为空" "密码少于6位" "邮箱格式不正确" "更新用户信息失败"
+    - ```json
+       "code": 200,
+       "message": "用户信息更新成功"
       
     
 
 4. **文生图历史记录**
   - 总的记录，获取所有的图像信息（按id/create_time升序）：
+  - Get方法
     - url: localhost:8080/image/all 
     - 参数格式： 无（GET方法）
     - 响应格式：
     - ```json
-      Code: StatusInternalServerError (500)
-      message: "获取图像列表失败"
+      "code":500,
+      "message": "查询图像列表失败"
     - ```json
       Code: StatusInternalServerError (500)
       message: "查询失败"
@@ -323,35 +332,34 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       请求头携带一个"Authorization"的token
     - 响应格式：
     - ```json
-      Code: StatusBadRequest (400)
-      message: "无效的开始时间格式", 
+      "code":400,
+      "message": "无效的开始时间格式", 
       error:
     - ```json
-      Code: StatusBadRequest (400)
-      message: "无效的结束时间格式", 
+      "code":400,
+      "message": "无效的结束时间格式", 
       error:
-    - ```json
-      Code: StatusInternalServerError (500)
-      message: "查询图像列表失败", 
-      error:
-    - ```json
-      Code: StatusOK
-      message: "查询图像列表成功", 
-      images: {
-        "images": [
-            {
-                "id": 1,
-                "username": "czh0",
-                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "picture": "generate/sun-2024-11-21 23:31:24.png",
-                "create_time": "2024-11-21T23:31:25.924231Z"
-            },
-            {
-              //……
-            },
+- ```json
+  "code":500,
+  "message": "查询图像列表失败", 
+  error:
+- ```json
+      "message": "查询图像列表成功",
+      "images": {
+        "images":[
+          {
+              "id": 1,
+              "username": "czh0",
+              "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
+              "picture": "generate/sun-2024-11-21 23:31:24.png",
+              "create_time": "2024-11-21T23:31:25.924231Z"
+          },
+          {
             //……
-        ]
-      }
+          },
+          //……
+      ]
+    }
 
 
   - 获取指定的某张图像
@@ -526,35 +534,40 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       Code:  200
       message: "取消图像收藏成功"
 
-6. **签到增加积分接口**
-    - GET方法，用户每次签到增加100积分，并保存记录
-    - url：http://localhost:8080/auth/score
-    - 参数格式：
-    - ```json
-     请求头携带一个"Authorization"的token
+  6. **签到增加积分接口**
+      - GET方法，用户每次签到增加100积分，并保存记录
+      - url：http://localhost:8080/auth/score
+      - 参数格式：
+      - ```json
+       请求头携带一个"Authorization"的token
 
-    - 响应格式：
-    - ```json
-     Code：200（StatusOK）,
-     Msg："用户当前积分"
-    - ```json
-     Code：401（StatusUnauthorized）,
-     Msg："请求头中缺少Token"
-    - ```json
-     Code：401（StatusUnauthorized）,
-     Msg："无效的Token"
-    - ```json
-     Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："用户信息查询失败"
-    - ```json
-     Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："积分记录创建失败"
-    - ```json
-     Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："用户积分更新失败"
+      - 响应格式：
+      - ```json
+       Code：200（StatusOK）,
+       Msg："用户当前积分"
+      - ```json
+              "code":    401,
+              “success": false,
+              "message": "未找到用户信息"
+      - ```json
+              "code":    401,
+              "success": false,
+              "message": "积分记录更新失败",
+      - ```json
+              "code":    401,
+              "message": "请求头中缺少Token"
+      - ```json
+              "code":    401,
+              "message": "无效的Token"
+      - ```json
+              "code":    401,
+              "success": false,
+              "message": "用户信息查询失败",
+      - ```json
+              "code":    401,
+              "success": false,
+              "message": "积分记录创建失败",
+      
     
 7. **token校验功能**
     - 校验用户的token
