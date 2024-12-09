@@ -590,21 +590,21 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 校验用户的token
     - 参数格式：
     - ```json
-     请求头携带一个"Authorization"的token
+      请求头携带一个"Authorization"的token
 
     - 响应格式：
     - ```json
       code：StatusUnauthorized(401)
       message："令牌格式不正确"
      - ```json
-      code：StatusUnauthorized(401)
-      message："令牌过期或未激活"
+       code：StatusUnauthorized(401)
+       message："令牌过期或未激活"
      - ```json
-      code：StatusUnauthorized(401)
-      message："令牌无法处理"
+       code：StatusUnauthorized(401)
+       message："令牌无法处理"
      - ```json
-      code：StatusUnauthorized(401)
-      message："令牌无效"
+       code：StatusUnauthorized(401)
+       message："令牌无效"
      - ```json
        code：StatusOK(200)
        message："令牌有效"
