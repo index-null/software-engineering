@@ -113,7 +113,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      code：500（StatusInternalServerError）,
      message: "登录时更新用户 token 失败",
-     "error": "用户不存在" 或 “查询用户信息失败” 或 “更新用户信息失败”
+     "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
    - ```json
      code：200（StatusOK）,
      message："登录成功",
@@ -458,27 +458,23 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      "code":  409,
      "error": "用户已经点赞过该图片"
-- ```json
+   - ```json
      "code":  500,
      "error": “返回获取赞数错误的error"
-  - ```json
+   - ```json
      "code":  500,
      "error": "点赞数据库开始出错"
-  - ```json
+   - ```json
      "current_likes": 当前赞数,
      “message": "Image liked successfully"
    - 按照参数排序，可以列出所需查询参数的查询信息
-
-
-   - 按照结果排序，可以列出所需结果图片的查询信息
-   - 按照用户排序，可以列出所需用户查询的查询信息
    - 待定   
 
 5. **图片收藏界面**
   - 查询展示出用户的收藏图片
   - 获取当前用户收藏的图像
     - url: localhost:8080/auth/user/favoritedimages
-    - 参数格式：（GET方法）请求头携带一个"Authorization"的token
+    - 参数格式：（GET方法）
     - ```json
       请求头携带一个"Authorization"的token
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
@@ -527,7 +523,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
   - 取消指定图像的收藏
     - url：localhost:8080/auth/deleteFavoritedImage
     - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
-    - 请求头携带一个"Authorization"的token
+    - ```json
+      请求头携带一个"Authorization"的token
     - 响应格式
     - ```json
       code: StatusBadRequest (400)
