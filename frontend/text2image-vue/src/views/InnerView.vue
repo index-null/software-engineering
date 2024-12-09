@@ -29,13 +29,13 @@
         <div class="avatar-container">
           <el-avatar :size="100" :src="avatarUrl"></el-avatar>
         </div>
-        <div class="nav-item" :class="{ 'active': activeRoute === '/main/info' }" @click="setActiveRoute('/main/info')">
+        <div class="nav-item">
           <img :src="svgPaths.avatar" alt="info" class="nav-icon"/>
           <router-link to="#" class="nav-link">{{ username }}</router-link>
         </div>
         <div class="nav-item" :class="{ 'active': activeRoute === '/main/settings' }" @click="setActiveRoute('/main/settings')">
           <img :src="svgPaths.setting" alt="info" class="nav-icon"/>
-          <router-link to="#" class="nav-link">账户信息</router-link>
+          <router-link to="/main/setting" class="nav-link">账户信息</router-link>
         </div>
       </div>
     </div>
@@ -80,7 +80,7 @@ export default {
     $route(to) {
       this.activeRoute = to.path;
     }
-  }
+  },
 }
 </script>
 <style scoped>
