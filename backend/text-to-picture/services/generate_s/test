@@ -1,0 +1,262 @@
+ go test
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:12:58 未找到用户名
+[GIN] 2024/12/09 - 09:12:58 | 401 |      5.1081ms |       127.0.0.1 | POST     "/generate"
+--- FAIL: TestGenerateImageValidRequest (0.62s)
+    generate_test.go:86:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:86
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageValidRequest
+    generate_test.go:87:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:87
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageValidRequest
+    generate_test.go:88:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:88
+                Error:          Not equal:
+                                expected: true
+                                actual  : false
+                Test:           TestGenerateImageValidRequest
+    generate_test.go:89:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:89
+                Error:          Should NOT be empty, but was
+                Test:           TestGenerateImageValidRequest
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:12:58 未找到用户名
+[GIN] 2024/12/09 - 09:12:58 | 401 |            0s |       127.0.0.1 | POST     "/generate"
+response: {401 false 未找到用户信息 }
+--- FAIL: TestGenerateImageSuccessfulRequest (0.49s)
+    generate_test.go:132:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:132
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageSuccessfulRequest
+    generate_test.go:133:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:133
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageSuccessfulRequest
+    generate_test.go:134:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:134
+                Error:          Not equal:
+                                expected: true
+                                actual  : false
+                Test:           TestGenerateImageSuccessfulRequest
+    generate_test.go:135:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:135
+                Error:          Should NOT be empty, but was
+                Test:           TestGenerateImageSuccessfulRequest
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:12:59 参数错误: 缺乏提示词
+[GIN] 2024/12/09 - 09:12:59 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.TestGenerateImageInternalError.func1 (3 handlers)
+2024/12/09 09:12:59 未找到用户名
+[GIN] 2024/12/09 - 09:12:59 | 401 |            0s |       127.0.0.1 | POST     "/generate"
+--- FAIL: TestGenerateImageInternalError (0.45s)
+    generate_test.go:231:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:231
+                Error:          Not equal:
+                                expected: 500
+                                actual  : 401
+                Test:           TestGenerateImageInternalError
+    generate_test.go:232:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:232
+                Error:          Not equal:
+                                expected: 500
+                                actual  : 401
+                Test:           TestGenerateImageInternalError
+    generate_test.go:234:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:234
+                Error:          Not equal:
+                                expected: "图片生成失败"
+                                actual  : "未找到用户信息"
+
+                                Diff:
+                                --- Expected
+                                +++ Actual
+                                @@ -1 +1 @@
+                                -图片生成失败
+                                +未找到用户信息
+                Test:           TestGenerateImageInternalError
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:00 参数错误: 宽度不在范围内
+[GIN] 2024/12/09 - 09:13:00 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:00 参数错误: 高度不在范围内
+[GIN] 2024/12/09 - 09:13:00 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:01 参数错误: 步数不在范围内
+[GIN] 2024/12/09 - 09:13:01 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:01 未找到用户名
+[GIN] 2024/12/09 - 09:13:01 | 401 |       503.9µs |       127.0.0.1 | POST     "/generate"
+--- FAIL: TestGenerateImageUserScoreDecrease (0.50s)
+    generate_test.go:433:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:433
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageUserScoreDecrease
+    generate_test.go:434:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:434
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageUserScoreDecrease
+    generate_test.go:435:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:435
+                Error:          Not equal:
+                                expected: true
+                                actual  : false
+                Test:           TestGenerateImageUserScoreDecrease
+    generate_test.go:436:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:436
+                Error:          Should NOT be empty, but was
+                Test:           TestGenerateImageUserScoreDecrease
+    generate_test.go:441:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:441
+                Error:          Not equal:
+                                expected: 30
+                                actual  : 50
+                Test:           TestGenerateImageUserScoreDecrease
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:02 未找到用户名
+[GIN] 2024/12/09 - 09:13:02 | 401 |            0s |       127.0.0.1 | POST     "/generate"
+
+2024/12/09 09:13:02 D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:503 record not found
+[1.221ms] [rows:0] SELECT * FROM "userscore" WHERE username = 'testuser' AND record = '积分-20' ORDER BY "userscore"."id" LIMIT 1
+
+2024/12/09 09:13:02 D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:508 WHERE conditions required
+[0.504ms] [rows:0] DELETE FROM "userscore"
+--- FAIL: TestGenerateImageScoreRecordCreated (0.47s)
+    generate_test.go:496:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:496
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageScoreRecordCreated
+    generate_test.go:497:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:497
+                Error:          Not equal:
+                                expected: 200
+                                actual  : 401
+                Test:           TestGenerateImageScoreRecordCreated
+    generate_test.go:498:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:498
+                Error:          Not equal:
+                                expected: true
+                                actual  : false
+                Test:           TestGenerateImageScoreRecordCreated
+    generate_test.go:499:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:499
+                Error:          Should NOT be empty, but was
+                Test:           TestGenerateImageScoreRecordCreated
+    generate_test.go:504:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:504
+                Error:          Should NOT be empty, but was 0
+                Test:           TestGenerateImageScoreRecordCreated
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:02 未找到用户名
+[GIN] 2024/12/09 - 09:13:02 | 401 |       503.6µs |       127.0.0.1 | POST     "/generate"
+--- FAIL: TestGenerateImageInsufficientScore (0.59s)
+    generate_test.go:564:
+                Error Trace:    D:/goproject/src/gocode/backend/backend/text-to-picture/services/generate_s/generate_test.go:564
+                Error:          Not equal:
+                                expected: "用户积分不足"
+                                actual  : "未找到用户信息"
+
+                                Diff:
+                                --- Expected
+                                +++ Actual
+                                @@ -1 +1 @@
+                                -用户积分不足
+                                +未找到用户信息
+                Test:           TestGenerateImageInsufficientScore
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:03 参数错误: 采样方法不在范围内
+[GIN] 2024/12/09 - 09:13:03 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /generate                 --> text-to-picture/services/generate_s.(*ImageGeneratorImpl).ReturnImage-fm (3 handlers)
+2024/12/09 09:13:03 参数错误: 缺乏种子
+[GIN] 2024/12/09 - 09:13:03 | 400 |            0s |       127.0.0.1 | POST     "/generate"
+FAIL
+exit status 1
+FAIL    text-to-picture/services/generate_s     6.407s
+
