@@ -561,7 +561,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - url：http://localhost:8080/auth/score
     - 参数格式：
     - ```json
-     请求头携带一个"Authorization"的token
+      请求头携带一个"Authorization"的token
 
     - 响应格式：
     - ```json
