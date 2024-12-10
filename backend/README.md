@@ -149,7 +149,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      code：400（StatusBadRequest）,
      message："缺乏提示词",
-		 success: false
+     success: false
    - ```json
      code：400（StatusBadRequest）,
      message："宽度不在范围内",
@@ -160,15 +160,15 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 		 success: false
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："步数不在范围内"
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："采样方法不在范围内"
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："缺乏种子"
    - ```json
      code：401（StatusUnauthorized）,
@@ -193,7 +193,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      success：false,
      message："用户积分更新失败"
    - ```json
-<<<<<<< HEAD
      code：401（StatusUnauthorized）,
      success：false,
      message："积分记录创建失败"
@@ -201,12 +200,9 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      code：500（StatusInternalServerError）,
      success：false,
      message："图片生成失败"
-  
-=======
-     Code：500（StatusInternalServerError）,
-     Msg："图片生成失败"
-
->>>>>>> d25e764a1a030b0e8f0ad7462947cc6a9206a2dd
+   - ```json
+     code：500（StatusInternalServerError）,
+     message："图片生成失败"
 
 
 3. **个人信息界面**
