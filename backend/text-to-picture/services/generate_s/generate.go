@@ -238,7 +238,7 @@ func SavetoOss() (string, error) {
 	// 示例操作：上传文件。
 	filetime := time.Now().Format("2006-01-02 15:04:05")
 	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
-	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/generate/" + encodedPrompt + "-" + filetime + ".png"
+	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/generate-" + encodedPrompt + "-" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
