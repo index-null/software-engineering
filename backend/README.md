@@ -168,7 +168,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      Code：500（StatusInternalServerError）,
      Msg："图片生成失败"
-  
+
 
 
 3. **个人信息界面**
@@ -412,7 +412,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       }
 
 
-  
+
    - 点赞图片功能：
    - url："localhost:8080/auth/like"
    - 参数格式：
@@ -536,25 +536,25 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 响应格式：
     - ```json
      Code：200（StatusOK）,
-     Msg："用户当前积分"
+      Msg："用户当前积分"
     - ```json
      Code：401（StatusUnauthorized）,
-     Msg："请求头中缺少Token"
+      Msg："请求头中缺少Token"
     - ```json
      Code：401（StatusUnauthorized）,
-     Msg："无效的Token"
+      Msg："无效的Token"
     - ```json
      Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："用户信息查询失败"
+      Success：false,
+      Msg："用户信息查询失败"
     - ```json
      Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："积分记录创建失败"
+      Success：false,
+      Msg："积分记录创建失败"
     - ```json
      Code：401（StatusUnauthorized）,
-     Success：false,
-     Msg："用户积分更新失败"
+      Success：false,
+      Msg："用户积分更新失败"
     
 7. **token校验功能**
     - 校验用户的token
@@ -565,20 +565,20 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 响应格式：
     - ```json
      Code：StatusUnauthorized(401)
-     Msg："令牌格式不正确"
+      Msg："令牌格式不正确"
      - ```json
      Code：StatusUnauthorized(401)
-     Msg："令牌过期或未激活"
+      Msg："令牌过期或未激活"
      - ```json
      Code：StatusUnauthorized(401)
-     Msg："令牌无法处理"
+      Msg："令牌无法处理"
      - ```json
      Code：StatusUnauthorized(401)
-     Msg："令牌无效"
+      Msg："令牌无效"
      - ```json
      Code：StatusOK(200)
-     Msg："令牌有效"
-     Data: tokenStr
+      Msg："令牌有效"
+      Data: tokenStr
 
 
 

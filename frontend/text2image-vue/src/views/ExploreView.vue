@@ -13,7 +13,7 @@
       </div>
       <div class="generate-same-style">
         <input class="search-input" type="text" placeholder="华丽的中国传统古代建筑,坐落在山脚下,山脚下有弯曲的河流流过,天空中飘着祥云" disabled>
-        <div class="generate-button">生成同款</div>
+        <div class="generate-button" @click="$router.push('/main/generate')">生成同款</div>
       </div>
     </div>
   </div>
@@ -23,7 +23,7 @@
       <div class="text2">
         文字描述生成画作
       </div>
-      <div class="generate-button">去生成</div>
+      <div class="generate-button" @click="$router.push('/main/generate')">去生成</div>
     </div>
   </div>
   <div class="explore-ground-container">
@@ -53,22 +53,22 @@ export default {
 .explore-container {
     display: flex;
     flex-direction: column;
-    min-height: 200vh; /* 确保容器至少占满整个视口高度 */
-    padding: 1vh 5vw; /* 使用视口宽度的相对单位 */
+    min-height: 120vh; /* 最小高度 */
+    background-color: #F1F6FF;
 }
 
 .carousel-img-container {
-    flex: 2;
-    border-radius: 1.5rem; /* 使用相对单位 */
-    position: relative; /* 使子元素可以绝对定位 */
-    color: white; /* 设置文本颜色为白色 */
+    flex: 1.3; 
+    border-radius: 1.5rem;
+    position: relative;
+    color: white;
 }
 
 .generate-entry-container {
-    flex:1;
-    border-radius: 1.5rem; /* 使用相对单位 */
-    position: relative; /* 使子元素可以绝对定位 */
-    color: white; /* 设置文本颜色为白色 */
+    flex: 0.5; /* 减少 flex 值 */
+    border-radius: 1.5rem;
+    position: relative;
+    color: white;
 }
 .explore-ground-container{
     flex: 8;
