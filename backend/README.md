@@ -600,21 +600,20 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
     - 响应格式：
     - ```json
       code：StatusUnauthorized(401)
-      message："令牌格式不正确"
+      msg："令牌格式不正确"
      - ```json
        code：StatusUnauthorized(401)
-       message："令牌过期或未激活"
+       msg："令牌过期或未激活"
      - ```json
        code：StatusUnauthorized(401)
-       message："令牌无法处理"
+       msg："令牌无法处理"
      - ```json
        code：StatusUnauthorized(401)
-       message："令牌无效"
+       msg："令牌无效"
      - ```json
        code：StatusOK(200)
-       message："令牌有效"
-       Data: tokenStr
-
+       msg："令牌有效"
+       data: tokenStr
 
 8. **数据库设计**
    - 用户登录表：id，email，user，password，token
