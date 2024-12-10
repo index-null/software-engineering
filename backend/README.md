@@ -149,7 +149,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - ```json
      code：400（StatusBadRequest）,
      message："缺乏提示词",
-		 success: false
+     success: false
    - ```json
      code：400（StatusBadRequest）,
      message："宽度不在范围内",
@@ -160,15 +160,15 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 		 success: false
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："步数不在范围内"
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："采样方法不在范围内"
    - ```json
      code：400（StatusBadRequest）,
-		 success: false,
+     success: false,
      message："缺乏种子"
    - ```json
      code：401（StatusUnauthorized）,
@@ -193,9 +193,16 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      success：false,
      message："用户积分更新失败"
    - ```json
-     Code：500（StatusInternalServerError）,
-     Msg："图片生成失败"
-
+     code：401（StatusUnauthorized）,
+     success：false,
+     message："积分记录创建失败"
+   - ```json
+     code：500（StatusInternalServerError）,
+     success：false,
+     message："图片生成失败"
+   - ```json
+     code：500（StatusInternalServerError）,
+     message："图片生成失败"
 
 
 3. **个人信息界面**
@@ -565,26 +572,26 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
     - 响应格式：
     - ```json
-     Code：200（StatusOK）,
-      Msg："用户当前积分"
+      code：200（StatusOK）,
+      message："用户当前积分"
     - ```json
-     Code：401（StatusUnauthorized）,
-      Msg："请求头中缺少Token"
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
     - ```json
-     Code：401（StatusUnauthorized）,
-      Msg："无效的Token"
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
     - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："用户信息查询失败"
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户信息查询失败"
     - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："积分记录创建失败"
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："积分记录创建失败"
     - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："用户积分更新失败"
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户积分更新失败"
     
 7. **token校验功能**
     - 校验用户的token
@@ -594,23 +601,21 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
     - 响应格式：
     - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌格式不正确"
+      code：StatusUnauthorized(401)
+      msg："令牌格式不正确"
      - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌过期或未激活"
+       code：StatusUnauthorized(401)
+       msg："令牌过期或未激活"
      - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌无法处理"
+       code：StatusUnauthorized(401)
+       msg："令牌无法处理"
      - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌无效"
+       code：StatusUnauthorized(401)
+       msg："令牌无效"
      - ```json
-     Code：StatusOK(200)
-      Msg："令牌有效"
-      Data: tokenStr
-
-
+       code：StatusOK(200)
+       msg："令牌有效"
+       data: tokenStr
 
 8. **数据库设计**
    - 用户登录表：id，email，user，password，token
