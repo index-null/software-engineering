@@ -18,6 +18,8 @@ import (
 	u "text-to-picture/models/user"
 
 	"github.com/gin-gonic/gin"
+    //文件路径操作包
+	"path/filepath"
 )
 
 // 传入的图片参数
@@ -207,14 +209,17 @@ func GenerateImage(username string) (string, error) {
 
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss() (string, error) {
-	if err := godotenv.Load("config\\oss\\oss.env"); err != nil {
+	// 构建跨平台的路径
+	envPath := filepath.Join("config", "oss", "oss.env")
+
+	if err := godotenv.Load(envPath); err != nil {
 		log.Fatalf("Failed to load .env file: %v", err)
 	}
 	// 从环境变量中获取访问凭证
 	accessKeyID := os.Getenv("OSS_ACCESS_KEY_ID")
 	accessKeySecret := os.Getenv("OSS_ACCESS_KEY_SECRET")
-	region := os.Getenv("region")
-	bucketName := os.Getenv("bucket")
+	region := os.Getenv("OSS_REGION")
+	bucketName := os.Getenv("OSS_BUCKET")
 	// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
 	provider, err := oss.NewEnvironmentVariableCredentialsProvider()
 	if err != nil {
