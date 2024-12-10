@@ -1,8 +1,13 @@
 package models
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"log"
 	"os"
+	image2 "text-to-picture/models/image"
+	user2 "text-to-picture/models/user"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,8 +28,7 @@ CREATE TABLE IF NOT EXISTS UserScore (
     id SERIAL PRIMARY KEY,
 	username VARCHAR(30) NOT NULL,
     record TEXT,
-	create_time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (id) REFERENCES UserInformation(id)
+	create_time TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
@@ -94,4 +98,96 @@ func InitDB() error {
 	}
 
 	return nil
+}
+func InitTestUser() error {
+	tx := DB.Begin()
+	if tx.Error != nil {
+		return fmt.Errorf("%v", tx.Error)
+	}
+	var user user2.UserInformation
+	result := DB.Where("username=?", "root").First(&user)
+	if result.Error == nil {
+		log.Printf("User already exists")
+		user.Score = 10000
+		user.Password = "c4ca4238a0b923820dcc509a6f75849b"
+		if result := tx.Save(&user); result.Error != nil {
+			log.Printf("Failed to update user score: %v", result.Error)
+			return result.Error
+		}
+		return nil
+	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		log.Printf("Failed to find user: %v", result.Error)
+		return result.Error
+	}
+	user = user2.UserInformation{
+		Email:      "root@example.com",
+		UserName:   "root",
+		Password:   "098f6bcd4621d373cade4e832627b4f6", //testpassword
+		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+		Score:      10000,
+	}
+	if result := tx.Create(&user); result.Error != nil {
+		log.Printf("Failed to create user: %v", result.Error)
+		return result.Error
+	}
+
+	userscore := user2.UserScore{
+		Username: "root",
+		Record:   "积分+100",
+	}
+	if result := tx.Create(&userscore); result.Error != nil {
+		log.Printf("Failed to create record: %v", result.Error)
+		return result.Error
+	}
+
+	filePath := "assets\\examples\\images\\image_urls.txt"
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Printf("Failed to open file: %v", err)
+		return err
+	}
+	defer file.Close()
+	i := 0
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		imageURL := scanner.Text()
+		i++
+		test := fmt.Sprintf("test%d", i)
+		// 创建ImageInformation记录
+		imageInfo := image2.ImageInformation{
+			UserName: "root", // 假设用户名为root
+			Params:   "Prompt:" + test + ", Width: 512, Height: 512, Steps: 20, SamplingMethod: Euler a",
+			Picture:  imageURL,
+		}
+
+		// 插入数据库
+		result := tx.Create(&imageInfo)
+		if result.Error != nil {
+			log.Printf("Failed to create image information: %v", result.Error)
+			return result.Error
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("Failed to read file: %v", err)
+		return fmt.Errorf("%v", err)
+	}
+
+	imagelike := image2.ImageLike{
+		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282351707.png",
+		UserName: "root",
+	}
+	if result := tx.Create(&imagelike); result.Error != nil {
+		log.Printf("Failed to create image like: %v", result.Error)
+		return result.Error
+	}
+
+	imagefavor := image2.FavoritedImages{
+		UserName: "root",
+		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347058.jpg",
+	}
+	if result := tx.Create(&imagefavor); result.Error != nil {
+		log.Printf("Failed to create image favor: %v", result.Error)
+		return result.Error
+	}
+	return fmt.Errorf("%v", tx.Commit().Error)
 }

@@ -15,13 +15,13 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"text-to-picture/services/auth_s/avator"
+	check_t "text-to-picture/services/auth_s/checkToken"
 	auth_s "text-to-picture/services/auth_s/login"
 	user_q "text-to-picture/services/auth_s/query"
 	user_up "text-to-picture/services/auth_s/update"
 	favorited "text-to-picture/services/favorites_s"
 	"text-to-picture/services/image_s/like"
 	image_q "text-to-picture/services/image_s/query"
-	check_t "text-to-picture/services/auth_s/checkToken"
 )
 
 type DBConfig struct {
@@ -65,7 +65,9 @@ func main() {
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
-
+	if err := db.InitTestUser(); err != nil {
+		log.Printf("Failed to initialize test user: %v", err)
+	}
 	// 设置路由
 	r := gin.Default()
 
@@ -106,7 +108,7 @@ func main() {
 		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 	}
-	r.GET("/checkToken", check_t.CheckToken)//校验token是否有效
+	r.GET("/checkToken", check_t.CheckToken) //校验token是否有效
 
 	// 以下三个暂时未需要
 	r.GET("/user/all", user_q.GetAllUsersInfo) // 获取所有用户信息
