@@ -5,7 +5,7 @@ import (
 	"log"
 
 	//"net/http"
-	"net/url"
+	// "net/url"
 	"os"
 	"reflect"
 	"time"
@@ -241,9 +241,9 @@ func SavetoOss() (string, error) {
 	// 填写存储空间名称，例如examplebucket。
 
 	// 示例操作：上传文件。
-	filetime := time.Now().Format("2006-01-02 15:04:05")
-	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
-	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/generate-" + filetime + ".png"
+	// filetime := time.Now().Format("2006-01-02 15:04:05")
+	// encodedPrompt := url.QueryEscape(imageParaments.Prompt)
+	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411251503682.png"
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
