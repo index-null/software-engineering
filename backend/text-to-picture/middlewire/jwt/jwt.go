@@ -1,6 +1,7 @@
 package middlewire
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -17,6 +18,7 @@ type Claims struct {
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.GetHeader("Authorization")
+		fmt.Println(tokenStr);
 		if tokenStr == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code":    401,

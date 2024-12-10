@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 // 更新用户信息
 // @Summary 更新用户信息
 // @Description 更新用户的详细信息（不能更新用户名）
@@ -45,12 +46,15 @@ func UpdateUser(c *gin.Context) { //不能更新用户名
 
 	// 更新用户信息
 	if err := user_r.UpdateUserInfo(d.DB, username.(string), input); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "更新用户信息失败", "error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "更新用户信息失败", "error": err.Error()})
 		return
 	}
 
 	// 返回结果
 	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
 		"message": "用户信息更新成功",
 	})
 }

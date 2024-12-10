@@ -120,6 +120,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户信息查询失败",
 		})
+		return
 	}
 
 	if user.Score < 20 {
@@ -128,6 +129,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户积分不足",
 		})
+		return
 	}
 
 	user.Score -= 20
@@ -138,6 +140,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "用户积分更新失败",
 		})
+		return
 	}
 	var record u.UserScore
 	record.Username = username
@@ -149,6 +152,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 			"success": false,
 			"message": "积分记录创建失败",
 		})
+		return
 	}
 	// 生成图片并传递用户名
 	imageUrl, err := GenerateImage(username)
@@ -177,7 +181,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 		"code":      200,
 		"success":   true,
 		"image_url": imageUrl,
-		"msg":       msg,
+		"message":   msg,
 	})
 }
 
@@ -239,7 +243,7 @@ func SavetoOss() (string, error) {
 	// 示例操作：上传文件。
 	filetime := time.Now().Format("2006-01-02 15:04:05")
 	encodedPrompt := url.QueryEscape(imageParaments.Prompt)
-	objectName := "generate/" + encodedPrompt + "-" + filetime + ".png"
+	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/generate-" + encodedPrompt + "-" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {

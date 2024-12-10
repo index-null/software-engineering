@@ -109,7 +109,6 @@ func InitTestUser() error {
 	if result.Error == nil {
 		log.Printf("User already exists")
 		user.Score = 10000
-		user.Password = "c4ca4238a0b923820dcc509a6f75849b"
 		if result := tx.Save(&user); result.Error != nil {
 			log.Printf("Failed to update user score: %v", result.Error)
 			return result.Error
@@ -122,7 +121,7 @@ func InitTestUser() error {
 	user = user2.UserInformation{
 		Email:      "root@example.com",
 		UserName:   "root",
-		Password:   "098f6bcd4621d373cade4e832627b4f6", //testpassword
+		Password:   "c4ca4238a0b923820dcc509a6f75849b", //111111
 		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
 		Score:      10000,
 	}

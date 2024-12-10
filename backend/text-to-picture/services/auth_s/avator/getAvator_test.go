@@ -129,7 +129,7 @@ func TestGetAvator_Success(t *testing.T) {
 	expectedResponse := AvatorResponse{
 		Code: Success,
 		Msg:  "获取头像成功",
-		Data: "1234567890", //根据自己数据库已有的用户
+		Data: "czh", //根据自己数据库已有的用户
 	}
 	var actualResponse AvatorResponse
 	json.Unmarshal(w.Body.Bytes(), &actualResponse)
@@ -216,7 +216,7 @@ func TestGetAvator_ExpiredToken(t *testing.T) {
 
 	// 创建一个过期的Token
 	claims := &middlewire.Claims{
-		Username: "testuser",
+		Username: "czh1",
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(-time.Hour).Unix(), // 设置过期时间
 		},

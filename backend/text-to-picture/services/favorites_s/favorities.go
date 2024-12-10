@@ -122,7 +122,9 @@ func DeleteFavoritedImage(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})
 				return
 			}
-			imageInfo, err = image_r.GetFavoritedImageById(d.DB, id)
+			var imageInfo1 *i.FavoritedImages
+			imageInfo1, err = image_r.GetFavoritedImageById(d.DB, imageInfo.ID)
+			imageInfo.Picture = imageInfo1.Picture
 		}
 
 	} else {
@@ -160,7 +162,7 @@ func DeleteFavoritedImage(c *gin.Context) {
 	}
 
 	// 取消收藏
-	err = image_r.DeleteFavoritedImage(d.DB, username.(string), imageInfo.Picture, imageInfo.Create_time)
+	err = image_r.DeleteFavoritedImage(d.DB, username.(string), imageInfo.Picture)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "取消图像收藏失败", "error": err.Error()})
 		return
