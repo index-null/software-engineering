@@ -109,7 +109,7 @@ func main() {
 		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 
 		auth.PUT("/user/update", user_up.UpdateUser)                         // 更新当前用户信息(拒绝改用户名)
-		auth.DELETE("/user/delete", user_d.DeleteUserByName) // 删除指定用户(?username=)
+		auth.DELETE("/user/deleteOne", user_d.DeleteUserByName) // 删除指定用户(?username=)
 
 		auth.DELETE("/image/deleteOne", image_d.DeleteOneImage)     // 删除单个图像(?url=)
 		auth.DELETE("/image/deleteByUser", image_d.DeleteUserImages) // 删除指定用户的所有图像(?username=)

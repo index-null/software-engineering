@@ -8,7 +8,7 @@ import (
 	"os"
 	image2 "text-to-picture/models/image"
 	user2 "text-to-picture/models/user"
-
+	"path/filepath"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -145,8 +145,8 @@ func InitTestUser() error {
 		return result.Error
 	}
 
-	filePath := "assets\\examples\\images\\image_urls.txt"
-	file, err := os.Open(filePath)
+	ImgfilePath := filepath.Join("assets", "examples", "images", "image_urls.txt")
+	file, err := os.Open(ImgfilePath)
 	if err != nil {
 		log.Printf("Failed to open file: %v", err)
 		return err

@@ -1,55 +1,105 @@
-包说明
-1. main.go程序入口用于初始化各个模块并启动服务。
-2. api/
-API 层
+# 包说明
 
-处理所有的 HTTP 请求和响应。
-定义与前端交互的 RESTful API 路由，处理用户请求并将请求转发到服务层。
-定义了三个接口分别是：auth——认证，history——查询历史记录，generate——生成图
-3. models/
-数据模型层
+## 1. main.go
+- **程序入口**：用于初始化各个模块并启动服务。
 
-定义数据库中使用的所有实体模型和结构体。
-该层负责将数据库中的数据映射到 Go 语言的结构体中（ORM）。
-示例文件：
-init:初始化
-image：建image表
-user：用户表
-repository/
-数据持久化层
-负责与数据库的交互，进行数据的存储、更新、删除、查询等操作。
-该层会调用模型，并根据业务需求编写具体的数据库查询逻辑。
+## 2. api/
+- **API 层**：
+  - 处理所有的 HTTP 请求和响应。
+  - 定义与前端交互的 RESTful API 路由，处理用户请求并将请求转发到服务层。
+  - 定义了三个接口：
+    - `auth`：认证
+    - `history`：查询历史记录
+    - `generate`：生成图
 
-5. services/
-业务逻辑层
-该层包含系统的核心业务逻辑。
-接收来自 api/ 层的请求，调用 repository/ 层来操作数据库，并返回结果。
-示例文件：
-对应api层里的三个接口，在这里实现其逻辑
-6. config/
-配置层
+## 3. models/
+- **数据模型层**：
+  - 定义数据库中使用的所有实体模型和结构体。
+  - 该层负责将数据库中的数据映射到 Go 语言的结构体中（ORM）。
+  - **示例文件**：
+    - `init`：初始化
+    - `image`：建 image 表
+    - `user`：用户表
 
-存储应用程序的配置文件（如数据库连接信息、API 密钥等）。
-负责读取和管理项目的全局配置参数。
-（方便修改程序信息，昨晚建漏了这个包，没事全部写完再加也可以哈哈）
-7. utils/
-工具层
+## 4. repository/
+- **数据持久化层**：
+  - 负责与数据库的交互，进行数据的存储、更新、删除、查询等操作。
+  - 该层会调用模型，并根据业务需求编写具体的数据库查询逻辑。
 
-提供常用的工具类函数和公共方法，这些工具通常会被多个模块调用。
-该层可以包含日志工具、错误处理工具、加密工具等。
-示例文件：
-我想到的工具就jwt生成密码的那个hash，还有response
-8. middleware/
-中间件层
-处理请求生命周期中的中间件逻辑，如认证、日志、跨域请求处理等。
-中间件通常用于拦截和处理 HTTP 请求的预处理。
-示例文件：
-jwt：登录要用到的登录验证中间件他会返回一个token用于身份验证登录
-9. docs/
-文档
+## 5. services/
+- **业务逻辑层**：
+  - 该层包含系统的核心业务逻辑。
+  - 接收来自 `api/` 层的请求，调用 `repository/` 层来操作数据库，并返回结果。
+  - **示例文件**：
+    - 对应 `api` 层里的三个接口，在这里实现其逻辑
 
-项目的文档存放处，包含API文档、架构图、使用说明等。
-该目录帮助开发者和使用者理解项目的功能和使用方法。（我们好像没有，先建着吧）
+## 6. config/
+- **配置层**：
+  - 存储应用程序的配置文件（如数据库连接信息、API 密钥等）。
+  - 负责读取和管理项目的全局配置参数。
+  - **备注**：方便修改程序信息，昨晚建漏了这个包，没事全部写完再加也可以哈哈
+
+## 7. utils/
+- **工具层**：
+  - 提供常用的工具类函数和公共方法，这些工具通常会被多个模块调用。
+  - 该层可以包含日志工具、错误处理工具、加密工具等。
+  - **示例文件**：
+    - `jwt`：生成密码的 hash
+    - `response`：响应处理
+
+## 8. middleware/
+- **中间件层**：
+  - 处理请求生命周期中的中间件逻辑，如认证、日志、跨域请求处理等。
+  - 中间件通常用于拦截和处理 HTTP 请求的预处理。
+  - **示例文件**：
+    - `jwt`：登录要用到的登录验证中间件，他会返回一个 token 用于身份验证登录
+
+## 9. docs/
+- **文档**：
+  - 项目的文档存放处，包含 API 文档、架构图、使用说明等。
+  - 该目录帮助开发者和使用者理解项目的功能和使用方法。
+  - **备注**：我们好像没有，先建着吧
+
+---
+# 示例接口规范
+### 创建用户
+
+### 功能
+
+创建一个新用户
+
+#### URL地址
+
+`POST localhost:8080/api/v1/users`
+
+
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token",
+}
+```
+
+#### 请求体
+
+```json
+{
+  "username": "string",
+  "password": "string",
+  "email": "user@example.com"
+}
+```
+
+#### 响应
+
+| 响应码 | 描述         | 示例响应体                                            |
+| ------ | ------------ | ----------------------------------------------------- |
+| 201    | 用户创建成功 | `{"message": "User created successfully","code":201}` |
+| 400    | 请求参数错误 | `{"error": "Invalid request parameters"}`             |
+| 409    | 用户名已存在 | `{"error": "Username already exists"}`                |
+---
 ### 开发内容
 #### 管理员账号：
 - username:root
@@ -97,29 +147,29 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
         "password": "sssssss"
      }
    - 响应格式：
-   - ```json
-     code：400（StatusBadRequest）,
-     message："请求数据格式错误"
-   - ```json
-     code：401（Unauthorized）,
-     message: "用户不存在"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "数据库查询错误"
-   - ```json
-     code：401（Unauthorized）,
-     message: "密码错误"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "生成 token 错误"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "登录时更新用户 token 失败",
-     "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
-   - ```json
-     code：200（StatusOK）,
-     message："登录成功",
-     token: "fake-jwt-token"
+    - ```json
+      code：400（StatusBadRequest）,
+      message："请求数据格式错误"
+    - ```json
+      code：401（Unauthorized）,
+      message: "用户不存在"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "数据库查询错误"
+    - ```json
+      code：401（Unauthorized）,
+      message: "密码错误"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "生成 token 错误"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "登录时更新用户 token 失败",
+      "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
+    - ```json
+      code：200（StatusOK）,
+      message："登录成功",
+      token: "fake-jwt-token"
      
 
 
@@ -127,80 +177,79 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
    - 用户每次生成消耗20积分
    - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-   - 文生图url：http://localhost:8080/auth/generate
-   - 参数格式：
-   - ```json
-     请求头携带一个"Authorization"的token
-     参数：
-     {
-       "prompt": "string",
-       "width": 220,
-       "height": 200,,
-       "steps": 100
-       "sampling_method": "DDIM",
-       "seed": "string"
-     }
+    - 文生图url：http://localhost:8080/auth/generate
+    - 参数格式：
+    - ```json
+      请求头携带一个"Authorization"的token
+      参数：
+      {
+        "prompt": "string",
+        "width": 220,
+        "height": 200,,
+        "steps": 100
+        "sampling_method": "DDIM",
+        "seed": "string"
+      }
     - 响应格式：
-   - ```json
-     code：200（StatusOK）,
-     image_url: "New_Image_Url" 
-     message："用户当前积分为",
-     success: true
-   - ```json
-     code：400（StatusBadRequest）,
-     message："缺乏提示词",
-		 success: false
-   - ```json
-     code：400（StatusBadRequest）,
-     message："宽度不在范围内",
-		 success: false
-   - ```json
-     code：400（StatusBadRequest）,
-     message："高度不在范围内",
-		 success: false
-   - ```json
-     code：400（StatusBadRequest）,
-		 success: false,
-     message："步数不在范围内"
-   - ```json
-     code：400（StatusBadRequest）,
-		 success: false,
-     message："采样方法不在范围内"
-   - ```json
-     code：400（StatusBadRequest）,
-		 success: false,
-     message："缺乏种子"
-   - ```json
-     code：401（StatusUnauthorized）,
-     message："请求头中缺少Token"
-   - ```json
-     code：401（StatusUnauthorized）,
-     message："无效的Token"
-   - ```json
-     code：401（StatusUnauthorized）,
-		 success: false,
-     message："未找到用户信息"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户信息查询失败"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户积分不足"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户积分更新失败"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："积分记录创建失败"
-   - ```json
-     code：500（StatusInternalServerError）,
-     success：false,
-     message："图片生成失败"
-  
+    - ```json
+      code：200（StatusOK）,
+      image_url: "New_Image_Url" 
+      message："用户当前积分为",
+      success: true
+    - ```json
+      code：400（StatusBadRequest）,
+      message："缺乏提示词",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      message："宽度不在范围内",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      message："高度不在范围内",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："步数不在范围内"
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："采样方法不在范围内"
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："缺乏种子"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success: false,
+      message："未找到用户信息"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户信息查询失败"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户积分不足"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户积分更新失败"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："积分记录创建失败"
+    - ```json
+      code：500（StatusInternalServerError）,
+      success：false,
+      message："图片生成失败"
 
 
 3. **个人信息界面**
@@ -570,7 +619,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
     - 响应格式：
     - ```json
-<<<<<<< HEAD
       code：200（StatusOK）,
       message："用户当前积分"
     - ```json
@@ -591,74 +639,73 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       code：401（StatusUnauthorized）,
       success：false,
       message："用户积分更新失败"
-=======
-     Code：200（StatusOK）,
-      Msg："用户当前积分"
-    - ```json
-     Code：401（StatusUnauthorized）,
-      Msg："请求头中缺少Token"
-    - ```json
-     Code：401（StatusUnauthorized）,
-      Msg："无效的Token"
-    - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："用户信息查询失败"
-    - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："积分记录创建失败"
-    - ```json
-     Code：401（StatusUnauthorized）,
-      Success：false,
-      Msg："用户积分更新失败"
->>>>>>> d25e764a1a030b0e8f0ad7462947cc6a9206a2dd
     
 7. **token校验功能**
-    - 校验用户的token
+  - 校验用户的token
+    - url：http://localhost:8080/checkToken
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
-
+    
     - 响应格式：
     - ```json
-<<<<<<< HEAD
       code：StatusUnauthorized(401)
       msg："令牌格式不正确"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌过期或未激活"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌无法处理"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌无效"
-     - ```json
-       code：StatusOK(200)
-       msg："令牌有效"
-       data: tokenStr
-=======
-     Code：StatusUnauthorized(401)
-      Msg："令牌格式不正确"
-     - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌过期或未激活"
-     - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌无法处理"
-     - ```json
-     Code：StatusUnauthorized(401)
-      Msg："令牌无效"
-     - ```json
-     Code：StatusOK(200)
-      Msg："令牌有效"
-      Data: tokenStr
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌过期或未激活"
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌无法处理"
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌无效"
+      data: null
+    - ```json
+      code：StatusOK(200)
+      msg："令牌有效"
+      data: tokenStr
 
+8. **管理员操作**
+  - 1、删除某个用户
+    - url：http://localhost:8080/auth/user/deleteOne
+    - 参数格式：?username=
+    - ```json
+      请求头携带一个"Authorization"的管理员token
+      
+    - 响应格式：
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success: false,
+      message："未找到用户信息"
+    - ```json
+      code：400（StatusBadRequest）,
+      message："非root用户，不可删除其他某个用户"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message："查询用户是否存在失败",
+      error: 
+    - ```json
+      code：400（StatusNotFound）,
+      message："用户不存在"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message："删除用户失败",
+      error:
+    - ```json
+      code：200,
+      message："成功删除用户：（用户名）"
 
->>>>>>> d25e764a1a030b0e8f0ad7462947cc6a9206a2dd
-
-8. **数据库设计**
+9. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

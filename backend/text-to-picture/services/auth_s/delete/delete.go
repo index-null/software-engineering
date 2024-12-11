@@ -27,7 +27,7 @@ func DeleteUserByName(c *gin.Context) {
 	// 非root用户，不能删除其他某个用户
 	if userName.(string) != "root" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
+			//"success": false,
 			"message": "非root用户，不可删除其他某个用户",
 		})
 		return
@@ -52,5 +52,5 @@ func DeleteUserByName(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "成功删除用户" + username})
+	c.JSON(200, gin.H{"message": "成功删除用户：" + username})
 }
