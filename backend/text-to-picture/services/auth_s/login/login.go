@@ -3,6 +3,7 @@ package auth_s
 import (
 	"errors"
 	"log"
+	"fmt"
 	"net/http"
 	middlewire "text-to-picture/middlewire/jwt"
 	models "text-to-picture/models/init"
@@ -82,6 +83,7 @@ func Login(c *gin.Context) {
 			"message": "请求数据格式错误"})
 		return
 	}
+	fmt.Println(input.Password)
 
 	// 查找用户
 	user, err := user_r.GetUserByName(models.DB, input.Name)

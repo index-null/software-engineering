@@ -10,15 +10,16 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	i "text-to-picture/models/image"
 	db "text-to-picture/models/init"
 	u "text-to-picture/models/user"
 
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
+
 	"github.com/gin-gonic/gin"
-    //文件路径操作包
+	//文件路径操作包
 	"path/filepath"
 )
 

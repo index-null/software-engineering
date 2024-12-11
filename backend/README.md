@@ -193,7 +193,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      success：false,
      message："用户积分更新失败"
    - ```json
-<<<<<<< HEAD
      code：401（StatusUnauthorized）,
      success：false,
      message："积分记录创建失败"
@@ -202,11 +201,6 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
      success：false,
      message："图片生成失败"
   
-=======
-     Code：500（StatusInternalServerError）,
-     Msg："图片生成失败"
-
->>>>>>> d25e764a1a030b0e8f0ad7462947cc6a9206a2dd
 
 
 3. **个人信息界面**
