@@ -611,13 +611,19 @@
       message: "取消图像收藏成功"
 
 6. **签到增加积分接口**
-    - GET方法，用户每次签到增加100积分，并保存记录
-    - url：http://localhost:8080/auth/score
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
+      ### 功能
+    - 用户每次签到增加100积分，并保存记录
+    #### URL地址
+    - `GET http://localhost:8080/auth/score`
+    #### 请求头
+    
+    ```json
+    {
+      "Authorization": "your_jwt_token",
+    }
+    ```
 
-    - 响应格式：
+    #### 响应
     - ```json
       code：200（StatusOK）,
       message："用户当前积分"
@@ -641,13 +647,26 @@
       message："用户积分更新失败"
     
 7. **token校验功能**
-  - 校验用户的token
-    - url：http://localhost:8080/checkToken
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
+      ### 功能
+    - 校验用户的token
+    #### URL地址
+    - `GET http://localhost:8080/checkToken`
+    #### 请求头
     
-    - 响应格式：
+    ```json
+    {
+      "Authorization": "your_jwt_token",
+    }
+    ```
+    #### 请求体
+    ```json
+    {
+      "code": "int",
+      "msg": "string",
+      "data": "interface{}"
+    }
+    ```
+    #### 响应
     - ```json
       code：StatusUnauthorized(401)
       msg："令牌格式不正确"
