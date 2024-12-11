@@ -65,10 +65,10 @@ export default {
       return this.$store.state.appName;
     },
     avatarUrl() {
-      return localStorage.getItem('avatarUrl') || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png';
+      return localStorage.getItem('avatarUrl') || 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412101217874.png';
     },
     username() {
-      return localStorage.getItem('username') || 'Chuhsing';
+      return localStorage.getItem('username') || '未知用户';
     }
   },
   methods: {
@@ -81,6 +81,16 @@ export default {
       this.activeRoute = to.path;
     }
   },
+  created() {
+    this.$axios.get('http://localhost:8080/auth/user/info').then(response => {
+      localStorage.setItem('avatarUrl', response.data.user.avatar_url);
+      localStorage.setItem('username', response.data.user.username);
+      this.$message.success('用户信息获取成功');
+    }).catch(error => {
+      this.$message.error('获取用户信息失败');
+      console.error('获取用户信息失败:', error);
+    });
+  }
 }
 </script>
 <style scoped>

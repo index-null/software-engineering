@@ -58,7 +58,7 @@ func UpdateUserInfo(db *gorm.DB, username string, updates map[string]interface{}
 	}
 
 	// 验证更新的字段
-	if updateStruct.Username != nil  {
+	if updateStruct.Username != nil {
 		return fmt.Errorf("用户名不可修改")
 	}
 	if updateStruct.Email != nil && *updateStruct.Email == "" {
@@ -71,10 +71,23 @@ func UpdateUserInfo(db *gorm.DB, username string, updates map[string]interface{}
 		return fmt.Errorf("邮箱格式不正确")
 	}
 
-	// 使用 Updates 方法更新指定字段
-	if err := db.Model(&user).Updates(updateStruct).Error; err != nil {
+	fmt.Printf("准备更新的用户信息: %+v\n", updateStruct)
+
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+		tx.Commit() // 确保在正常情况下提交事务
+	}()
+
+	// 执行数据库操作
+	if err := tx.Model(&user).Updates(updateStruct).Error; err != nil {
+		tx.Rollback()
 		return fmt.Errorf("更新用户信息失败: %v", err)
 	}
+
+	tx.Commit()
 
 	return nil
 }

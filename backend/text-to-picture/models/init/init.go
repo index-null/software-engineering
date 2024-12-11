@@ -8,7 +8,7 @@ import (
 	"os"
 	image2 "text-to-picture/models/image"
 	user2 "text-to-picture/models/user"
-
+	"path/filepath"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS UserScore (
     id SERIAL PRIMARY KEY,
 	username VARCHAR(30) NOT NULL,
     record TEXT,
-	create_time TIMESTAMP DEFAULT NOW()
+	create_time TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (username) REFERENCES UserInformation(username) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS ImageInformation (
     id SERIAL PRIMARY KEY,
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS ImageInformation (
     picture TEXT UNIQUE,
     likecount INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (userName) REFERENCES UserInformation(username)
+    FOREIGN KEY (userName) REFERENCES UserInformation(username) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS ImageLike (
     id SERIAL PRIMARY KEY,
@@ -45,7 +46,8 @@ CREATE TABLE IF NOT EXISTS ImageLike (
     username TEXT,
     num INT DEFAULT 0,
     create_time TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (picture) REFERENCES ImageInformation(picture)
+	FOREIGN KEY (username) REFERENCES UserInformation(username) ON DELETE CASCADE,
+    FOREIGN KEY (picture) REFERENCES ImageInformation(picture) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS FavoritedImage (
@@ -53,8 +55,10 @@ CREATE TABLE IF NOT EXISTS FavoritedImage (
 	userName VARCHAR(30) NOT NULL,
 	picture TEXT,
 	create_time TIMESTAMP DEFAULT NOW(),
-	FOREIGN KEY (userName) REFERENCES UserInformation(username)
+	FOREIGN KEY (userName) REFERENCES UserInformation(username) ON DELETE CASCADE,
+    FOREIGN KEY (picture) REFERENCES ImageInformation(picture) ON DELETE CASCADE
 );
+
 
 `
 
@@ -99,6 +103,7 @@ func InitDB() error {
 
 	return nil
 }
+
 func InitTestUser() error {
 	tx := DB.Begin()
 	if tx.Error != nil {
@@ -108,6 +113,7 @@ func InitTestUser() error {
 	result := DB.Where("username=?", "root").First(&user)
 	if result.Error == nil {
 		log.Printf("User already exists")
+		fmt.Println("User already exists")
 		user.Score = 10000
 		if result := tx.Save(&user); result.Error != nil {
 			log.Printf("Failed to update user score: %v", result.Error)
@@ -139,8 +145,8 @@ func InitTestUser() error {
 		return result.Error
 	}
 
-	filePath := "assets\\examples\\images\\image_urls.txt"
-	file, err := os.Open(filePath)
+	ImgfilePath := filepath.Join("assets", "examples", "images", "image_urls.txt")
+	file, err := os.Open(ImgfilePath)
 	if err != nil {
 		log.Printf("Failed to open file: %v", err)
 		return err

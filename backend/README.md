@@ -147,29 +147,29 @@
         "password": "sssssss"
      }
    - 响应格式：
-   - ```json
-     code：400（StatusBadRequest）,
-     message："请求数据格式错误"
-   - ```json
-     code：401（Unauthorized）,
-     message: "用户不存在"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "数据库查询错误"
-   - ```json
-     code：401（Unauthorized）,
-     message: "密码错误"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "生成 token 错误"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message: "登录时更新用户 token 失败",
-     "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
-   - ```json
-     code：200（StatusOK）,
-     message："登录成功",
-     token: "fake-jwt-token"
+    - ```json
+      code：400（StatusBadRequest）,
+      message："请求数据格式错误"
+    - ```json
+      code：401（Unauthorized）,
+      message: "用户不存在"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "数据库查询错误"
+    - ```json
+      code：401（Unauthorized）,
+      message: "密码错误"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "生成 token 错误"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message: "登录时更新用户 token 失败",
+      "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
+    - ```json
+      code：200（StatusOK）,
+      message："登录成功",
+      token: "fake-jwt-token"
      
 
 
@@ -177,82 +177,79 @@
    - 用户每次生成消耗20积分
    - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-   - 文生图url：http://localhost:8080/auth/generate
-   - 参数格式：
-   - ```json
-     请求头携带一个"Authorization"的token
-     参数：
-     {
-       "prompt": "string",
-       "width": 220,
-       "height": 200,,
-       "steps": 100
-       "sampling_method": "DDIM",
-       "seed": "string"
-     }
+    - 文生图url：http://localhost:8080/auth/generate
+    - 参数格式：
+    - ```json
+      请求头携带一个"Authorization"的token
+      参数：
+      {
+        "prompt": "string",
+        "width": 220,
+        "height": 200,,
+        "steps": 100
+        "sampling_method": "DDIM",
+        "seed": "string"
+      }
     - 响应格式：
-   - ```json
-     code：200（StatusOK）,
-     image_url: "New_Image_Url" 
-     message："用户当前积分为",
-     success: true
-   - ```json
-     code：400（StatusBadRequest）,
-     message："缺乏提示词",
-     success: false
-   - ```json
-     code：400（StatusBadRequest）,
-     message："宽度不在范围内",
-		 success: false
-   - ```json
-     code：400（StatusBadRequest）,
-     message："高度不在范围内",
-		 success: false
-   - ```json
-     code：400（StatusBadRequest）,
-     success: false,
-     message："步数不在范围内"
-   - ```json
-     code：400（StatusBadRequest）,
-     success: false,
-     message："采样方法不在范围内"
-   - ```json
-     code：400（StatusBadRequest）,
-     success: false,
-     message："缺乏种子"
-   - ```json
-     code：401（StatusUnauthorized）,
-     message："请求头中缺少Token"
-   - ```json
-     code：401（StatusUnauthorized）,
-     message："无效的Token"
-   - ```json
-     code：401（StatusUnauthorized）,
-		 success: false,
-     message："未找到用户信息"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户信息查询失败"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户积分不足"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："用户积分更新失败"
-   - ```json
-     code：401（StatusUnauthorized）,
-     success：false,
-     message："积分记录创建失败"
-   - ```json
-     code：500（StatusInternalServerError）,
-     success：false,
-     message："图片生成失败"
-   - ```json
-     code：500（StatusInternalServerError）,
-     message："图片生成失败"
+    - ```json
+      code：200（StatusOK）,
+      image_url: "New_Image_Url" 
+      message："用户当前积分为",
+      success: true
+    - ```json
+      code：400（StatusBadRequest）,
+      message："缺乏提示词",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      message："宽度不在范围内",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      message："高度不在范围内",
+      success: false
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："步数不在范围内"
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："采样方法不在范围内"
+    - ```json
+      code：400（StatusBadRequest）,
+      success: false,
+      message："缺乏种子"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success: false,
+      message："未找到用户信息"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户信息查询失败"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户积分不足"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："用户积分更新失败"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success：false,
+      message："积分记录创建失败"
+    - ```json
+      code：500（StatusInternalServerError）,
+      success：false,
+      message："图片生成失败"
 
 
 3. **个人信息界面**
@@ -673,21 +670,61 @@
     - ```json
       code：StatusUnauthorized(401)
       msg："令牌格式不正确"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌过期或未激活"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌无法处理"
-     - ```json
-       code：StatusUnauthorized(401)
-       msg："令牌无效"
-     - ```json
-       code：StatusOK(200)
-       msg："令牌有效"
-       data: tokenStr
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌过期或未激活"
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌无法处理"
+      data: null
+    - ```json
+      code：StatusUnauthorized(401)
+      msg："令牌无效"
+      data: null
+    - ```json
+      code：StatusOK(200)
+      msg："令牌有效"
+      data: tokenStr
 
-8. **数据库设计**
+8. **管理员操作**
+  - 1、删除某个用户
+    - url：http://localhost:8080/auth/user/deleteOne
+    - 参数格式：?username=
+    - ```json
+      请求头携带一个"Authorization"的管理员token
+      
+    - 响应格式：
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success: false,
+      message："未找到用户信息"
+    - ```json
+      code：400（StatusBadRequest）,
+      message："非root用户，不可删除其他某个用户"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message："查询用户是否存在失败",
+      error: 
+    - ```json
+      code：400（StatusNotFound）,
+      message："用户不存在"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message："删除用户失败",
+      error:
+    - ```json
+      code：200,
+      message："成功删除用户：（用户名）"
+
+9. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

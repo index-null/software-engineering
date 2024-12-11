@@ -3,11 +3,7 @@
         <el-button type="primary" icon="el-icon-delete" class="delete-button">批量管理</el-button>
 
         <!-- 显示图片 -->
-<<<<<<< HEAD
-        <div v-if="images.length > 0" class="image-gallery-container">
-=======
         <div v-if="images &&images.length" class="image-gallery-container">
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
             <div v-for="image in images" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id"
                 @mouseleave="hoveredImage = null">
                 <img :src="image.url" :alt="image.name" class="image">
@@ -20,11 +16,7 @@
 
         <!-- 提示没有收藏 -->
         <div v-else>
-<<<<<<< HEAD
-            <img :src="require('@/assets/nofavorites.png')" >
-=======
             <img :src="require('@/assets/nofavorites.png')" alt="暂无收藏">
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
             <h1>暂无收藏</h1>
         </div>
     </div>
@@ -47,23 +39,6 @@ export default {
     methods: {
         // 获取用户收藏的图片
         async getFavoritedImages() {
-<<<<<<< HEAD
-            try {      
-                const token=this.token;
-                if (!token) {
-                    throw new Error('Token not found in localStorage');
-                }
-                console.log(token);
-                const response =await axios.get('http://localhost:8080/auth/user/favoritedimages', {
-                    headers: {
-                        Authorization:  this.token,  // 使用从 localStorage 获取的 token
-                        
-                    },
-                });
-                this.images = //获取response中每一个image的url
-                
-
-=======
             try {
                 const response = await fetch("http://localhost:8080/auth/user/favoritedimages", {
                     method: 'GET',
@@ -80,34 +55,11 @@ export default {
                         isFavorite: true   
                 })
             });
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
             } catch (error) {
                 console.error('获取收藏的图片失败:', error.response?.data || error.message);
             }
         },
 
-<<<<<<< HEAD
-        // 收藏图像
-        async addFavoriteImage(imageId, imageUrl) {
-            try {
-                const response = await axios.post(
-                    'http://localhost:8080/auth/addFavoritedImage',
-                    { id: imageId, url: imageUrl },  // 只需传递 id 或 url
-                    {
-                        headers: {
-                            Authorization: `Bearer ${this.token}`,  // 携带 token
-                        },
-                    }
-                );
-                if (response.status === 200) {
-                    this.getFavoritedImages();  // 收藏成功后重新获取收藏列表
-                    this.$message.success('收藏图像成功');
-                }
-            } catch (error) {
-                console.error('收藏图像失败:', error.response?.data || error.message);
-            }
-        },
-=======
         // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
         // async addFavoriteImage(imageId, imageUrl) {
         //     try {
@@ -128,7 +80,6 @@ export default {
         //         console.error('收藏图像失败:', error.response?.data || error.message);
         //     }
         // },
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
 
         // 取消收藏图像
         async removeFavorite(image) {
@@ -136,11 +87,7 @@ export default {
                 const response = await axios.delete(
                     'http://localhost:8080/auth/deleteFavoritedImage', {
                     headers: {
-<<<<<<< HEAD
-                        Authorization: `Bearer ${this.token}`,
-=======
                         Authorization: this.token,
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
                     },
                     params: { id: image.id },  // 传递图像的收藏表id
                 }
