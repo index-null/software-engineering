@@ -124,18 +124,17 @@ func InitTestUser() error {
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		log.Printf("Failed to find user: %v", result.Error)
 		return result.Error
-	} else {
-		user = user2.UserInformation{
-			Email:      "root@example.com",
-			UserName:   "root",
-			Password:   "c4ca4238a0b923820dcc509a6f75849b", //111111
-			Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
-			Score:      10000,
-		}
-		if result := tx.Create(&user); result.Error != nil {
-			log.Printf("Failed to create user: %v", result.Error)
-			return result.Error
-		}
+	}
+	user = user2.UserInformation{
+		Email:      "root@example.com",
+		UserName:   "root",
+		Password:   "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a", //111111
+		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+		Score:      10000,
+	}
+	if result := tx.Create(&user); result.Error != nil {
+		log.Printf("Failed to create user: %v", result.Error)
+		return result.Error
 	}
 
 	userscore := user2.UserScore{

@@ -111,7 +111,7 @@ func main() {
 
 		auth.PUT("/user/update", user_up.UpdateUser)                         // 更新当前用户信息(拒绝改用户名)
 
-		auth.GET("/image/feature",image_f.FindByFeature)
+		auth.GET("/image/feature",image_f.FindByFeature)	//查询所有图像中或当前用户的图像中 图像的Prompt中包含所输入的（可多个）关键字的所有图像
 
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 

@@ -105,10 +105,11 @@
 - username:root
 - password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
 1. **登陆注册接口**
+   
    - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
    - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
    - jwt返回token用于登录验证
-   - 注册访问url：http://localhost:8080/register
+   - 注册访问url：post http://localhost:8080/register
    - 注册数据格式：
    - ```json
      {
@@ -136,10 +137,10 @@
             9、“插入用户表失败”
           )
         - ```json  
-          code: 200,
-		      message:  "注册成功",
-
-   - 登录访问url：http://localhost:8080/login
+	       code: 200,
+   	      message:  "注册成功",
+   
+   - 登录访问url：post http://localhost:8080/login
    - 登录数据格式：
    - ```json
      {
@@ -172,12 +173,11 @@
       token: "fake-jwt-token"
      
 
-
 2. **文生图接口**
    - 用户每次生成消耗20积分
    - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-    - 文生图url：http://localhost:8080/auth/generate
+  - 文生图url：(POST) http://localhost:8080/auth/generate
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
@@ -255,7 +255,7 @@
 3. **个人信息界面**
   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
   - 头像上传功能，获取功能set，get
-    - 修改头像url：http://localhost:8080/auth/setavator
+   - 修改头像url：(POST) http://localhost:8080/auth/setavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -274,7 +274,8 @@
       code: 200(Success),
       msg:  "头像更新成功",
       data: "newURL"
-    - 获取头像url：http://localhost:8080/auth/getavator
+
+  - 获取头像url：(GET) http://localhost:8080/auth/getavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -295,7 +296,7 @@
 
   - 用户信息查询
   - 查询当前登录用户的信息
-    - url: http:localhost:8080/auth/user/info
+    - url: (GET) http:localhost:8080/auth/user/info
     - 参数格式 
     - ```json
       请求头携带一个"Authorization"的token
@@ -323,7 +324,7 @@
       }
     
   - 查询所有用户信息
-    - url: http:localhost:8080/user/all
+    - url: (GET) http:localhost:8080/user/all
     - 参数格式：无
     - 响应格式
     - ```json
@@ -341,8 +342,8 @@
       ]
 
   - 更新当前登录用户的信息
-    - url: http:localhost:8080/auth/user/update
-    - 参数格式： （PUT方法）
+    - url: (PUT) http:localhost:8080/auth/user/update
+    - 参数格式： 
     - ```json
       请求头携带一个"Authorization"的token
       {
@@ -371,7 +372,7 @@
     - ```json
        code: 200,
        message: "用户信息更新成功"
-      
+    
     
 
 4. **文生图历史记录**
@@ -386,25 +387,23 @@
     - ```json
       code: StatusInternalServerError (500)
       message: "查询失败"
-      images: {
-        "images": [
-            {
-                "id": 1,
-                "username": "czh0",
-                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "picture": "generate/sun-2024-11-21 23:31:24.png",
-                "create_time": "2024-11-21T23:31:25.924231Z"
-            },
-            {
-              //……
-            },
-            //……
-        ]
-      }
+      images: [
+        {
+            "id": 66,
+            "username": "czh1",
+            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
+            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
+            "create_time": "2024-12-12T20:24:34.165272Z"
+        },
+        {
+          //……
+        },
+        //……
+      ]
 
 
   - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
-    - url: localhost:8080/auth/user/images/timeRange
+    - url: (GET) localhost:8080/auth/user/images/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
     - ```json
@@ -426,23 +425,22 @@
     - ```json
       code: StatusOK
       message: "查询图像列表成功", 
-      images: {
-        "images": [
-            {
-                "id": 1,
-                "username": "czh0",
-                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "picture": "generate/sun-2024-11-21 23:31:24.png",
-                "create_time": "2024-11-21T23:31:25.924231Z"
-            },
-            {
-              //……
-            },
-            //……
-        ]
-      }
+      images: [
+        {
+            "id": 66,
+            "username": "czh1",
+            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
+            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
+            "create_time": "2024-12-12T20:24:34.165272Z"
+        },
+        {
+          //……
+        },
+        //……
+      ]
+
   - 获取指定的某张图像
-    - url: localhost:8080/auth/image
+    - url: (GET) localhost:8080/auth/image
     - 参数格式：?username= 或?id= 或?url=
 
     - 响应格式：
@@ -461,16 +459,16 @@
       code: StatusOK
       message: "查询图像成功"
       image:  {
-                "id": 1,
-                "username": "czh0",
-                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "picture": "generate/sun-2024-11-21 23:31:24.png",
-                "create_time": "2024-11-21T23:31:25.924231Z"
+          "id": 66,
+          "username": "czh1",
+          "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
+          "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
+          "create_time": "2024-12-12T20:24:34.165272Z"
       }
 
 
   - 获取当前登录用户生成的所有图像
-    - url: localhost:8080/auth/user/images
+    - url: (GET) localhost:8080/auth/user/images
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
@@ -482,64 +480,62 @@
     - ```json
       code: StatusOK
       message: "获取用户的图像成功"
-      images: {
-        "images": [
-            {
-                "id": 1,
-                "username": "czh0",
-                "params": "Prompt: sun, Width: 400, Height: 400, Steps: 30, SamplingMethod: DDIM",
-                "picture": "generate/sun-2024-11-21 23:31:24.png",
-                "create_time": "2024-11-21T23:31:25.924231Z"
-            },
-            {
-              //……
-            },
-            //……
-        ]
-      }
-
-
-
-   - 点赞图片功能：
-   - url："localhost:8080/auth/like"
-   - 参数格式：
-   - ```json
-     请求头携带一个"Authorization"的token
+      images: [
         {
-            “url":,//图像url
-        }
-   - 响应格式：
-   - ```json
-     "code":  400,
-     "error": "Missing image URL"
-   - ```json
-     "code":  409,
-     "error": "用户已经点赞过该图片"
-   - ```json
-     "code":  500,
-     "error": “返回获取赞数错误的error"
-   - ```json
-     "code":  500,
-     "error": "点赞数据库开始出错"
-   - ```json
-     "current_likes": 当前赞数,
-     “message": "Image liked successfully"
-   - 按照参数排序，可以列出所需查询参数的查询信息
-   - 待定   
+            "id": 66,
+            "username": "czh1",
+            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
+            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
+            "create_time": "2024-12-12T20:24:34.165272Z"
+        },
+        {
+          //……
+        },
+        //……
+      ]
+
+
+
+  - 点赞图片功能：
+    - url：(POST) "localhost:8080/auth/like"
+    - 参数格式：
+    - ```json
+      请求头携带一个"Authorization"的token
+          {
+              "url":,//图像url
+          }
+    - 响应格式：
+    - ```json
+      "code":  400,
+      "error": "Missing image URL"
+    - ```json
+      "code":  409,
+      "error": "用户已经点赞过该图片"
+    - ```json
+      "code":  500,
+      "error": “返回获取赞数错误的error"
+    - ```json
+      "code":  500,
+      "error": "点赞数据库开始出错"
+    - ```json
+      "current_likes": 当前赞数,
+      “message": "Image liked successfully"
+    - 按照参数排序，可以列出所需查询参数的查询信息
+    - 待定   
 
 5. **图片收藏界面**
   - 查询展示出用户的收藏图片
   - 获取当前用户收藏的图像
-    - url: localhost:8080/auth/user/favoritedimages
-    - 参数格式：（GET方法）
+    - url: (GET) localhost:8080/auth/user/favoritedimages
+    - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
     - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
 
   - 收藏图像
   - 收藏指定图像
-    - url：localhost:8080/auth/addFavoritedImage
-    - 参数格式：（POST方法）
+    - url：(POST) localhost:8080/auth/addFavoritedImage
+    - 参数格式:
     - ```json
       请求头携带一个"Authorization"的token
       {
@@ -578,7 +574,7 @@
 
   - 取消图像收藏
   - 取消指定图像的收藏
-    - url：localhost:8080/auth/deleteFavoritedImage
+    - url：(DELETE) localhost:8080/auth/deleteFavoritedImage
     - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
     - ```json
       请求头携带一个"Authorization"的token
@@ -688,9 +684,48 @@
       msg："令牌有效"
       data: tokenStr
 
-8. **管理员操作**
+8. **搜索功能**
+  ### 功能
+    - 查询所有图像中或当前用户的图像中 图像的Prompt中包含所输入的关键字（可多个）的所有图像
+    #### URL地址
+    - `GET http://localhost:8080/auth/image/feature`
+    #### 参数格式
+      （可选isOwn= &）?feature= & ?feature= ……（可多个feature）
+    
+    #### 响应
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："请求头中缺少Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      message："无效的Token"
+    - ```json
+      code：401（StatusUnauthorized）,
+      success: false,
+      message："未找到用户信息"
+    - ```json
+      code：500（StatusInternalServerError）,
+      message："根据关键字查询图片失败",
+      error: err.Error()
+    - ```json
+      code：200,
+      images: [
+        {
+            "id": 66,
+            "username": "czh1",
+            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
+            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
+            "create_time": "2024-12-12T20:24:34.165272Z"
+        },
+        {
+          //……
+        },
+        //……
+      ]
+
+9. **管理员操作**
   - 1、删除某个用户
-    - url：http://localhost:8080/auth/root/deleteOneUser
+    - url：(DELETE) http://localhost:8080/auth/root/deleteOneUser
     - 参数格式：?username= (DELETE)
     - ```json
       请求头携带一个"Authorization"的管理员token
@@ -724,7 +759,7 @@
       code：200,
       message："成功删除用户：（用户名）"
 
-9. **数据库设计**
+10. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture
