@@ -171,7 +171,7 @@ export default {
           const response = await axios.post('http://localhost:8080/login', formData);
           if (response.data.code === 200) {
             localStorage.setItem('token', response.data.token);
-           
+            
             this.$message.success('登录成功');
             this.$router.push('/main');
           } 
