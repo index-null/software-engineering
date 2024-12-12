@@ -685,79 +685,75 @@
       data: tokenStr
 
 8. **搜索功能**
-  ### 功能
-    - 查询所有图像中或当前用户的图像中 图像的Prompt中包含所输入的关键字（可多个）的所有图像
-    #### URL地址
-    - `GET http://localhost:8080/auth/image/feature`
-    #### 参数格式
-      （可选isOwn= &）?feature= & ?feature= ……（可多个feature）
-    
-    #### 响应
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："请求头中缺少Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："无效的Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success: false,
-      message："未找到用户信息"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message："根据关键字查询图片失败",
-      error: err.Error()
-    - ```json
-      code：200,
-      images: [
-        {
-            "id": 66,
-            "username": "czh1",
-            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
-            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
-            "create_time": "2024-12-12T20:24:34.165272Z"
-        },
-        {
-          //……
-        },
-        //……
-      ]
+### 搜素图像
+### 功能
+  根据前端传来的关键字（可多个）查询Prompt中包含至少一个关键字的图像。
+  如果?isOwn=true，则只查询当前登录用户的。
+
+#### URL地址
+
+`(DELETE) http://localhost:8080/auth//image/feature`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token",
+}
+```
+
+#### 请求体
+无。
+通过查询参数:   ?feature=……&feature=……（可多个feature）（可选&isOwn=true ）
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                                                              |
+| ------ | ----------------- | -------------------------------------------------------------------------------------- |
+| 401    | 请求头中缺少Token" | `{"message"："请求头中缺少Token"}`                                                       |
+| 401    | 无效的Token       | `{"message"："无效的Token"}`                                                             |
+| 401    | 未找到用户信息     | `{"message"："未找到用户信息"}`                                                          |
+| 500    | 根据关键字查询失败 | `{"message"："根据关键字查询失败"}`                                                       |
+| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "create_time":,},{……},…………]}`  |
+---
+  
 
 9. **管理员操作**
-  - 1、删除某个用户
-    - url：(DELETE) http://localhost:8080/auth/root/deleteOneUser
-    - 参数格式：?username= (DELETE)
-    - ```json
-      请求头携带一个"Authorization"的管理员token
-      
-    - 响应格式：
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："请求头中缺少Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："无效的Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success: false,
-      message："未找到用户信息"
-    - ```json
-      code：400（StatusBadRequest）,
-      message："非root用户，不可删除其他某个用户"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message："查询用户是否存在失败",
-      error: 
-    - ```json
-      code：400（StatusNotFound）,
-      message："用户不存在"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message："删除用户失败",
-      error:
-    - ```json
-      code：200,
-      message："成功删除用户：（用户名）"
+### 删除用户
+### 功能
+  根据前端传来的username删除指定用户
+
+#### URL地址
+
+`(DELETE) http://localhost:8080/auth/root/deleteOneUser`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token",
+}
+```
+
+#### 请求体
+无。
+通过查询参数:   ?username=
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                        |
+| ------ | ----------------- | ------------------------------------------------- |
+| 401    | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 401    | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 401    | 未找到用户信息      | `{"message"："未找到用户信息"}`                   |
+| 400    | 非root用户         | `{"message"："非root用户，不可删除其他某个用户"}`   |
+| 401    | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 500    | 查询用户是否存在失败| `{"message"："查询用户是否存在失败"}`              |
+| 400    | 用户不存在         | `{"message"："用户不存在"}`                       |
+| 500    | 删除用户失败       | `{"message"："删除用户失败"}`                      |
+| 200    | 成功删除用户       | `{"message"："成功删除用户：（用户名）"}`           |
+---
+ 
 
 10. **数据库设计**
    - 用户登录表：id，email，user，password，token
