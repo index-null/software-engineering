@@ -24,6 +24,7 @@ import (
 	image_d "text-to-picture/services/image_s/delete"
 	"text-to-picture/services/image_s/like"
 	image_q "text-to-picture/services/image_s/query"
+	image_f "text-to-picture/services/image_s/findByFeature"
 )
 
 type DBConfig struct {
@@ -109,12 +110,16 @@ func main() {
 		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 
 		auth.PUT("/user/update", user_up.UpdateUser)                         // 更新当前用户信息(拒绝改用户名)
-		auth.DELETE("/user/deleteOne", user_d.DeleteUserByName) // 删除指定用户(?username=)
 
-		auth.DELETE("/image/deleteOne", image_d.DeleteOneImage)     // 删除单个图像(?url=)
-		auth.DELETE("/image/deleteByUser", image_d.DeleteUserImages) // 删除指定用户的所有图像(?username=)
+		auth.GET("/image/feature",image_f.FindByFeature)
 
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
+
+		// root操作
+		auth.DELETE("/root/deleteOneUser", user_d.DeleteUserByName) // 删除指定用户(?username=)
+		auth.DELETE("/root/deleteOneImage", image_d.DeleteOneImage)     // 删除单个图像(?url=)
+		auth.DELETE("/root/deleteImagesByUser", image_d.DeleteUserImages) // 删除指定用户的所有图像(?username=)
+
 	}
 	r.GET("/checkToken", check_t.CheckToken) //校验token是否有效
 
@@ -123,7 +128,7 @@ func main() {
 
 	r.GET("/image", image_q.GetImage)                        // 查询指定的一张图片 (根据id 或图片的username属性的第一张图片)
 	r.GET("/image/all", image_q.GetAllImages)                // 获取所有图像信息
-	r.DELETE("/image.deleteAll", image_d.DeleteAllImages)    // 删除所有图像(无参)
+	r.DELETE("/root/deleteAllImages", image_d.DeleteAllImages)    // 删除所有图像(无参)
 
 	// 添加静态文件服务，指向 docs 目录
 	r.Static("/docs", "./docs")

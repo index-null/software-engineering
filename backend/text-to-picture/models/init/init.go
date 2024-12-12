@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	image2 "text-to-picture/models/image"
 	user2 "text-to-picture/models/user"
-	"path/filepath"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -113,7 +114,7 @@ func InitTestUser() error {
 	result := DB.Where("username=?", "root").First(&user)
 	if result.Error == nil {
 		log.Printf("User already exists")
-		fmt.Println("User already exists")
+		fmt.Println("\nUser already exists\n")
 		user.Score = 10000
 		if result := tx.Save(&user); result.Error != nil {
 			log.Printf("Failed to update user score: %v", result.Error)
@@ -123,17 +124,18 @@ func InitTestUser() error {
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		log.Printf("Failed to find user: %v", result.Error)
 		return result.Error
-	}
-	user = user2.UserInformation{
-		Email:      "root@example.com",
-		UserName:   "root",
-		Password:   "c4ca4238a0b923820dcc509a6f75849b", //111111
-		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
-		Score:      10000,
-	}
-	if result := tx.Create(&user); result.Error != nil {
-		log.Printf("Failed to create user: %v", result.Error)
-		return result.Error
+	} else {
+		user = user2.UserInformation{
+			Email:      "root@example.com",
+			UserName:   "root",
+			Password:   "c4ca4238a0b923820dcc509a6f75849b", //111111
+			Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+			Score:      10000,
+		}
+		if result := tx.Create(&user); result.Error != nil {
+			log.Printf("Failed to create user: %v", result.Error)
+			return result.Error
+		}
 	}
 
 	userscore := user2.UserScore{
@@ -194,5 +196,9 @@ func InitTestUser() error {
 		log.Printf("Failed to create image favor: %v", result.Error)
 		return result.Error
 	}
-	return fmt.Errorf("%v", tx.Commit().Error)
+
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
+	return nil
 }

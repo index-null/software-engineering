@@ -9,12 +9,12 @@ import (
 	u "text-to-picture/models/repository/user_r"
 
 	"github.com/gin-gonic/gin"
+	//"gorm.io/gorm"
 )
 
 func DeleteUserByName(c *gin.Context) {
 	// 从上下文中获取用户名
 	userName, exists := c.Get("username")
-	fmt.Println("当前的登录用户为：" + userName.(string))
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -23,6 +23,8 @@ func DeleteUserByName(c *gin.Context) {
 		})
 		return
 	}
+
+	fmt.Println("当前的登录用户为：" + userName.(string))
 
 	// 非root用户，不能删除其他某个用户
 	if userName.(string) != "root" {
@@ -35,20 +37,38 @@ func DeleteUserByName(c *gin.Context) {
 
 	username := c.Query("username")
 
-	exist, err := u.IsExist(d.DB, username)
+	// 开始事务
+	tx := d.DB.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "开始事务失败", "error": tx.Error.Error()})
+		return
+	}
+
+	// 检查用户是否存在
+	exist, err := u.IsExist(tx, username)
 	if err != nil {
+		tx.Rollback() // 回滚事务
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户失败", "error": err.Error()})
 		return
 	}
 
 	if !exist { // 不存在
+		tx.Rollback() // 回滚事务
 		c.JSON(http.StatusNotFound, gin.H{"message": "用户不存在"})
 		return
 	}
 
-	err = u.DeleteUserByUsername(d.DB, username)
+	// 删除用户
+	err = u.DeleteUserByUsername(tx, username)
 	if err != nil {
+		tx.Rollback() // 回滚事务
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "删除用户失败", "error": err.Error()})
+		return
+	}
+
+	// 提交事务
+	if err = tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "提交事务失败", "error": err.Error()})
 		return
 	}
 

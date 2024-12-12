@@ -3,6 +3,7 @@ package user_r
 import (
 	"errors"
 	"fmt"
+	"log"
 	u "text-to-picture/models/user"
 
 	"gorm.io/gorm"
@@ -74,20 +75,37 @@ func UpdateUserInfo(db *gorm.DB, username string, updates map[string]interface{}
 	fmt.Printf("准备更新的用户信息: %+v\n", updateStruct)
 
 	tx := db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-		tx.Commit() // 确保在正常情况下提交事务
-	}()
+    if err := tx.Error; err != nil {
+        return fmt.Errorf("开始事务失败: %v", err)
+    }
+    defer func() {
+        if r := recover(); r != nil {
+            tx.Rollback()
+            fmt.Printf("事务处理过程中出现panic: %v\n", r)
+        }
+    }()
 
-	// 执行数据库操作
-	if err := tx.Model(&user).Updates(updateStruct).Error; err != nil {
+	log.Printf("正在尝试更新用户 %s 的信息...", username)
+	
+	
+    // 执行数据库操作
+     // 执行数据库操作
+	result = tx.Model(&user).Updates(updateStruct)
+	if result.Error != nil {
 		tx.Rollback()
-		return fmt.Errorf("更新用户信息失败: %v", err)
+		log.Printf("更新用户信息失败: %v", result.Error)
+		return fmt.Errorf("更新用户信息失败: %v", result.Error)
+	}
+	log.Printf("成功更新了用户 %s 的信息，受影响行数: %d", username, result.RowsAffected)
+
+	// 提交事务前打印日志
+	log.Printf("正在提交事务...")
+
+	if err := tx.Commit().Error; err != nil {
+		log.Printf("提交事务失败: %v", err)
+		return fmt.Errorf("提交事务失败: %v", err)
 	}
 
-	tx.Commit()
-
+	log.Printf("事务提交成功")
 	return nil
 }
