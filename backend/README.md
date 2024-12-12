@@ -105,10 +105,11 @@
 - username:root
 - password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
 1. **登陆注册接口**
+   
    - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
    - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
    - jwt返回token用于登录验证
-   - 注册访问url：http://localhost:8080/register
+   - 注册访问url：post http://localhost:8080/register
    - 注册数据格式：
    - ```json
      {
@@ -136,10 +137,10 @@
             9、“插入用户表失败”
           )
         - ```json  
-          code: 200,
-		      message:  "注册成功",
-
-   - 登录访问url：http://localhost:8080/login
+	       code: 200,
+   	      message:  "注册成功",
+   
+   - 登录访问url：post http://localhost:8080/login
    - 登录数据格式：
    - ```json
      {
@@ -374,7 +375,7 @@
     - ```json
        code: 200,
        message: "用户信息更新成功"
-      
+    
     
 
 4. **文生图历史记录**
