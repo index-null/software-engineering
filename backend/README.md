@@ -690,8 +690,8 @@
 
 8. **管理员操作**
   - 1、删除某个用户
-    - url：http://localhost:8080/auth/user/deleteOne
-    - 参数格式：?username=
+    - url：http://localhost:8080/auth/root/deleteOneUser
+    - 参数格式：?username= (DELETE)
     - ```json
       请求头携带一个"Authorization"的管理员token
       
