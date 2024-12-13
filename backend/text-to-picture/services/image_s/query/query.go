@@ -306,18 +306,8 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "获取图像列表失败"
 // @Router /image/all [get]
 func GetAllImages(c *gin.Context) {
-	// 从上下文中获取用户名
-	username, exists := c.Get("username")
-	if !exists {
-		log.Printf("未找到用户名")
-		c.JSON(401, gin.H{
-			"success": false,
-			"message": "未找到用户信息",
-		})
-		return
-	}
 
-	images, err := image_r.GetAllImagesInfo(d.DB, username.(string))
+	images, err := image_r.GetAllImagesInfo(d.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取图像列表失败", "error": err.Error()})
 		return

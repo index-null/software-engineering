@@ -78,7 +78,7 @@
 
 ```json
 {
-  "Authorization": "your_jwt_token",
+  "Authorization": "your_jwt_token"
 }
 ```
 
@@ -105,584 +105,469 @@
 - username:root
 - password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
 1. **登陆注册接口**
-   
-   - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
-   - 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
-   - jwt返回token用于登录验证
-   - 注册访问url：post http://localhost:8080/register
-   - 注册数据格式：
-   - ```json
-     {
-        “email": "root@qq.com",
-        "username": "root1",
-        "password": "sssssss"
-     }
-   - 响应格式：
-        - ```json
-          code: 400 (StatusBadRequest),
-          message:  "请求数据格式错误"
-        - ```json
-          code: 500 (StatusInternalServerError),
-          message: "用户创建失败",
-          error:   err.Error()
-          (err.Error()可能的情况为：
-            1、“名字为空”
-            2、“邮箱为空”
-            3、“密码少于6位”
-            4、“邮箱格式不正确”
-            5、“用户名已存在”
-            6、“邮箱已存在”
-            7、“查询用户名时发生错误”
-            8、“查询邮箱时发生错误”
-            9、“插入用户表失败”
-          )
-        - ```json  
-	       code: 200,
-   	      message:  "注册成功",
-   
-   - 登录访问url：post http://localhost:8080/login
-   - 登录数据格式：
-   - ```json
-     {
-        "username": "root1",
-        "password": "sssssss"
-     }
-   - 响应格式：
-    - ```json
-      code：400（StatusBadRequest）,
-      message："请求数据格式错误"
-    - ```json
-      code：401（Unauthorized）,
-      message: "用户不存在"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message: "数据库查询错误"
-    - ```json
-      code：401（Unauthorized）,
-      message: "密码错误"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message: "生成 token 错误"
-    - ```json
-      code：500（StatusInternalServerError）,
-      message: "登录时更新用户 token 失败",
-      "error": "用户不存在" 或 "查询用户信息失败" 或 "更新用户信息失败"
-    - ```json
-      code：200（StatusOK）,
-      message："登录成功",
-      token: "fake-jwt-token"
-     
+#### 注册数据格式：
+- 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
+- 登陆界面接收前端传来用户名和密码，进行数据库查询，判断用户是否存在，存在则比对密码，不存在则返回错误信息
+- jwt返回token用于登录验证
+#### url：
+POST http://localhost:8080/register
+
+
+```json
+{
+  "email": "root@qq.com",
+  "username": "root1",
+  "password": "sssssss"
+}
+```
+#### 响应
+
+| 响应码 | 描述                   | 示例响应体                                            |
+|--------|------------------------|-------------------------------------------------------|
+| 400    | 请求数据格式错误         | { "code": 400, "message": "请求数据格式错误" }         |
+| 500    | 用户创建失败（具体错误信息） | { "code": 500, "message": "用户创建失败", "error": "邮箱已存在" } |
+| 200    | 注册成功                | { "code": 200, "message": "注册成功" }                 |
+
+---
+
+#### 登录
+- 使用用户名和密码登录
+#### 请求头
+无
+#### 请求体
+``` json
+{
+  "username": "root1",
+  "password": "sssssss"
+}
+```
+#### 响应
+
+| 响应码 | 描述                    | 示例响应体                                                     |
+|--------|-------------------------|----------------------------------------------------------------|
+| 400    | 请求数据格式错误          | { "code": 400, "message": "请求数据格式错误" }                  |
+| 401    | 用户不存在               | { "code": 401, "message": "用户不存在" }                       |
+| 500    | 数据库查询错误            | { "code": 500, "message": "数据库查询错误" }                    |
+| 401    | 密码错误                 | { "code": 401, "message": "密码错误" }                          |
+| 500    | 生成token错误             | { "code": 500, "message": "生成 token 错误" }                   |
+| 500    | 登录时更新用户token失败     | { "code": 500, "message": "登录时更新用户 token 失败", "error": "查询用户信息失败" } |
+| 200    | 登录成功并返回token       | { "code": 200, "message": "登录成功", "token": "fake-jwt-token" } |
+---
 
 2. **文生图接口**
-   - 用户每次生成消耗20积分
-   - 部署本地的文生图模型，编写接口进行传参和调用，
-   - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-  - 文生图url：(POST) http://localhost:8080/auth/generate
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
-      参数：
-      {
-        "prompt": "string",
-        "width": 220,
-        "height": 200,,
-        "steps": 100
-        "sampling_method": "DDIM",
-        "seed": "string"
-      }
-    - 响应格式：
-    - ```json
-      code：200（StatusOK）,
-      image_url: "New_Image_Url" 
-      message："用户当前积分为",
-      success: true
-    - ```json
-      code：400（StatusBadRequest）,
-      message："缺乏提示词",
-      success: false
-    - ```json
-      code：400（StatusBadRequest）,
-      message："宽度不在范围内",
-      success: false
-    - ```json
-      code：400（StatusBadRequest）,
-      message："高度不在范围内",
-      success: false
-    - ```json
-      code：400（StatusBadRequest）,
-      success: false,
-      message："步数不在范围内"
-    - ```json
-      code：400（StatusBadRequest）,
-      success: false,
-      message："采样方法不在范围内"
-    - ```json
-      code：400（StatusBadRequest）,
-      success: false,
-      message："缺乏种子"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："请求头中缺少Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："无效的Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success: false,
-      message："未找到用户信息"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："用户信息查询失败"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："用户积分不足"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："用户积分更新失败"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："积分记录创建失败"
-    - ```json
-      code：500（StatusInternalServerError）,
-      success：false,
-      message："图片生成失败"
+生成图像并记录积分消耗,每次消耗20积分
 
+#### URL地址
+- (POST) http://localhost:8080/auth/generate
+
+#### 请求参数
+- 请求头携带一个"Authorization"的token
+- 请求体（JSON格式）：
+
+```json
+{
+  "prompt": "string",
+  "width": 220,
+  "height": 200,
+  "steps": 100,
+  "sampling_method": "DDIM",
+  "seed": "string"
+}
+```
+
+#### 响应
+
+| 响应码 | 描述                 | 示例响应体                                                                  |
+|--------|----------------------|-----------------------------------------------------------------------------|
+| 200    | 图片生成成功并返回URL | { "code": 200, "image_url": "New_Image_Url", "message": "用户当前积分为", "success": true } |
+| 400    | 缺少提示词           | { "code": 400, "message": "缺乏提示词", "success": false }                   |
+| 400    | 宽度不在范围内       | { "code": 400, "message": "宽度不在范围内", "success": false }               |
+| 400    | 高度不在范围内       | { "code": 400, "message": "高度不在范围内", "success": false }               |
+| 400    | 步数不在范围内       | { "code": 400, "message": "步数不在范围内", "success": false }               |
+| 400    | 采样方法不在范围内   | { "code": 400, "message": "采样方法不在范围内", "success": false }           |
+| 400    | 缺少种子             | { "code": 400, "message": "缺乏种子", "success": false }                     |
+| 401    | 请求头中缺少Token     | { "code": 401, "message": "请求头中缺少Token", "success": false }             |
+| 401    | 无效的Token          | { "code": 401, "message": "无效的Token", "success": false }                  |
+| 401    | 未找到用户信息       | { "code": 401, "message": "未找到用户信息", "success": false }                |
+| 401    | 用户信息查询失败     | { "code": 401, "message": "用户信息查询失败", "success": false }              |
+| 401    | 用户积分不足         | { "code": 401, "message": "用户积分不足", "success": false }                 |
+| 401    | 用户积分更新失败     | { "code": 401, "message": "用户积分更新失败", "success": false }             |
+| 401    | 积分记录创建失败     | { "code": 401, "message": "积分记录创建失败", "success": false }             |
+| 500    | 图片生成失败         | { "code": 500, "message": "图片生成失败", "success": false }                 |
+---
 
 3. **个人信息界面**
   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
   - 头像上传功能，获取功能set，get
-   - 修改头像url：(POST) http://localhost:8080/auth/setavator
-    - 参数格式：
-    - ```json
-      携带一个"Authorization"的token
-      "url": "string"(更换头像的url)
-    - 响应格式：
-    - ```json
-      code: 401（Unauthorized）,
-      message:  "请求头中缺少Token"
-    - ```json
-      code: 401（Unauthorized）,
-      message:  "无效的Token"
-    - ```json
-      code: 500(Error),
-      message:  "更新头像失败"
-    - ```json
-      code: 200(Success),
-      msg:  "头像更新成功",
-      data: "newURL"
+### 修改头像URL
 
-  - 获取头像url：(GET) http://localhost:8080/auth/getavator
-    - 参数格式：
-    - ```json
-      携带一个"Authorization"的token
-    - 响应格式：
-    - ```json
-      code: 401（Unauthorized）,
-      message:  "Token已过期"
-    - ```json
-      code: 401（Unauthorized）,
-      message:  "无效的Token"
-    - ```json
-      code: 500 (Error),
-      message:  "查询头像失败"
-    - ```json  
-      code: 200 (Success),
-      msg:  "获取头像成功",
-      data: "user.Avator_url"  
+#### URL地址
+- (POST) http://localhost:8080/auth/setavator
 
-  - 用户信息查询
-  - 查询当前登录用户的信息
-    - url: (GET) http:localhost:8080/auth/user/info
-    - 参数格式 
-    - ```json
-      请求头携带一个"Authorization"的token
-    - 响应格式：
-    - ```json
-      code: StatusBadRequest (400)
-      message: "Invalid request data"
-    - ```json
-      code: StatusNotFound (404)
-      message: "用户未找到"
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "查询失败"
-      error: 
-    - ```json
-      code: StatusOK
-      user:{
-      "id": 6,
-      "email": "czh@qq.com",
-      "username": "czh",
-      "password": "chenzanhong",
-      "avatar_url": "https://www.chen.com",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImN6aCIsImV4cCI6MTczMjU0MjU3NH0.IoDSg08xnSNK9jlJBr_xdVyYKUIXIbEZm_UsXk0vPmM",
-      "create_time": "2024-11-24T21:49:24.78802Z"
-      }
-    
-  - 查询所有用户信息
-    - url: (GET) http:localhost:8080/user/all
-    - 参数格式：无
-    - 响应格式
-    - ```json
-      code: StatusInternalServerError
-      message: "获取用户列表失败"
-    - ```json
-      code: StatusOK
-      message: "获取用户列表成功"
-      users: [
-        {
-          //用户信息
-        },{
-          //……
-        }
-      ]
+#### 请求参数
+- 必须携带一个"Authorization"的token，和头像URL：
 
-  - 更新当前登录用户的信息
-    - url: (PUT) http:localhost:8080/auth/user/update
-    - 参数格式： 
-    - ```json
-      请求头携带一个"Authorization"的token
-      {
-        //所有参数都是可选的，而且无法更新用户名和id
-        "id":,
-        "username":,
-        "email":,
-        "password":,
-        "avator_url":,
-        "token":,
-        "create_time":
-      }
-    - 响应格式
-    - ```json
-      code: StatusBadRequest (400)
-      message: "请求数据格式错误"
-      error:
-    - ```json
-      code: 401,
-      message: "未找到用户信息"
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "更新用户信息失败"
-      error: 可能为：
-        "用户不存在" "查询用户时发生错误" "用户名不可修改" "邮箱为空" "密码少于6位" "邮箱格式不正确" "更新用户信息失败"
-    - ```json
-       code: 200,
-       message: "用户信息更新成功"
-    
-    
+```json
+{
+  "url": "string"  // 更换头像的URL
+}
+```
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                    |
+|--------|--------------------|-----------------------------------------------|
+| 401    | 请求头中缺少Token   |` { "code": 401, "message": "请求头中缺少Token" }` |
+| 401    | 无效的Token        | `{ "code": 401, "message": "无效的Token" }  `     |
+| 500    | 更新头像失败        | `{ "code": 500, "message": "更新头像失败" }  `    |
+| 200    | 头像更新成功        | `{ "code": 200, "msg": "头像更新成功", "data": "newURL" } `|
+
+---
+
+### 获取头像URL
+
+#### URL地址
+- (GET) http://localhost:8080/auth/getavator
+
+#### 请求参数
+- 必须携带一个"Authorization"的token。
+
+#### 响应
+
+| 响应码 | 描述            | 示例响应体                               |
+|--------|-----------------|------------------------------------------|
+| 401    | Token已过期     |` { "code": 401, "message": "Token已过期" }` |
+| 401    | 无效的Token     | `{ "code": 401, "message": "无效的Token" } `|
+| 500    | 查询头像失败     | `{ "code": 500, "message": "查询头像失败" } `|
+| 200    | 获取头像成功     | `{ "code": 200, "msg": "获取头像成功", "data": "user.Avator_url" }` |
+
+---
+
+### 查询当前登录用户信息
+
+#### URL地址
+- (GET) http://localhost:8080/auth/user/info
+
+#### 请求参数
+- 请求头携带一个"Authorization"的token。
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                                                                                         |
+|--------|--------------------|--------------------------------------------------------------------------------------------------------------------|
+| 400    | 请求数据格式错误    | `{ "code": 400, "message": "Invalid request data" }          `                                                        |
+| 404    | 用户未找到         | `{ "code": 404, "message": "用户未找到" }           `                                                                 |
+| 500    | 查询失败           | `{ "code": 500, "message": "查询失败", "error": "错误信息" }   `                                                       |
+| 200    | 查询成功           | `{ "code": 200, "user": { "id": 6, "email": "czh@qq.com", "username": "czh", "avatar_url": "https://www.chen.com", "create_time": "2024-11-24T21:49:24.78802Z" } }` |
+
+---
+
+### 查询所有用户信息
+
+#### URL地址
+- (GET) http://localhost:8080/user/all
+
+#### 请求参数
+- 无（GET方法，不需要携带token）
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                    |
+|--------|--------------------|-----------------------------------------------|
+| 500    | 获取用户列表失败    | `{ "code": 500, "message": "获取用户列表失败" } `|
+| 200    | 获取用户列表成功    | `{ "code": 200, "message": "获取用户列表成功", "users": [{ ... }, { ... }] } `|
+
+---
+
+### 更新当前登录用户信息
+
+#### URL地址
+- (PUT) http://localhost:8080/auth/user/update
+
+#### 请求参数
+- 请求头携带一个"Authorization"的token，参数包含：
+
+```json
+{
+  "username": "string",
+  "email": "string",
+  "password": "string",
+  "avator_url": "string",
+  "token": "string",
+  "create_time": "string"
+}
+```
+
+- 所有参数都是可选的，但用户名和ID不可修改。
+
+#### 响应
+
+| 响应码 | 描述                 | 示例响应体                                                                   |
+|-----|----------------------|-------------------------------------------------------------------------|
+| 400 | 请求数据格式错误      | `{ "code": StatusBadRequest(400),"message":"请求数据格式错误","error": "错误信息"}` 
+| 401 | 未找到用户信息     | `{ "code": 401, "message": "未找到用户信息" }`                                 |
+| 200 | 用户信息更新成功     | `{ "code": 200, "message": "用户信息更新成功" }`               |
+---
+
 
 4. **文生图历史记录**
-  - 总的记录，获取所有的图像信息（按id/create_time升序）：
-  - Get方法
-    - url: get http://localhost:8080/image/all 
-    - 参数格式： 无（GET方法）
-    - 响应格式：
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "获取图像列表失败"
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "查询失败"
-      images: [
-        {
-            "id": 66,
-            "username": "czh1",
-            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
-            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
-            "create_time": "2024-12-12T20:24:34.165272Z"
-        },
-        {
-          //……
-        },
-        //……
-      ]
+#### 获取所有用户所有的图像信息
 
+- **URL地址**  
+  `(GET) http://localhost:8080/image/all`
 
-  - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
-    - url: (GET) localhost:8080/auth/user/images/timeRange
-    - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
-      （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
-    - ```json
-      请求头携带一个"Authorization"的token
-    - 响应格式：
-    - ```json
-      code: StatusBadRequest (400)
-      message: "无效的开始时间格式", 
-      error:
-    - ```json
-      code: StatusBadRequest (400)
-      message: "无效的结束时间格式", 
-      error:
+- **请求参数**  
+  无（GET方法，不需要携带token）
 
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "查询图像列表失败", 
-      error:
-    - ```json
-      code: StatusOK
-      message: "查询图像列表成功", 
-      images: [
-        {
-            "id": 66,
-            "username": "czh1",
-            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
-            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
-            "create_time": "2024-12-12T20:24:34.165272Z"
-        },
-        {
-          //……
-        },
-        //……
-      ]
+- **响应**
 
-  - 获取指定的某张图像
-    - url: get http://localhost:8080/image
-    - 参数格式：?username= 或?id= 或?url=
+| 响应码 | 描述                    | 示例响应体                                                                 |
+|-------|-----------------------|-------------------------------------------------------------------------|
+| 500   | 获取图像列表失败            | `{ "code": StatusInternalServerError (500), "message": "获取图像列表失败" }` |
+| 500   | 查询失败                  | `{ "code": StatusInternalServerError (500), "message": "查询失败", "images": [...] }` |
 
-    - 响应格式：
-    - ```json
-      code: StatusNotFound (404)
-      message: "未找到相关图片"
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "查询用户的图片失败"
-      error: 
-    - ```json
-      code: StatusBadRequest (400)
-      message: "无效的图像id或用户名"
-      error:  
-    - ```json
-      code: StatusOK
-      message: "查询图像成功"
-      image:  {
-          "id": 66,
-          "username": "czh1",
-          "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
-          "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
-          "create_time": "2024-12-12T20:24:34.165272Z"
-      }
+---
 
+#### 获取当前登录用户在一段时间内生成的图像信息
 
-  - 获取当前登录用户生成的所有图像
-    - url: get http://localhost:8080/auth/user/images
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
-    - 响应格式：
-    - ```json
-      code: StatusInternalServerError (500)
-      message: "查询用户图像失败"
-      error:  
-    - ```json
-      code: StatusOK
-      message: "获取用户的图像成功"
-      images: [
-        {
-            "id": 66,
-            "username": "czh1",
-            "params": "\"Prompt\": \"太阳\", \"Width\": \"400\", \"Height\": \"400\", \"Steps\": \"30\", \"SamplingMethod\": \"DDIM\"",
-            "picture": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412122024733.png",
-            "create_time": "2024-12-12T20:24:34.165272Z"
-        },
-        {
-          //……
-        },
-        //……
-      ]
+- **URL地址**  
+  `(GET) localhost:8080/auth/user/images/timeRange`
 
+- **请求参数**  
+  `?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD`  
+  或 `?start_time=2006-01-02T15:04:05.000000Z&end_time=2006-01-02T15:04:05.000000Z`
 
+- **请求头**
+  ```json
+  {
+    "Authorization": "your_jwt_token"
+  }
+  ```
+  
+| 响应码 | 描述                   | 示例响应体                                                                   |
+|-------|----------------------|---------------------------------------------------------------------------|
+| 400   | 无效的开始时间格式       | `{ "code": StatusBadRequest (400), "message": "无效的开始时间格式", "error": "" }` |
+| 400   | 无效的结束时间格式       | `{ "code": StatusBadRequest (400), "message": "无效的结束时间格式", "error": "" }` |
+| 500   | 查询图像列表失败        | `{ "code": StatusInternalServerError (500), "message": "查询图像列表失败", "error": "" }` |
+| 200   | 查询图像列表成功        | `{ "code": StatusOK, "message": "查询图像列表成功", "images": [...] }`      |
+---
+### 获取指定的某张图像
 
-  - 点赞图片功能：
-    - url：(POST) "localhost:8080/auth/like"
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
-          {
-              "url":,//图像url
-          }
-    - 响应格式：
-    - ```json
-      "code":  400,
-      "error": "Missing image URL"
-    - ```json
-      "code":  409,
-      "error": "用户已经点赞过该图片"
-    - ```json
-      "code":  500,
-      "error": “返回获取赞数错误的error"
-    - ```json
-      "code":  500,
-      "error": "点赞数据库开始出错"
-    - ```json
-      "current_likes": 当前赞数,
-      “message": "Image liked successfully"
-    - 按照参数排序，可以列出所需查询参数的查询信息
-    - 待定   
+- **URL地址**
+  `(GET) http://localhost:8080/image`
 
+- **请求参数**
+  `?username=` 或 `?id=` 或 `?url=`
+
+- **响应**
+
+| 响应码 | 描述                 | 示例响应体                                                                   |
+|-------|--------------------|---------------------------------------------------------------------------|
+| 404   | 未找到相关图片          | `{ "code": StatusNotFound (404), "message": "未找到相关图片" }`             |
+| 500   | 查询用户的图片失败       | `{ "code": StatusInternalServerError (500), "message": "查询用户的图片失败", "error": "" }` |
+| 400   | 无效的图像id或用户名     | `{ "code": StatusBadRequest (400), "message": "无效的图像id或用户名", "error": "" }` |
+| 200   | 查询图像成功            | `{ "code": StatusOK, "message": "查询图像成功", "image": { ... } }`         |
+---
+
+### 获取当前登录用户生成的所有图像
+
+- **URL地址**
+  `(GET) http://localhost:8080/auth/user/images`
+
+- **请求头**
+  ```json
+  {
+    "Authorization": "your_jwt_token"
+  }
+  ```
+
+- **响应**
+
+| 响应码 | 描述                | 示例响应体                                                                  |
+|-------|-------------------|--------------------------------------------------------------------------|
+| 500   | 查询用户图像失败      | `{ "code": StatusInternalServerError (500), "message": "查询用户图像失败", "error": "" }` |
+| 200   | 获取用户的图像成功     | `{ "code": StatusOK, "message": "获取用户的图像成功", "images": [...] }`    |
+---
+
+### 点赞图片功能
+
+- **URL地址**
+  `(POST) http://localhost:8080/auth/like`
+
+- **请求头**
+  ```json
+  {
+    "Authorization": "your_jwt_token"
+  }
+  ```
+
+- **请求体**
+  ```json
+  {
+    "url": "图像url"
+  }
+  ```
+
+- **响应**
+
+| 响应码 | 描述                   | 示例响应体                                                                        |
+|-------|----------------------|------------------------------------------------------------------------------|
+| 400   | 缺少图像URL             | `{ "code": 400, "error": "Missing image URL" }`                              |
+| 409   | 用户已经点赞过该图片      | `{ "code": 409, "error": "用户已经点赞过该图片" }`                                     |
+| 500   | 返回获取赞数错误        | `{ "code": 500, "error": "返回获取赞数错误的error" }`                                 |
+| 500   | 点赞数据库操作出错       | `{ "code": 500, "error": "点赞数据库操作出错" }`                                      |
+| 200   | 点赞成功                | `{ “code":200,current_likes": 当前赞数, "message": "Image liked successfully" }` |
+---
+  
 5. **图片收藏界面**
-  - 查询展示出用户的收藏图片
-  - 获取当前用户收藏的图像
-    - url: (GET) localhost:8080/auth/user/favoritedimages
-    - 参数格式：
-    - ```json
-      请求头携带一个"Authorization"的token
-    - 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”） 
+#### 查询功能
+- 查询展示出用户的收藏图片
+#### URL地址
 
-  - 收藏图像
-  - 收藏指定图像
-    - url：(POST) localhost:8080/auth/addFavoritedImage
-    - 参数格式:
-    - ```json
-      请求头携带一个"Authorization"的token
-      {
-        //两个参数有一个就行
-        "url":,//图像url
-        "id":,//图像id
-      }
-    - 响应格式
-    - ```json
-      code: StatusBadRequest (400)
-      message: "无有效的图像id或url"
-      error: "id 必须大于 0 或者 url 不得为空"
-    - ```json
-      code: StatusNotFound (404)
-      message: "未找到对应的图像"
-      error:  
-    - ```json
-      code:  401
-      message: "未找到用户信息"//没有token时
-      error:  
-    - ```json
-      code:  StatusInternalServerError （500）
-      message: "检查收藏状态失败"
-      error:  
-    - ```json
-      code:  StatusConflict
-      message: "该图像已经被收藏过"
-    - ```json
-      code:  StatusInternalServerError （500）
-      message: "收藏图像失败"
-      error:  
-    - ```json
-      code:  200
-      message: "收藏图像成功"
+`(GET) http://localhost:8080/auth/user/favoritedimages`
 
+#### 请求头
 
-  - 取消图像收藏
-  - 取消指定图像的收藏
-    - url：(DELETE) localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
-    - ```json
-      请求头携带一个"Authorization"的token
-    - 响应格式
-    - ```json
-      code: StatusBadRequest (400)
-      message: "无有效的图像id或url"
-      error: "id 必须大于 0 或者 url 不得为空"
-    - ```json
-      code: StatusNotFound (404)
-      message: "未找到对应的图像"
-      error:  
-    - ```json
-      code:  401
-      message: "未找到用户信息"//没有token时
-      error:  
-    - ```json
-      code:  StatusInternalServerError （500）
-      message: "检查收藏状态失败"
-      error:  
-    - ```json
-      code:  StatusConflict
-      message: "该图像未被收藏过"
-    - ```json
-      code:  StatusInternalServerError （500）
-      message: "取消图像收藏失败"
-      error:  
-    - ```json
-      code:  200
-      message: "取消图像收藏成功"
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
 
+#### 请求体
+无
+
+#### 响应
+- 响应格式：同localhost:8080/user/images（只不过message多了一个“收藏”）
+
+#### 收藏图像功能
+- 收藏指定图像
+#### URL地址
+
+`(POST) http://localhost:8080/auth/addFavoritedImage`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+//两个参数有一个就行
+```json
+{
+   
+  "url":"",
+  "id":""
+}
+```
+
+#### 响应
+| 响应码 | 描述                | 示例响应体                                                                                    |
+|-----|-------------------|------------------------------------------------------------------------------------------|
+| 400 | 无有效的图像id或url      | `{ code: StatusBadRequest (400),message: "无有效的图像id或url",error: "id 必须大于 0 或者 url 不得为空"}` |
+| 404 | 未找到对应的图像          | `{ "code"：StatusUnauthorized(404),"message"："未找到对应的图像",error}`                           |
+| 401 | 未找到用户信息"或没有token时 | `{ "code"：StatusUnauthorized(401),"message"："未找到用户信息"或没有token时",error}`                  |
+| 500 | 检查收藏状态失败        | `{ "code"：StatusInternalServerError(500),"message"："检查收藏状态失败",error}`               |
+| 401 | 该图像已经被收藏过          | `{ "code"：StatusConflict(409),"message"："该图像已经被收藏过",error}`                         |
+| 500 | 收藏图像失败        | `{ "code"：StatusInternalServerError(500),"message"："收藏图像失败",error}`               |
+| 200 | 收藏图像成功          | `{ "code"：StatusOK(200),"message"："收藏图像成功"}`                                 |
+---
+
+### 取消图像收藏
+- 取消指定图像的收藏
+
+#### URL地址
+
+`(DELETE) localhost:8080/auth/deleteFavoritedImage`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+//至少传递一个参数
+```json
+   
+  "url": "",
+  "id": ""
+```
+
+#### 响应
+
+| 响应码 | 描述                | 示例响应体                                                                                    |
+|-----|-------------------|------------------------------------------------------------------------------------------|
+| 400 | 无有效的图像id或url      | `{ code: StatusBadRequest (400),message: "无有效的图像id或url",error: "id 必须大于 0 或者 url 不得为空"}` |
+| 404 | 未找到对应的图像          | `{ "code"：StatusNotFound(404),"message"："未找到对应的图像",error}`                           |
+| 401 | 未找到用户信息"或没有token时 | `{ "code"：StatusUnauthorized(401),"message"："未找到用户信息"或没有token时",error}`                  |
+| 500 | 检查收藏状态失败        | `{ "code"：StatusInternalServerError(500),"message"："检查收藏状态失败",error}`               |
+| 409 | 该图像未被收藏过          | `{ "code"：StatusConflict(409),"message"："该图像未被收藏过"}`                         |
+| 500 | 取消图像收藏失败        | `{ "code"：StatusInternalServerError(500),"message"："取消图像收藏失败"}`               |
+| 200 | 取消图像收藏成功          | `{ "code"：StatusOK(200),"message"："取消图像收藏成功"}`                                 |
+---
 6. **签到增加积分接口**
-      ### 功能
-    - 用户每次签到增加100积分，并保存记录
-    #### URL地址
-    - `GET http://localhost:8080/auth/score`
-    #### 请求头
-    
-    ```json
-    {
-      "Authorization": "your_jwt_token",
-    }
-    ```
+#### 功能
+ - 用户每次签到增加100积分，并保存记录
+#### URL地址
 
-    #### 响应
-    - ```json
-      code：200（StatusOK）,
-      message："用户当前积分"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："请求头中缺少Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      message："无效的Token"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："用户信息查询失败"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："积分记录创建失败"
-    - ```json
-      code：401（StatusUnauthorized）,
-      success：false,
-      message："用户积分更新失败"
-    
+`(GET) http://localhost:8080/auth/score`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无
+
+#### 响应
+
+| 响应码 | 描述          | 示例响应体                                                                  |
+|-----|-------------|------------------------------------------------------------------------|
+| 401 | 请求头中缺少Token | `{ "code"：StatusUnauthorized(401),"message"："请求头中缺少Token",data: null}` |
+| 401 | 无效的Token    | `{ "code"：StatusUnauthorized(401),"message"："无效的Token",data: null}`    |
+| 401 | 用户信息查询失败    | `{ "code"：StatusUnauthorized(401),"message"："用户信息查询失败",data: null}`      |
+| 401 |   积分记录创建失败          | `{ "code"：StatusUnauthorized(401),"message"："积分记录创建失败",data: null}`        |
+| 401 |  用户积分更新失败          | `{ "code"：StatusUnauthorized(401),"message"："用户积分更新失败",data: null}`        |
+| 200 | 返回用户当前积分    | `{ "code"：StatusOK(200),"message"："用户当前积分为",data: null}`               |
+---
 7. **token校验功能**
-      ### 功能
+#### 功能
     - 校验用户的token
-    #### URL地址
-    - `GET http://localhost:8080/checkToken`
-    #### 请求头
-    
-    ```json
-    {
-      "Authorization": "your_jwt_token",
-    }
-    ```
-    #### 请求体
-    ```json
-    {
-      "code": "int",
-      "msg": "string",
-      "data": "interface{}"
-    }
-    ```
-    #### 响应
-    - ```json
-      code：StatusUnauthorized(401)
-      msg："令牌格式不正确"
-      data: null
-    - ```json
-      code：StatusUnauthorized(401)
-      msg："令牌过期或未激活"
-      data: null
-    - ```json
-      code：StatusUnauthorized(401)
-      msg："令牌无法处理"
-      data: null
-    - ```json
-      code：StatusUnauthorized(401)
-      msg："令牌无效"
-      data: null
-    - ```json
-      code：StatusOK(200)
-      msg："令牌有效"
-      data: tokenStr
+#### URL地址
+
+`(GET) http://localhost:8080/checkToken`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无
+
+#### 响应
+
+| 响应码 | 描述            | 示例响应体                                                               |
+| ------ | ------------- |---------------------------------------------------------------------|
+| 401    | 令牌格式不正确 | `{ "code"：StatusUnauthorized(401),"message"："令牌格式不正确",data: null}`  |
+| 401    | 令牌过期或未激活     | `{ "code"：StatusUnauthorized(401),"message"："令牌过期或未激活",data: null}` |
+| 401    | 令牌无法处理    | `{ "code"：StatusUnauthorized(401),"message"："令牌无法处理",data: null}`   |
+| 500    | 令牌无效 | `{ "code"：StatusUnauthorized(401),"message"："令牌无效",data: null}`     |
+| 200    | 令牌有效 | `{ "code"：StatusOK(200),"message"："令牌有效",data: null}`               |
+---
 
 8. **搜索功能**
 ### 搜素图像
@@ -698,7 +583,7 @@
 
 ```json
 {
-  "Authorization": "your_jwt_token",
+  "Authorization": "your_jwt_token"
 }
 ```
 
@@ -731,7 +616,7 @@
 
 ```json
 {
-  "Authorization": "your_jwt_token",
+  "Authorization": "your_jwt_token"
 }
 ```
 
