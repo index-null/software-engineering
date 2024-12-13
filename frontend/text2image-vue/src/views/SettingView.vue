@@ -1,18 +1,289 @@
 <template>
-  <div>
-    <UserProfile></UserProfile>
+  <div class="setting-container">
+    <div class="shinning-bar"></div>
+    <el-card class="user-profile">
+      <div class="profile-header">
+        <div class="avatar-container" @click="handleAvatarClick">
+          <img :src="user.avatar" alt="User Avatar" class="avatar">
+          <div class="avatar-overlay" v-show="isEditing"></div>
+        </div>
+        <div class="profile-info" v-if="!isEditing">
+          <div class="info-item">
+            <span class="info-label">昵称:</span>
+            <span class="info-value">{{ user.username }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">邮箱:</span>
+            <span class="info-value">{{ user.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">个签:</span>
+            <span class="info-value">{{ user.personalSignature }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">性别:</span>
+            <span class="info-value">{{ user.gender }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">爱好:</span>
+            <span class="info-value">{{ user.hobbies }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">居住地:</span>
+            <span class="info-value">{{ user.location }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">已收藏图片数:</span>
+            <span class="info-value">{{ user.collectedPictures }}</span>
+          </div>
+        </div>
+      </div>
+      <el-button type="primary" @click="toggleEdit" class="edit-button" v-show="!isEditing">
+        编辑
+      </el-button>
+      <el-form v-if="isEditing" label-width="80px" class="edit-form">
+        <el-form-item label="昵称">
+          <el-input v-model="user.username" disabled class="form-item-input"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="user.email" class="form-item-input"></el-input>
+        </el-form-item>
+        <el-form-item label="个签">
+          <el-input v-model="user.personalSignature" class="form-item-input"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-select v-model="user.gender" placeholder="请选择性别" class="form-item-input">
+            <el-option label="男" value="男"></el-option>
+            <el-option label="女" value="女"></el-option>
+            <el-option label="保密" value="保密"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="爱好">
+          <el-input v-model="user.hobbies" class="form-item-input"></el-input>
+        </el-form-item>
+        <el-form-item label="居住地">
+          <el-select v-model="user.location" placeholder="请选择省份" class="form-item-input">
+            <el-option v-for="province in provinces" :key="province" :label="province" :value="province"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收藏">
+          <el-input v-model="user.collectedPictures" disabled class="form-item-input"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" @click="saveChanges" class="save-button">保存</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- 隐藏头像上传控件 -->
+      <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;">
+    </el-card>
   </div>
 </template>
 
 <script>
-import UserProfile from '@/components/UserProfile.vue';
+import OSS from 'ali-oss';
+
 export default {
-components: {
-    UserProfile,
+  data() {
+    return {
+      user: {
+        avatar: localStorage.getItem('avatarUrl') || 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412092143859.png',
+        username: localStorage.getItem('username') || '未知用户',
+        email: localStorage.getItem('email') || '未知邮箱',
+        personalSignature: localStorage.getItem('personalSignature') || '快创建一个个性签名吧!',
+        gender: localStorage.getItem('gender') || '未知',
+        hobbies: localStorage.getItem('hobbies') || '未知',
+        location: localStorage.getItem('location') || '未知',
+      },
+      isEditing: false,
+      client: null,
+      provinces: [
+        '北京市', '天津市', '上海市', '重庆市', '河北省', '山西省', '辽宁省', '吉林省', '黑龙江省', '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '河南省', '湖北省', '湖南省', '广东省', '海南省', '四川省', '贵州省', '云南省', '陕西省', '甘肃省', '青海省', '台湾省', '内蒙古自治区', '广西壮族自治区', '西藏自治区', '宁夏回族自治区', '新疆维吾尔自治区', '香港特别行政区', '澳门特别行政区'
+      ]
+    };
   },
-}
+  methods: {
+    handleAvatarClick() {
+      if (this.isEditing) {
+        this.deleteOldAvatar().then(() => {
+          this.$refs.fileInput.click();
+        });
+      }
+    },
+    async deleteOldAvatar() {
+      if (this.user.avatar) {
+        const urlParts = this.user.avatar.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        try {
+          await this.initOSSClient();
+          await this.client.delete(`avator/${fileName}`);
+          this.$message.success('旧头像删除成功');
+        } catch (error) {
+          this.$message.error('删除旧头像失败');
+        }
+      }
+    },
+    async initOSSClient() {
+      this.client = new OSS({
+        region: process.env.VUE_APP_OSS_REGION,
+        accessKeyId: process.env.VUE_APP_OSS_ACCESS_KEY_ID,
+        accessKeySecret: process.env.VUE_APP_OSS_ACCESS_KEY_SECRET,
+        bucket: process.env.VUE_APP_OSS_BUCKET,
+      });
+    },
+    async handleFileChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        await this.initOSSClient();
+        const result = await this.client.put(`avator/${file.name}`, file);
+        this.user.avatar = result.url;
+        localStorage.setItem('avatarUrl', this.user.avatar);
+        this.$message.success('头像上传成功');
+      } catch (error) {
+        this.$message.error('上传失败');
+      }
+    },
+    toggleEdit() {
+      this.isEditing = !this.isEditing;
+    },
+    saveChanges() {
+      localStorage.setItem('personalSignature', this.user.personalSignature);
+      localStorage.setItem('gender', this.user.gender);
+      localStorage.setItem('hobbies', this.user.hobbies);
+      localStorage.setItem('location', this.user.location);
+      let updatedUser = {
+        "email": this.user.email,
+        "avatar_url": this.user.avatar
+      };
+      this.$axios.put('http://localhost:8080/auth/user/update', updatedUser).then(response => {
+        this.$message.success(response.data.message);
+      }).catch(error => {
+        this.$message.error(error.response.data.message);
+      });
+      this.isEditing = false;
+      this.$nextTick(
+        this.$forceUpdate()
+      );
+    }
+  },
+  created() {
+  }
+};
 </script>
 
-<style>
+<style scoped>
+.setting-container {
+  background-color: #F1F6FF;
+  height: 100vh;
+  width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.shinning-bar {
+  height: 18vh;
+  width: 90vw;
+  margin-bottom: 6vh;
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* 彩色渐变效果 */
+}
 
+.user-profile {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #f7f7f7; /* 苹果风格的背景色 */
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.avatar-container:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+.profile-info {
+  margin-top: 10px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
+}
+
+.info-label {
+  font-size: 16px;
+  color: #555; /* 苹果风格的标签颜色 */
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333; /* 苹果风格的值颜色 */
+}
+
+.edit-button {
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
+}
+
+.save-button {
+  margin-left: -10%;
+  animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
+}
+
+.edit-form {
+  margin-top: 20px;
+  margin-left: -10%;
+}
+
+.form-item-input {
+  width: 100%; /* 设置宽度为100%，或者根据需要设置固定宽度 */
+}
+
+/* 定义动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 </style>

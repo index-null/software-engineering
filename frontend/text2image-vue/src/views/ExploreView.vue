@@ -58,14 +58,14 @@ export default {
 }
 
 .carousel-img-container {
-    flex: 1.3; 
+    flex: 1.1; 
     border-radius: 1.5rem;
     position: relative;
     color: white;
 }
 
 .generate-entry-container {
-    flex: 0.5; /* 减少 flex 值 */
+    flex: 0.4; /* 减少 flex 值 */
     border-radius: 1.5rem;
     position: relative;
     color: white;
