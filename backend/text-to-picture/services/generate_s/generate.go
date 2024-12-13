@@ -242,13 +242,21 @@ func SavetoOss() (string, error) {
 
 	// 示例操作：上传文件。
 	filetime := time.Now().Format("2006-01-02 15:04:05")
-	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/generate-" + filetime + ".png"
+	objectName := bucketName + "/" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
 		log.Fatalf("上传失败，error%v", err)
 	}
-	return objectName, err
+	bucket, err := client.Bucket(bucketName)
+	if err != nil {
+		log.Printf("Failed to get bucket: %v", err)
+	}
+	signedURL, err := bucket.SignURL(objectName, oss.HTTPGet, 60)
+	if err != nil {
+		log.Printf("Failed to sign URL: %v", err)
+	}
+	return signedURL, err
 }
 
 // handleError 用于处理不可恢复的错误，并记录错误信息后终止程序。

@@ -178,7 +178,7 @@
    - 用户每次生成消耗20积分
    - 部署本地的文生图模型，编写接口进行传参和调用，
    - 接收前端的参数，调用本地部署的大模型，生成对应的图片，返回给前端，并将记录存入数据库
-   - 文生图url：http://localhost:8080/auth/generate
+   - 文生图url：post http://localhost:8080/auth/generate
    - 参数格式：
    - ```json
      请求头携带一个"Authorization"的token
@@ -259,7 +259,7 @@
 3. **个人信息界面**
   - 结合数据库的用户信息，使用查询函数查询出需要的信息返回给前端
   - 头像上传功能，获取功能set，get
-    - 修改头像url：http://localhost:8080/auth/setavator
+    - 修改头像url：post http://localhost:8080/auth/setavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -278,7 +278,7 @@
       code: 200(Success),
       msg:  "头像更新成功",
       data: "newURL"
-    - 获取头像url：http://localhost:8080/auth/getavator
+    - 获取头像url：get http://localhost:8080/auth/getavator
     - 参数格式：
     - ```json
       携带一个"Authorization"的token
@@ -299,7 +299,7 @@
 
   - 用户信息查询
   - 查询当前登录用户的信息
-    - url: http:localhost:8080/auth/user/info
+    - url: get http://localhost:8080/auth/user/info
     - 参数格式 
     - ```json
       请求头携带一个"Authorization"的token
@@ -327,7 +327,7 @@
       }
     
   - 查询所有用户信息
-    - url: http:localhost:8080/user/all
+    - url: get http://localhost:8080/user/all
     - 参数格式：无
     - 响应格式
     - ```json
@@ -345,7 +345,7 @@
       ]
 
   - 更新当前登录用户的信息
-    - url: http:localhost:8080/auth/user/update
+    - url: put http://localhost:8080/auth/user/update
     - 参数格式： （PUT方法）
     - ```json
       请求头携带一个"Authorization"的token
@@ -381,7 +381,7 @@
 4. **文生图历史记录**
   - 总的记录，获取所有的图像信息（按id/create_time升序）：
   - Get方法
-    - url: localhost:8080/image/all 
+    - url: get http://localhost:8080/image/all 
     - 参数格式： 无（GET方法）
     - 响应格式：
     - ```json
@@ -408,7 +408,7 @@
 
 
   - 按照时间排序，获取当前登录用户在一段时间内的生成的图像信息
-    - url: localhost:8080/auth/user/images/timeRange
+    - url: get http://localhost:8080/auth/user/images/timeRange
     - 参数格式： ?start_time=YYYY-MM-DD&end_time=YYYY-MM-DD 
       （参数值也可以为完整的时间戳2006-01-02T15:04:05.000000Z）
     - ```json
@@ -446,7 +446,7 @@
         ]
       }
   - 获取指定的某张图像
-    - url: localhost:8080/auth/image
+    - url: get http://localhost:8080/image
     - 参数格式：?username= 或?id= 或?url=
 
     - 响应格式：
@@ -474,7 +474,7 @@
 
 
   - 获取当前登录用户生成的所有图像
-    - url: localhost:8080/auth/user/images
+    - url: get http://localhost:8080/auth/user/images
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
@@ -505,7 +505,7 @@
 
 
    - 点赞图片功能：
-   - url："localhost:8080/auth/like"
+   - url：post http://localhost:8080/auth/like
    - 参数格式：
    - ```json
      请求头携带一个"Authorization"的token
@@ -534,7 +534,7 @@
 5. **图片收藏界面**
   - 查询展示出用户的收藏图片
   - 获取当前用户收藏的图像
-    - url: localhost:8080/auth/user/favoritedimages
+    - url: get http://localhost:8080/auth/user/favoritedimages
     - 参数格式：（GET方法）
     - ```json
       请求头携带一个"Authorization"的token
@@ -542,7 +542,7 @@
 
   - 收藏图像
   - 收藏指定图像
-    - url：localhost:8080/auth/addFavoritedImage
+    - url：post http://localhost:8080/auth/addFavoritedImage
     - 参数格式：（POST方法）
     - ```json
       请求头携带一个"Authorization"的token
@@ -582,8 +582,8 @@
 
   - 取消图像收藏
   - 取消指定图像的收藏
-    - （DELETE方法）url：localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  
+    - url：delete http://localhost:8080/auth/deleteFavoritedImage
+    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
     - ```json
       请求头携带一个"Authorization"的token
     - 响应格式
@@ -616,7 +616,7 @@
 
 6. **签到增加积分接口**
     - GET方法，用户每次签到增加100积分，并保存记录
-    - url：http://localhost:8080/auth/score
+    - url：get http://localhost:8080/auth/score
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
@@ -645,9 +645,8 @@
       message："用户积分更新失败"
     
 7. **token校验功能**
-    - Get 方法，url：http://localhost:8080/auth/check
     - 校验用户的token
-    - url：http://localhost:8080/checkToken
+    - url：get http://localhost:8080/checkToken
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
