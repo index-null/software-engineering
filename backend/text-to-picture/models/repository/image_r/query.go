@@ -116,7 +116,7 @@ func GetImagesInfoWithinTimeRange(db *gorm.DB, username string, startTime, endTi
 // 获取所有图像信息并按id排序
 func GetAllImagesInfo(db *gorm.DB, username string) ([]i.ImageInformation, error) {
 	var images []i.ImageInformation
-	result := db.Table("imageinformation").Where("username = ?", username).Order("id ASC").Find(&images)
+	result := db.Table("imageinformation").Order("id ASC").Find(&images)//.Where("username = ?", username)
 	if result.Error != nil {
 		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
 	}

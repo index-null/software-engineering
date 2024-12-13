@@ -6,6 +6,19 @@ import (
 	"gorm.io/gorm"
 )
 
+func IsExist(db *gorm.DB, username string) (bool, error) {
+	var count int64
+	err := db.Table("userinformation").Where("username = ?", username).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	if count <= 0 {
+		return false, nil
+	} else {
+		return true, nil
+	}
+}
+
 func GetUserById(db *gorm.DB, id int) (*u.UserInformation, error) {
 	var user u.UserInformation
 	err := db.Table("userinformation").Where("id = ?", id).First(&user).Error

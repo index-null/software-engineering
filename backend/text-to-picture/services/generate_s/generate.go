@@ -10,12 +10,13 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	i "text-to-picture/models/image"
 	db "text-to-picture/models/init"
 	u "text-to-picture/models/user"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	//文件路径操作包
@@ -192,7 +193,7 @@ func GenerateImage(username string) (string, error) {
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\", \"SamplingMethod\": \"%s\"",
 			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
 		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
@@ -241,9 +242,9 @@ func SavetoOss() (string, error) {
 	// 填写存储空间名称，例如examplebucket。
 
 	// 示例操作：上传文件。
-	// filetime := time.Now().Format("2006-01-02 15:04:05")
-	// encodedPrompt := url.QueryEscape(imageParaments.Prompt)
-	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411251503682.png"
+	filetime := time.Now().Format("20060102154705")
+	//encodedPrompt := url.QueryEscape(imageParaments.Prompt)
+	objectName := "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/" + filetime + ".png"
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
