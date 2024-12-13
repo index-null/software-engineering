@@ -531,8 +531,8 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
 
   - 取消图像收藏
   - 取消指定图像的收藏
-    - url：localhost:8080/auth/deleteFavoritedImage
-    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  （DELETE方法）
+    - （DELETE方法）url：localhost:8080/auth/deleteFavoritedImage
+    - 参数格式：?url 或?id（收藏表的图像id，不是图像表的图像id）  
     - ```json
       请求头携带一个"Authorization"的token
     - 响应格式
@@ -594,6 +594,7 @@ jwt：登录要用到的登录验证中间件他会返回一个token用于身份
       message："用户积分更新失败"
     
 7. **token校验功能**
+    - Get 方法，url：http://localhost:8080/auth/check
     - 校验用户的token
     - 参数格式：
     - ```json
