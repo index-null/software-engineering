@@ -378,7 +378,7 @@
 4. **文生图历史记录**
   - 总的记录，获取所有的图像信息（按id/create_time升序）：
   - Get方法
-    - url: localhost:8080/image/all 
+    - url: get http://localhost:8080/image/all 
     - 参数格式： 无（GET方法）
     - 响应格式：
     - ```json
@@ -440,7 +440,7 @@
       ]
 
   - 获取指定的某张图像
-    - url: (GET) localhost:8080/auth/image
+    - url: get http://localhost:8080/image
     - 参数格式：?username= 或?id= 或?url=
 
     - 响应格式：
@@ -468,7 +468,7 @@
 
 
   - 获取当前登录用户生成的所有图像
-    - url: (GET) localhost:8080/auth/user/images
+    - url: get http://localhost:8080/auth/user/images
     - 参数格式：
     - ```json
       请求头携带一个"Authorization"的token
