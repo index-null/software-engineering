@@ -29,10 +29,19 @@
         <div class="avatar-container">
           <el-avatar :size="100" :src="avatarUrl"></el-avatar>
         </div>
-        <div class="nav-item">
-          <img :src="svgPaths.avatar" alt="info" class="nav-icon"/>
-          <router-link to="#" class="nav-link">{{ username }}</router-link>
-        </div>
+        <el-popconfirm
+          confirm-button-text='是'
+          cancel-button-text='取消'
+          icon="el-icon-info"
+          icon-color="red"
+          title="确定要退出登录吗？"
+          @confirm="handleLogout"
+        >
+          <div class="nav-item" slot="reference">
+            <img :src="svgPaths.avatar" alt="info" class="nav-icon"/>
+            <router-link to="#" class="nav-link">{{ username }}</router-link>
+          </div>
+        </el-popconfirm>
         <div class="nav-item" :class="{ 'active': activeRoute === '/main/settings' }" @click="setActiveRoute('/main/settings')">
           <img :src="svgPaths.setting" alt="info" class="nav-icon"/>
           <router-link to="/main/setting" class="nav-link">账户信息</router-link>
@@ -74,6 +83,12 @@ export default {
   methods: {
     setActiveRoute(route) {
       this.activeRoute = route;
+    },
+    handleLogout() {
+      // 清空 token
+      localStorage.removeItem('token');
+      // 跳转到登录注册页面
+      this.$router.push('/log-reg');
     }
   },
   watch: {
@@ -82,10 +97,28 @@ export default {
     }
   },
   created() {
+//     {
+//     "user": {
+//         "id": 1,
+//         "email": "root@example.com",
+//         "username": "root",
+//         "password": "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a",
+//         "avatar_url": "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+//         "score": 10000,
+//         "token": "",
+//         "create_time": "0001-01-01T00:00:00Z"
+//     }
+// }
     this.$axios.get('http://localhost:8080/auth/user/info').then(response => {
       localStorage.setItem('avatarUrl', response.data.user.avatar_url);
       localStorage.setItem('username', response.data.user.username);
+      localStorage.setItem('email',response.data.user.email)
+      localStorage.setItem('score',response.data.user.score)
+      localStorage.setItem('createTime',response.data.user.create_time)
       this.$message.success('用户信息获取成功');
+      this.$nextTick(() => {
+        this.$forceUpdate(); // 强制更新组件
+      });
     }).catch(error => {
       this.$message.error('获取用户信息失败');
       console.error('获取用户信息失败:', error);
