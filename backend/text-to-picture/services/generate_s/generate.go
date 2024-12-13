@@ -5,7 +5,7 @@ import (
 	"log"
 
 	//"net/http"
-	//"net/url"
+	// "net/url"
 	"os"
 	"reflect"
 	"time"
@@ -192,7 +192,7 @@ func GenerateImage(username string) (string, error) {
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("Prompt: %s, Width: %d, Height: %d, Steps: %d, SamplingMethod: %s",
+		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\", \"SamplingMethod\": \"%s\"",
 			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
 		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
