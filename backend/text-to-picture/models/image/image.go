@@ -24,6 +24,7 @@ type ImageInformation struct {
 	ID          int       `json:"id" gorm:"primarykey"`
 	UserName    string    `json:"username" gorm:"column:username;not null"`
 	Params      string    `json:"params"`
+	LikeCount	int		  `json:"likecount" gorm:"column:likecount"`
 	Picture     string    `json:"picture"`
 	Create_time time.Time `json:"create_time"`
 	//User        u.UserInformation `gorm:"foreignKey:UserName;references:Username"`

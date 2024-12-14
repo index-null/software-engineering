@@ -577,7 +577,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) http://localhost:8080/auth//image/feature`
+`(DELETE) http://localhost:8080/auth/image/feature`
 
 #### 请求头
 
@@ -599,7 +599,7 @@ POST http://localhost:8080/register
 | 401    | 无效的Token       | `{"message"："无效的Token"}`                                                             |
 | 401    | 未找到用户信息     | `{"message"："未找到用户信息"}`                                                          |
 | 500    | 根据关键字查询失败 | `{"message"："根据关键字查询失败"}`                                                       |
-| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "create_time":,},{……},…………]}`  |
+| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "likecount":, "create_time":,},{……},…………]}`  |
 ---
   
 

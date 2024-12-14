@@ -1,4 +1,4 @@
-package findbyfeature
+package findByFeature
 
 import (
 	"log"
