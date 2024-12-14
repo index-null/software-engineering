@@ -180,7 +180,7 @@ func InitTestUser() error {
 		// 创建ImageInformation记录
 		imageInfo := image2.ImageInformation{
 			UserName: "root", // 假设用户名为root
-			Params:   "Prompt:" + test + ", Width: 512, Height: 512, Steps: 20, SamplingMethod: Euler a",
+			Params:   "\"Prompt\": \"" + test + "\", \"Width\": \"512\", \"Height\": \"512\", \"Steps\": \"20\", \"SamplingMethod\": \"Euler a\"",
 			Picture:  imageURL,
 		}
 
