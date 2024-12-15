@@ -156,6 +156,8 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	}
 	// 生成图片并传递用户名
 	imageUrl, err := GenerateImage(username)
+	fmt.Println(imageUrl)
+	fmt.Println()
 	//校验生成图片
 	if err != nil {
 		log.Panicf("图片生成失败: %v", err)
@@ -213,7 +215,7 @@ func SavetoOss() (string, error) {
 	envPath := filepath.Join("config", "oss", "oss.env")
 
 	if err := godotenv.Load(envPath); err != nil {
-		log.Fatalf("Failed to load .env file: %v", err)
+		log.Printf("Failed to load .env file: %v", err)
 	}
 	// 从环境变量中获取访问凭证
 	accessKeyID := os.Getenv("OSS_ACCESS_KEY_ID")
@@ -236,7 +238,7 @@ func SavetoOss() (string, error) {
 	clientOptions = append(clientOptions, oss.AuthVersion(oss.AuthV2))
 	client, err = oss.New("https://"+region+".aliyuncs.com", accessKeyID, accessKeySecret, clientOptions...)
 	if err != nil {
-		log.Fatalf("Failed to create OSS client: %v", err)
+		log.Printf("Failed to create OSS client: %v", err)
 	}
 	// 填写存储空间名称，例如examplebucket。
 
@@ -246,7 +248,7 @@ func SavetoOss() (string, error) {
 	fmt.Println("objectName:", objectName)
 	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		log.Fatalf("上传失败，error%v", err)
+		log.Printf("上传失败，error%v", err)
 	}
 	bucket, err := client.Bucket(bucketName)
 	if err != nil {
@@ -261,7 +263,7 @@ func SavetoOss() (string, error) {
 
 // handleError 用于处理不可恢复的错误，并记录错误信息后终止程序。
 func handleError(err error) {
-	log.Fatalf("Error: %v", err)
+	log.Printf("Error: %v", err)
 }
 
 // uploadFile 用于将本地文件上传到OSS存储桶。
