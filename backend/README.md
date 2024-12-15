@@ -606,7 +606,8 @@ POST http://localhost:8080/register
 9. **管理员操作**
 ### 删除用户
 ### 功能
-  根据前端传来的username删除指定用户
+  根据前端传来的?username删除指定用户
+  如果?isOwn=true表示账号注销（即删除自己的账号信息，如果没有这个，则表示root用户删除违规账号）
 
 #### URL地址
 
@@ -622,7 +623,7 @@ POST http://localhost:8080/register
 
 #### 请求体
 无。
-通过查询参数:   ?username=
+通过查询参数:   ?username= (可选isOwn=true)
 
 #### 响应
 
@@ -637,6 +638,7 @@ POST http://localhost:8080/register
 | 400    | 用户不存在         | `{"message"："用户不存在"}`                       |
 | 500    | 删除用户失败       | `{"message"："删除用户失败"}`                      |
 | 200    | 成功删除用户       | `{"message"："成功删除用户：（用户名）"}`           |
+| 200    | 账号注销成功       | `{"message"："（用户名）的账号注销成功"}`           |
 ---
  
 

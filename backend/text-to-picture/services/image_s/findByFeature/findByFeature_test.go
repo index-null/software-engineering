@@ -232,9 +232,6 @@ func TestFindByFeature_NoToken(t *testing.T) {
 	// 检查响应状态码
 	assert.Equal(t, http.StatusUnauthorized, w.Code, "Expected status code to be Unauthorized")
 
-	// 检查响应状态码
-	assert.Equal(t, http.StatusUnauthorized, w.Code)
-
 	// 检查响应体
 	expectedResponse := gin.H{
 		"code":    float64(401),
