@@ -26,8 +26,10 @@ func DeleteUserByName(c *gin.Context) {
 
 	fmt.Println("当前的登录用户为：" + userName.(string))
 
+	isOwn := c.Query("isOwn")
+
 	// 非root用户，不能删除其他某个用户
-	if userName.(string) != "root" {
+	if (isOwn != "true" && isOwn != "True") && userName.(string) != "root" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			//"success": false,
 			"message": "非root用户，不可删除其他某个用户",
@@ -71,6 +73,9 @@ func DeleteUserByName(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "提交事务失败", "error": err.Error()})
 		return
 	}
-
+	if isOwn == "true" || isOwn == "True" {
+		c.JSON(200,gin.H{"message": username + "的账号注销成功"})
+		return 
+	}
 	c.JSON(200, gin.H{"message": "成功删除用户：" + username})
 }
