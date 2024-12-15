@@ -3,15 +3,19 @@ package findByFeature
 import (
 	"encoding/json"
 	"fmt"
+	//"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	//"path/filepath"
+	//"runtime"
 	"testing"
 
 	//middlewire "text-to-picture/middlewire/jwt"
 	middlewire "text-to-picture/middlewire/jwt"
 	"text-to-picture/models/image"
 	db "text-to-picture/models/init"
+	getDB "text-to-picture/config"
 	"time"
 
 	//"github.com/dgrijalva/jwt-go"
@@ -35,7 +39,7 @@ type DBConfig struct {
 // TestMain 是测试的入口函数
 func TestMain(m *testing.M) {
 	// 读取测试数据库配置
-	yamlFile, err := os.ReadFile("D:/软件工程项目/software-engineering/backend/text-to-picture/config/DBconfig/DBconfig.yaml")
+	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
 		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
 		os.Exit(1)
@@ -90,7 +94,7 @@ func TestFindByFeature_Success(t *testing.T) {
 	imageData := image.ImageInformation{
 		UserName:    "czh",
 		Params:      "{\"Prompt\": \"test_1\", \"Width\": 640}",
-		Picture:     "test10.png", //每次测试时修改一下，避免违反属性值唯一的约束
+		Picture:     "test14.png", //每次测试时修改一下，避免违反属性值唯一的约束
 		Create_time: time.Now(),
 	}
 	db.DB.Create(&imageData)
