@@ -227,6 +227,50 @@ paths:
       summary: 获取用户头像
       tags:
       - user
+  /auth/image/feature:
+    get:
+      consumes:
+      - application/json
+      description: 根据提供的特征列表查找图片
+      parameters:
+      - collectionFormat: csv
+        description: 特征列表
+        in: query
+        items:
+          type: string
+        name: feature
+        required: true
+        type: array
+      - description: 是否只查找自己的图片
+        in: query
+        name: isOwn
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功查找图片
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求错误
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 根据特征查找图片
+      tags:
+      - 图片管理
   /auth/like:
     put:
       consumes:
@@ -270,6 +314,48 @@ paths:
       summary: 点赞图片
       tags:
       - image
+  /auth/root/deleteOneUser:
+    delete:
+      consumes:
+      - application/json
+      description: 根据用户名删除用户，只有root用户才能删除其他用户
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功删除用户
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: 请求错误
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 未授权
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: 用户不存在
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 内部服务器错误
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 删除用户
+      tags:
+      - 用户管理
   /auth/setavator:
     post:
       consumes:
@@ -534,50 +620,6 @@ paths:
       summary: 获取所有图像信息
       tags:
       - images
-  /images/findByFeature:
-    get:
-      consumes:
-      - application/json
-      description: 根据提供的特征列表查找图片
-      parameters:
-      - collectionFormat: csv
-        description: 特征列表
-        in: query
-        items:
-          type: string
-        name: feature
-        required: true
-        type: array
-      - description: 是否只查找自己的图片
-        in: query
-        name: isOwn
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功查找图片
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: 请求错误
-          schema:
-            additionalProperties: true
-            type: object
-        "401":
-          description: 未授权
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: 内部服务器错误
-          schema:
-            additionalProperties: true
-            type: object
-      summary: 根据特征查找图片
-      tags:
-      - 图片管理
   /login:
     post:
       consumes:
@@ -668,46 +710,4 @@ paths:
       summary: 获取所有用户信息
       tags:
       - users
-  /users:
-    delete:
-      consumes:
-      - application/json
-      description: 根据用户名删除用户，只有root用户才能删除其他用户
-      parameters:
-      - description: 用户名
-        in: query
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功删除用户
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: 请求错误
-          schema:
-            additionalProperties: true
-            type: object
-        "401":
-          description: 未授权
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: 用户不存在
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: 内部服务器错误
-          schema:
-            additionalProperties: true
-            type: object
-      summary: 删除用户
-      tags:
-      - 用户管理
 swagger: "2.0"

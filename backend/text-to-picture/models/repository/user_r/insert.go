@@ -49,6 +49,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 		return fmt.Errorf("查询邮箱时发生错误: %v", result.Error)
 	}
 	user.Create_time = time.Now()
+	user.Score = 100 // 注册时给一点积分
 
 	if err := db.Create(user).Error; err != nil {
 		return fmt.Errorf("插入用户表失败: %v", err)

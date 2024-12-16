@@ -23,7 +23,7 @@ import (
 // @Failure 401 {object} map[string]interface{} "未授权"
 // @Failure 404 {object} map[string]interface{} "用户不存在"
 // @Failure 500 {object} map[string]interface{} "内部服务器错误"
-// @Router /users [delete]
+// @Router /auth/root/deleteOneUser [delete]
 func DeleteUserByName(c *gin.Context) {
 	// 从上下文中获取用户名
 	userName, exists := c.Get("username")
