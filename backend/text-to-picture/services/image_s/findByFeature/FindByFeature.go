@@ -25,7 +25,7 @@ import (
 // @Failure 400 {object} map[string]interface{} "请求错误"
 // @Failure 401 {object} map[string]interface{} "未授权"
 // @Failure 500 {object} map[string]interface{} "内部服务器错误"
-// @Router /images/findByFeature [get]
+// @Router /auth/image/feature [get]
 func FindByFeature(c *gin.Context) {
 	// 从查询参数中获取特征列表
 	features := c.QueryArray("feature")
