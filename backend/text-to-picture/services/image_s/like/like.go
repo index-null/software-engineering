@@ -8,12 +8,16 @@ import (
 	db "text-to-picture/models/init"
 )
 
+type ReqBody struct {
+	URL string `json:"url"`
+}
+
 // @Summary 点赞图片
 // @Description 点赞图片接口
 // @Tags image
 // @Accept json
 // @Produce json
-// @Param requestBody body struct { URL string `json:"url"` } true "图片 URL"
+// @Param requestBody body like.ReqBody true "图片 URL"
 // @Success 200 {object} map[string]interface{} "点赞成功"
 // @Failure 400 {object} map[string]interface{} "缺少图片 URL"
 // @Failure 401 {object} map[string]interface{} "名字解析出错"
@@ -22,10 +26,8 @@ import (
 // @Router /auth/like [put]
 func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
-	var reqBody struct {
-		URL string `json:"url"`
-	}
 
+	var reqBody ReqBody
 	c.BindJSON(&reqBody)
 	imageURL := reqBody.URL
 

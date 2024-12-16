@@ -106,73 +106,72 @@ func InitDB() error {
 }
 
 func InitTestUser() error {
-    tx := DB.Begin()
-    defer func() {
-        if r := recover(); r != nil {
-            tx.Rollback()
-        }
-    }()
+	tx := DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
-    var user user2.UserInformation
-    result := tx.Where("username=?", "root").First(&user)
+	var user user2.UserInformation
+	result := tx.Where("username=?", "root").First(&user)
 
-    if result.Error == nil {
-        log.Printf("User already exists")
-        fmt.Println("\nUser already exists\n")
+	if result.Error == nil {
+		log.Printf("User already exists")
 
-        // 更新用户分数
-        user.Score = 10000
-        if result := tx.Save(&user); result.Error != nil {
-            log.Printf("Failed to update user score: %v", result.Error)
-            tx.Rollback()
-            return result.Error
-        }
+		// 更新用户分数
+		user.Score = 10000
+		if result := tx.Save(&user); result.Error != nil {
+			log.Printf("Failed to update user score: %v", result.Error)
+			tx.Rollback()
+			return result.Error
+		}
 
-        tx.Commit()
-        return nil
-    } else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-        log.Printf("Failed to find user: %v", result.Error)
-        tx.Rollback()
-        return result.Error
-    }
+		tx.Commit()
+		return nil
+	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		log.Printf("Failed to find user: %v", result.Error)
+		tx.Rollback()
+		return result.Error
+	}
 
-    // 创建用户信息
-    user = user2.UserInformation{
-        Email:      "root@example.com",
-        UserName:   "root",
-        Password:   "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a", //111111
-        Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
-        Score:      10000,
-    }
-    if result := tx.Create(&user); result.Error != nil {
-        log.Printf("Failed to create user: %v", result.Error)
-        tx.Rollback()
-        return result.Error
-    }
+	// 创建用户信息
+	user = user2.UserInformation{
+		Email:      "root@example.com",
+		UserName:   "root",
+		Password:   "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a", //111111
+		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+		Score:      10000,
+	}
+	if result := tx.Create(&user); result.Error != nil {
+		log.Printf("Failed to create user: %v", result.Error)
+		tx.Rollback()
+		return result.Error
+	}
 
-    // 创建用户积分记录
-    userscore := user2.UserScore{
-        Username: "root",
-        Record:   "积分+100",
-    }
-    if result := tx.Create(&userscore); result.Error != nil {
-        log.Printf("Failed to create record: %v", result.Error)
-        tx.Rollback()
-        return result.Error
-    }
+	// 创建用户积分记录
+	userscore := user2.UserScore{
+		Username: "root",
+		Record:   "积分+100",
+	}
+	if result := tx.Create(&userscore); result.Error != nil {
+		log.Printf("Failed to create record: %v", result.Error)
+		tx.Rollback()
+		return result.Error
+	}
 
-    // 处理图片文件路径
-    ImgfilePath := filepath.Join("assets", "examples", "images", "image_urls.txt")
-    file, err := os.Open(ImgfilePath)
-    if err != nil {
-        log.Printf("Failed to open file: %v", err)
-        tx.Rollback()
-        return err
-    }
-    defer file.Close()
+	// 处理图片文件路径
+	ImgfilePath := filepath.Join("assets", "examples", "images", "image_urls.txt")
+	file, err := os.Open(ImgfilePath)
+	if err != nil {
+		log.Printf("Failed to open file: %v", err)
+		tx.Rollback()
+		return err
+	}
+	defer file.Close()
 
-    i := 0
-    scanner := bufio.NewScanner(file)
+	i := 0
+	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		imageURL := scanner.Text()
 		i++
@@ -191,37 +190,37 @@ func InitTestUser() error {
 			return result.Error
 		}
 	}
-    if err := scanner.Err(); err != nil {
-        log.Printf("Failed to read file: %v", err)
-        tx.Rollback()
-        return fmt.Errorf("%v", err)
-    }
+	if err := scanner.Err(); err != nil {
+		log.Printf("Failed to read file: %v", err)
+		tx.Rollback()
+		return fmt.Errorf("%v", err)
+	}
 
-    // 创建图片点赞记录
-    imagelike := image2.ImageLike{
-        Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282351707.png",
-        UserName: "root",
-    }
-    if result := tx.Create(&imagelike); result.Error != nil {
-        log.Printf("Failed to create image like: %v", result.Error)
-        tx.Rollback()
-        return result.Error
-    }
+	// 创建图片点赞记录
+	imagelike := image2.ImageLike{
+		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282351707.png",
+		UserName: "root",
+	}
+	if result := tx.Create(&imagelike); result.Error != nil {
+		log.Printf("Failed to create image like: %v", result.Error)
+		tx.Rollback()
+		return result.Error
+	}
 
-    // 创建图片收藏记录
-    imagefavor := image2.FavoritedImages{
-        UserName: "root",
-        Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347058.jpg",
-    }
-    if result := tx.Create(&imagefavor); result.Error != nil {
-        log.Printf("Failed to create image favor: %v", result.Error)
-        tx.Rollback()
-        return result.Error
-    }
+	// 创建图片收藏记录
+	imagefavor := image2.FavoritedImages{
+		UserName: "root",
+		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347058.jpg",
+	}
+	if result := tx.Create(&imagefavor); result.Error != nil {
+		log.Printf("Failed to create image favor: %v", result.Error)
+		tx.Rollback()
+		return result.Error
+	}
 
-    if err := tx.Commit().Error; err != nil {
-        return fmt.Errorf("failed to commit transaction: %v", err)
-    }
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
 
-    return nil
+	return nil
 }

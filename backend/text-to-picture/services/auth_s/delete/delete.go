@@ -12,6 +12,18 @@ import (
 	//"gorm.io/gorm"
 )
 
+// @Summary 删除用户
+// @Description 根据用户名删除用户，只有root用户才能删除其他用户
+// @Tags 用户管理
+// @Accept json
+// @Produce json
+// @Param username query string true "用户名"
+// @Success 200 {object} map[string]interface{} "成功删除用户"
+// @Failure 400 {object} map[string]interface{} "请求错误"
+// @Failure 401 {object} map[string]interface{} "未授权"
+// @Failure 404 {object} map[string]interface{} "用户不存在"
+// @Failure 500 {object} map[string]interface{} "内部服务器错误"
+// @Router /users [delete]
 func DeleteUserByName(c *gin.Context) {
 	// 从上下文中获取用户名
 	userName, exists := c.Get("username")
