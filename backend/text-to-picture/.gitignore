@@ -151,3 +151,6 @@ config/DBconfig/DBconfig.yaml
 *.p12
 *.pfx
 *.der
+
+backend/text-to-picture/czh_demo
+czh_demo/

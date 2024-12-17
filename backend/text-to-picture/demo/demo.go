@@ -17,7 +17,7 @@ type Input struct {
 type Parameters struct {
 	//Style string `json:"style"`
 	Size string `json:"size"`
-	//N    int    `json:"n"`
+	//N    int    `json:"n"`// 默认为4
 }
 
 type RequestBody struct {
@@ -60,7 +60,7 @@ func main() {
 		Parameters: Parameters{
 			//Style: "<auto>",
 			Size: "1024*1024",
-			N:    1,
+			//N:    1,
 		},
 	}
 
