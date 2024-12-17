@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-func GetDBConfigPath() string {
+func getDBConfigPath() string {
 	// 获取调用者的文件名（即 login_test.go 或 findByFeature.go）
 	_, filename, _, ok := runtime.Caller(2) // 注意这里使用 Caller(2)
 	if !ok {
@@ -29,4 +29,8 @@ func GetDBConfigPath() string {
 	simplifiedPath := filepath.Clean(absPath)
 
 	return simplifiedPath
+}
+
+func GetDBConfigPath() string {
+	return getDBConfigPath()
 }

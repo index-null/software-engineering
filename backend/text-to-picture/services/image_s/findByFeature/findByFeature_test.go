@@ -94,7 +94,7 @@ func TestFindByFeature_Success(t *testing.T) {
 	imageData := image.ImageInformation{
 		UserName:    "czh",
 		Params:      "{\"Prompt\": \"test_1\", \"Width\": 640}",
-		Picture:     "test14.png", //每次测试时修改一下，避免违反属性值唯一的约束
+		Picture:     "test_15.png", //每次测试时修改一下，避免违反属性值唯一的约束
 		Create_time: time.Now(),
 	}
 	db.DB.Create(&imageData)
