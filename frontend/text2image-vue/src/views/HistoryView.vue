@@ -1,147 +1,200 @@
 <template>
-  <div class="history-container">
-    <h2>历史记录</h2>
-    <div v-if="historyRecords.length === 0">没有历史记录。</div>
-    <div class="history-records" v-else>
-      <div class="record" v-for="record in historyRecords" :key="record.id" >
-        <img :src="record.image_url" alt="History Image" class="history-image" />
-        <div class="record-details">
-          <p>提示词: {{ record.prompt }}</p>
-          <p>生成时间: {{ record.created_at }}</p>
-          <el-button type="text" @click="regenerateImage(record)">重新生成</el-button>
-          <el-button type="danger" icon="el-icon-delete" circle @click="deleteRecord(record.id)"></el-button>
-          <el-button type="text" @click="viewImage(record)">查看</el-button>
-          <el-button type="text" @click="downloadImage(record)">下载</el-button>
-      </div>
-      </div>
-    <div class="pagination">
-      <el-button @click="fetchHistoryRecords(currentPage - 1, pageSize)" :disabled="currentPage <= 1">上一页</el-button>
-      <span>第 {{ currentPage }} 页，共 {{ Math.ceil(totalRecords / pageSize) }} 页</span>
-      <el-button @click="fetchHistoryRecords(currentPage + 1, pageSize)" :disabled="currentPage >= Math.ceil(totalRecords / pageSize)">下一页</el-button>
+    <div class="history-container">
+        <h2>历史记录</h2>
+         <div   v-if="historyRecords&&historyRecords.length" class="image-gallery-container">
+            <div v-for="image in historyRecords" :key="image.id"  class="image-card">
+                <img :src="image.url" :alt="image.name" class="image">                 
+            </div>
+        </div>
+        
+        <!-- 提示没有收藏 -->
+        <div v-else>
+            <img :src="require('@/assets/nofavorites.png')" alt="暂无收藏">
+            <h1>暂无收藏</h1>
+        </div>
     </div>
-  </div>
-  </div>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      historyRecords: [],
-      currentPage: 1, 
-      pageSize: 10, 
-      totalRecords: 0, 
-      isLoading: true,
-    };
-  },
-  methods: {
-      fetchHistoryRecords(page, size) {
-          // axios.get('/api/history-records', { params: { page, size } })
-          // .then(response => {
-          //     this.historyRecords = response.data.records;
-          //     this.totalRecords = response.data.total; // 假设后端返回总记录数
-          // })
-          // .catch(error => {
-          //     console.error('获取历史记录失败:', error);
-          //     this.$message.error('获取历史记录失败');
-          // });
-      // 模拟 API 调用
-      this.currentPage = page; // 更新当前页码
-      const mockData = {
-        records: [],
-          total: 100 
-      };
-
-      // 模拟分页逻辑
-      const start = (page - 1) * size;
-      const end = Math.min(start + size, mockData.total);
-      for (let i = start; i < end && i < mockData.total; i++) {
-      mockData.records.push({
-          id: i + 1,
-          image_url: `https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347060.jpg`,
-          prompt: 'Test prompt',
-          created_at: '2024-01-' + (i + 1) 
-      });
-      }
-
-      // 延迟模拟网络请求
-      setTimeout(() => {
-          this.historyRecords = mockData.records;
-          this.totalRecords = mockData.total;
-          this.isLoading = false;
-      }, 1000); // 模拟1秒的网络延迟
-          
-      },
-    regenerateImage() {
-      // 重新生成图片的逻辑，可能需要重新调用 generateImage 方法，并传入相应的参数
+    data() {
+        return {
+            historyRecords: [],
+            //currentPage: 1,
+            //pageSize: 10,
+            //totalRecords: 0,
+            //isLoading: true,
+            token: localStorage.getItem('token') || '', 
+        };
     },
-    deleteRecord(id) {
-      axios.delete(`/api/history-records/${id}`)
-        .then(() => {
-          this.fetchHistoryRecords(); 
-          this.$message.success('记录已删除');
-        })
-        .catch(error => {
-          console.error('删除记录失败:', error);
-          this.$message.error('删除记录失败');
-        });
+    methods: {
+       async getHistoryImages() {
+            try {
+                const response = await fetch("http://localhost:8080/auth/user/images", {
+                    method: 'GET',
+                    headers: {
+                        Authorization: this.token,  // 携带 token
+                    },
+                })
+
+               //const data = await response.json();
+                //const images = data.images;
+
+                // 解析JSON字符串
+                const data = await response.json();
+                console.log(data);
+
+                const images=data.images;
+                //console.log(Array.isArray(images)); // 输出: true，表示images是一个数组
+
+                images.forEach(item => {
+                   
+                //     this.historyRecords.push({
+                //         id: item.id,
+                //         name: item.username,
+                //         grams: item.params,
+                //         url: item.picture,              
+                //         likecount: item.likecount,
+                //         createtime: item.create_time
+                // })
+                // console.log(this.historyRecords);
+                if (!this.historyRecords.some(record => record.id === item.id)) {
+                    this.historyRecords.push({
+                        id: item.id,
+                        name: item.username,
+                        grams: item.params,
+                        url: item.picture,              
+                        likecount: item.likecount,
+                        createtime: item.create_time
+                    });
+                } else {
+                    console.log(`记录 id: ${item.id} 已经存在，跳过添加`);
+                }
+            });
+            } catch (error) {
+                console.error('获取收藏的图片失败:', error.response?.data || error.message);
+            }
+        },
+
+        deleteRecord(id) {
+            axios.delete(`/api/history-records/${id}`)
+                .then(() => {
+                    this.fetchHistoryRecords();
+                    this.$message.success('记录已删除');
+                })
+                .catch(error => {
+                    console.error('删除记录失败:', error);
+                    this.$message.error('删除记录失败');
+                });
+        },
+        viewImage(record) {
+            window.open(record.image_url, '_blank');
+        },
+        downloadImage(record) {
+            const link = document.createElement('a');
+            link.href = record.image_url;
+            link.download = 'downloaded_image.png'; // 你可以根据需要更改文件名
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+        
     },
-    viewImage(record) {
-      window.open(record.image_url, '_blank');
-  },
-  downloadImage(record) {
-      const link = document.createElement('a');
-      link.href = record.image_url;
-      link.download = 'downloaded_image.png'; // 你可以根据需要更改文件名
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  },
-  onPreviousPage() {
-      this.fetchHistoryRecords(this.currentPage - 1, this.pageSize);
-  },
-  onNextPage() {
-      this.fetchHistoryRecords(this.currentPage + 1, this.pageSize);
-  }
-  },
-  mounted() {
-      this.fetchHistoryRecords(this.currentPage, this.pageSize);
-  }
+    mounted() {
+        this.getHistoryImages();
+        //this.fetchHistoryRecords(this.currentPage, this.pageSize);
+    }
 };
 </script>
 
 <style scoped>
+.image-gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 80px;
+    padding: 20px;
+    margin-left: 130px;
+    margin-top: 100px;
+    width: 100%;
+    /* 容器宽度设置为页面宽度的 100% */
+}
+
+.image-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-card:hover .overlay {
+    opacity: 1;
+}
+
+.overlay button {
+    background: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
 .history-container {
-  padding: 20px;
-  margin: 0 auto;
-  text-align: center;
+    padding: 20px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .history-records {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
 .record {
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 4px;
-  width: calc(33.333% - 20px);
-  text-align: center; 
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    width: calc(33.333% - 20px);
+    text-align: center;
 }
 
 .history-image {
-  display: block; 
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
 }
 
 .record-details {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 </style>
