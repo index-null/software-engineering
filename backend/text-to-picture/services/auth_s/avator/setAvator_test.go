@@ -18,6 +18,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"fmt"
 	db "text-to-picture/models/init"
+	getDB "text-to-picture/config"
 )
 
 func setupRouter() *gin.Engine {
@@ -30,7 +31,7 @@ func setupRouter() *gin.Engine {
 func TestSetAvator(t *testing.T) {
 	
 	//写入DBConfig.yaml文件（数据库的配置文件）
-	yamlFile , err := os.ReadFile("D:/go project/src/gocode/software-engineering/backend/text-to-picture/config/DBconfig/DBconfig.yaml")
+	yamlFile , err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
 		t.Fatalf("Error reading config.yaml file: %v", err)
 		os.Exit(1)

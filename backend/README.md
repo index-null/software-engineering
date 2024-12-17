@@ -103,7 +103,7 @@
 ### 开发内容
 #### 管理员账号：
 - username:root
-- password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
+- password:111111(加密后"bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a")
 1. **登陆注册接口**
 #### 注册数据格式：
 - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
@@ -577,7 +577,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) http://localhost:8080/auth//image/feature`
+`(DELETE) http://localhost:8080/auth/image/feature`
 
 #### 请求头
 
@@ -599,14 +599,15 @@ POST http://localhost:8080/register
 | 401    | 无效的Token       | `{"message"："无效的Token"}`                                                             |
 | 401    | 未找到用户信息     | `{"message"："未找到用户信息"}`                                                          |
 | 500    | 根据关键字查询失败 | `{"message"："根据关键字查询失败"}`                                                       |
-| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "create_time":,},{……},…………]}`  |
+| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "likecount":, "create_time":,},{……},…………]}`  |
 ---
   
 
 9. **管理员操作**
 ### 删除用户
 ### 功能
-  根据前端传来的username删除指定用户
+  根据前端传来的?username删除指定用户
+  如果?isOwn=true表示账号注销（即删除自己的账号信息，如果没有这个，则表示root用户删除违规账号）
 
 #### URL地址
 
@@ -622,7 +623,7 @@ POST http://localhost:8080/register
 
 #### 请求体
 无。
-通过查询参数:   ?username=
+通过查询参数:   ?username= (可选isOwn=true)
 
 #### 响应
 
@@ -637,6 +638,7 @@ POST http://localhost:8080/register
 | 400    | 用户不存在         | `{"message"："用户不存在"}`                       |
 | 500    | 删除用户失败       | `{"message"："删除用户失败"}`                      |
 | 200    | 成功删除用户       | `{"message"："成功删除用户：（用户名）"}`           |
+| 200    | 账号注销成功       | `{"message"："（用户名）的账号注销成功"}`           |
 ---
  
 
