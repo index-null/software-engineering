@@ -39,6 +39,7 @@ export default {
     methods: {
         // 获取用户收藏的图片
         async getFavoritedImages() {
+            //console.log(this.token);
             try {
                 const response = await fetch("http://localhost:8080/auth/user/favoritedimages", {
                     method: 'GET',
@@ -46,6 +47,7 @@ export default {
                         Authorization: this.token,  // 携带 token
                     },
                 })
+                
                 const data = await response.json();
                 data.forEach(item => {
                     this.images.push({
@@ -54,6 +56,7 @@ export default {
                         name: item.username,
                         isFavorite: true   
                 })
+                //console.log(this.images);
             });
             } catch (error) {
                 console.error('获取收藏的图片失败:', error.response?.data || error.message);
