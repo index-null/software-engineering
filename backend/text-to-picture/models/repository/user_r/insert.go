@@ -51,7 +51,7 @@ func InsertUserInformation(db *gorm.DB, user *userLogin.UserInformation) error {
 	user.Create_time = time.Now()
 
 	if err := db.Create(user).Error; err != nil {
-		return fmt.Errorf("插入用户登录表失败: %v", err)
+		return fmt.Errorf("插入用户表失败: %v", err)
 	}
 
 	return nil

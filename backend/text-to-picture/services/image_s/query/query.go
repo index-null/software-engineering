@@ -1,6 +1,7 @@
 package query
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -95,6 +96,7 @@ func GetUserFavoritedImages(c *gin.Context) {
 	// if username != ""{
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
+	fmt.Println(username.(string))
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{
@@ -213,7 +215,7 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{
-			"success": false,
+			"code":    401,
 			"message": "未找到用户信息",
 		})
 		return
@@ -233,18 +235,24 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 	if timeRegex.MatchString(startTimeStr) { //含时间部分
 		startTime, err = time.Parse("2006-01-02T15:04:05Z", startTimeStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式", "error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    400,
+				"message": "无效的开始时间格式", "error": err.Error()})
 			return
 		}
 	} else if dateRegex.MatchString(startTimeStr) { //不含时间部分
 		startTime, err = time.Parse("2006-01-02", startTimeStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式", "error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    400,
+				"message": "无效的开始时间格式", "error": err.Error()})
 			return
 		}
 		startTime = time.Date(startTime.Year(), startTime.Month(), startTime.Day(), 0, 0, 0, 0, time.UTC)
 	} else { //都不符合
-		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的开始时间格式"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "无效的开始时间格式"})
 		return
 	}
 
@@ -252,28 +260,37 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 	if timeRegex.MatchString(endTimeStr) { //含时间部分
 		endTime, err = time.Parse("2006-01-02T15:04:05Z", endTimeStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式", "error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    400,
+				"message": "无效的结束时间格式", "error": err.Error()})
 			return
 		}
 	} else if dateRegex.MatchString(endTimeStr) { //不含时间部分
 		endTime, err = time.Parse("2006-01-02", endTimeStr)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式", "error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code":    400,
+				"message": "无效的结束时间格式", "error": err.Error()})
 			return
 		}
 		endTime = time.Date(endTime.Year(), endTime.Month(), endTime.Day(), 23, 59, 59, 999999999, time.UTC)
 	} else { //都不符合
-		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的结束时间格式"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "无效的结束时间格式"})
 		return
 	}
 
 	images, err := image_r.GetImagesInfoWithinTimeRange(d.DB, username.(string), startTime, endTime)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "查询图像列表失败", "error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "查询图像列表失败", "error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
 		"message": "查询图像列表成功",
 		"images":  images,
 	})
@@ -289,18 +306,8 @@ func GetImagesWithinTimeRange(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "获取图像列表失败"
 // @Router /image/all [get]
 func GetAllImages(c *gin.Context) {
-	// 从上下文中获取用户名
-	username, exists := c.Get("username")
-	if !exists {
-		log.Printf("未找到用户名")
-		c.JSON(401, gin.H{
-			"success": false,
-			"message": "未找到用户信息",
-		})
-		return
-	}
 
-	images, err := image_r.GetAllImagesInfo(d.DB, username.(string))
+	images, err := image_r.GetAllImagesInfo(d.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取图像列表失败", "error": err.Error()})
 		return

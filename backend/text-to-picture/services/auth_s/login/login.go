@@ -2,14 +2,16 @@ package auth_s
 
 import (
 	"errors"
-	"github.com/dgrijalva/jwt-go"
 	"log"
+	"fmt"
 	"net/http"
 	middlewire "text-to-picture/middlewire/jwt"
 	models "text-to-picture/models/init"
 	"text-to-picture/models/repository/user_r"
 	userLogin "text-to-picture/models/user"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -38,7 +40,7 @@ func Register(c *gin.Context) {
 			"message": "请求数据格式错误"})
 		return
 	}
-
+	input.Avatar_url = "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412092143859.png"
 	//插入数据
 	if err := user_r.InsertUserInformation(models.DB, &input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -81,6 +83,7 @@ func Login(c *gin.Context) {
 			"message": "请求数据格式错误"})
 		return
 	}
+	fmt.Println(input.Password)
 
 	// 查找用户
 	user, err := user_r.GetUserByName(models.DB, input.Name)
@@ -125,7 +128,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// 更新用户的 token
+	// // 更新用户的 token
 	updates := map[string]interface{}{
 		"token": tokenString,
 	}

@@ -3,6 +3,7 @@ package generate_s
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -42,7 +43,7 @@ func TestGenerateImageValidRequest(t *testing.T) {
 	r.POST("/generate", generator.ReturnImage)
 
 	os.Setenv("DB_USER", "postgres")
-	os.Setenv("DB_PASSWORD", "07080031")
+	os.Setenv("DB_PASSWORD", "czh20040301")
 	os.Setenv("DB_HOST", "localhost")
 	os.Setenv("DB_PORT", "5432")
 	os.Setenv("DB_NAME", "postgres")
@@ -132,6 +133,7 @@ func TestGenerateImageSuccessfulRequest(t *testing.T) {
 	assert.Equal(t, 200, response.Code)
 	assert.Equal(t, true, response.Success)
 	assert.NotEmpty(t, response.Image_url)
+	fmt.Println("response:", response)
 }
 
 func TestGenerateImageLackingKeyWordRequest(t *testing.T) {

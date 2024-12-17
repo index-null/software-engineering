@@ -1,9 +1,15 @@
 <template>
+  <div class="container">
   <div class="log-reg-container">
-    <!-- <div class="left-side-container">
-      <img src="https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347055.jpg" alt="#">
-    </div> -->
+    <div class="left-side-container">
+      <div class="text-bold">用简单的文案</div>
+      <div class="text-bold-smaller">创作精彩的图片!</div>
+    </div>
     <div class="right-side-container">
+      <div class="title">
+        <img src="@/assets/button-icon/文生图-gray.svg" alt="">
+        <div class="title-text">{{ appName }}</div>
+      </div>
       <el-tabs type="border-card">
         <el-tab-pane label="注册">
           <!-- <el-card class="box-card"> -->
@@ -76,12 +82,19 @@
       </el-tabs>
     </div>
   </div>
+</div>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
+  computed: {
+    appName() {
+      return this.$store.state.appName;
+    },
+  },
+
   data() {
     const validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -138,75 +151,86 @@ export default {
     };
   },
   methods: {
-    async hashPassword(password) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    },
-    async submitLoginForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
-          let hashedPassword = await this.hashPassword(this.loginForm.password);
-          let formData = {
-            username: this.loginForm.username,
-            password: hashedPassword
-          };
-          axios.post('http://localhost:8080/login', formData)
-            .then(response => {
-              if (response.data.message === '登录成功') {
-                this.$message.success('登录成功');
-                this.$router.push('/home');
-              } else {
-                this.$message.error(response.data.message);
-              }
-            })
-            .catch(error => {
-              console.error('登录失败:', error);
-              this.$message.error('登录过程中发生错误');
-            });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    resetLoginForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-    async submitRegisterForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
-          try {
-            const hashedPassword = await this.hashPassword(this.registerForm.password);
-            const formattedFormData = {
-              email: this.registerForm.email,
-              username: this.registerForm.uname,
-              password: hashedPassword
-            };
-            console.log(formattedFormData);
-            const response = await axios.post('http://localhost:8080/register', formattedFormData);
-            if (response.data.message === '注册成功') {
-              console.log('注册成功');
-              this.$router.push('/login');
-            } else {
-              this.$message.error(response.data.message);
+  async hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  },
+  async submitLoginForm(formName) {
+    this.$refs[formName].validate(async (valid) => {
+      if (valid) {
+        let hashedPassword = await this.hashPassword(this.loginForm.password);
+        let formData = {
+          username: this.loginForm.username,
+          password: hashedPassword
+        };
+        try {
+          const response = await axios.post('http://localhost:8080/login', formData);
+          if (response.data.code === 200) {
+            localStorage.setItem('token', response.data.token);
+            
+            this.$message.success('登录成功');
+            this.$router.push('/main');
+          } 
+        } catch (error) {
+          if (error.response) {
+            // 服务器返回了错误响应
+            switch (error.response.status) {
+              case 401:
+                this.$message.error('用户名或密码错误');
+                break;
+              default:
+                this.$message.error('登录过程中发生错误');
             }
-          } catch (error) {
-            console.error('注册失败:', error);
-            if (error.response) {
-              this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-            } else if (error.request) {
-              this.$message.error('请求未响应，请检查网络连接');
-            } else {
-              this.$message.error('请求发送失败，请稍后再试');
-            }
+          } else {
+            // 其他错误，如网络问题
+            this.$message.error('登录过程中发生错误');
           }
         }
-      });
-    },
+      } else {
+        console.log("error submit!!");
+        return false;
+      }
+    });
+  },
+  resetLoginForm(formName) {
+    this.$refs[formName].resetFields();
+  },
+  async submitRegisterForm(formName) {
+    this.$refs[formName].validate(async (valid) => {
+      if (valid) {
+        try {
+          const hashedPassword = await this.hashPassword(this.registerForm.password);
+          const formattedFormData = {
+            email: this.registerForm.email,
+            username: this.registerForm.uname,
+            password: hashedPassword
+          };
+          const response = await axios.post('http://localhost:8080/register', formattedFormData);
+          if (response.data.code === 200) {
+            this.$message.success('注册成功');
+          } 
+        } catch (error) {
+          if (error.response) {
+            // 服务器返回了错误响应
+            switch (error.response.status) {
+              case 401:
+                this.$message.error('用户名或密码错误');
+                break;
+              default:
+                this.$message.error('注册过程中发生错误');
+            }
+          } else {
+            // 其他错误，如网络问题
+            this.$message.error('注册过程中发生错误');
+          }
+        }
+      }
+    });
+  },
     resetRegisterForm(formName) {
       this.$refs[formName].resetFields();
     },
@@ -218,29 +242,73 @@ export default {
 .log-reg-container {
   display: flex;
   height: 100vh;
-  background-color: #ffffff;
+  width: 100vw;
+  background-color: 0F131C;
 }
 
 .left-side-container {
   flex: 1;
+  background-image: url(https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412091935661.jpg);
+  background-size: cover;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  border-radius: 10px; /* 添加圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+}
+.text-bold {
+  font-weight: bold;
+  font-size: 40px;
+  color: white;
+  margin-top: 10vh;
+  margin-bottom: 10px; /* 调整两段文字之间的间距 */
+  transform: translateX(-12vw); /* 向左偏移 */
+}
+
+.text-bold-smaller {
+  font-weight: bold;
+  font-size: 30px;
+  color: white;
+  transform: translateX(-5vw); /* 向右偏移 */
 }
 
 .right-side-container {
   flex: 1;
   display: flex;
-  justify-content: center;
+  gap: 0px;
   align-items: center;
+  flex-direction: column;
+  background-color: #0F131C; /* 添加背景色 */
+  padding: 20px; /* 添加内边距 */
+  border-radius: 10px; /* 添加圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影 */
 }
 
-.box-card {
-  width: 400px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  background-color: #ffffff;
+.title {
+  font-size: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 修改对齐方式 */
+  gap: 0;
+  height: 10vh;
+  margin-bottom: 10vh;
+}
+
+.title img {
+  width: 70px;
+  height: 70px;
+  margin-right: 10px;
+}
+
+.title-text {
+  font-family: 'Roboto', sans-serif; /* 使用现代字体 */
+
+  color: #333333; /* 文字颜色 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* 添加文字阴影 */
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* 渐变背景色 */
+  -webkit-background-clip: text; /* 将背景应用于文字 */
+  -webkit-text-fill-color: transparent; /* 使文字透明以显示背景 */
 }
 
 h2 {
@@ -252,6 +320,7 @@ h2 {
 .login-form, .register-form {
   margin: 0 auto;
   width: 100%;
+  max-width: 400px; /* 设置最大宽度 */
 }
 
 .btn-group {
@@ -274,5 +343,39 @@ h2 {
   margin-bottom: 10px;
   border-radius: 4px;
   transition: border-color 0.3s ease;
+}
+
+/* 新增样式 */
+.el-form-item__label {
+  color: #555555; /* 调整标签颜色 */
+}
+
+.el-input__inner {
+  border: 1px solid #dcdcdc; /* 调整输入框边框颜色 */
+  transition: border-color 0.3s ease;
+}
+
+.el-input__inner:focus {
+  border-color: #409EFF; /* 输入框聚焦时边框颜色 */
+}
+
+.el-button--primary {
+  background-color: #409EFF; /* 主按钮背景颜色 */
+  border-color: #409EFF; /* 主按钮边框颜色 */
+}
+
+.el-button--primary:hover {
+  background-color: #66b1ff; /* 主按钮悬停时背景颜色 */
+  border-color: #66b1ff; /* 主按钮悬停时边框颜色 */
+}
+
+.el-button--default {
+  background-color: #ffffff; /* 默认按钮背景颜色 */
+  border-color: #dcdcdc; /* 默认按钮边框颜色 */
+}
+
+.el-button--default:hover {
+  background-color: #ebeef5; /* 默认按钮悬停时背景颜色 */
+  border-color: #c6e2ff; /* 默认按钮悬停时边框颜色 */
 }
 </style>
