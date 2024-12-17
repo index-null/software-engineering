@@ -158,19 +158,24 @@ export default {
 }
 
 .form-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
 }
 
 .tutorial {
   font-size: 14px;
-  color: #909399;
+  font-weight: bold;
+  color: #5f6163;
+  border: 1px gray solid;
+  border-radius: 30px;
+  padding: 6px;
+  padding-left: 20px;
+  padding-right: 20px
 }
 
 .form-body {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: calc(100% - 60px); /* Adjust height to accommodate header and footer */
 }
 
