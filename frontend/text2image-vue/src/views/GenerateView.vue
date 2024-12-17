@@ -1,178 +1,111 @@
 <template>
-   <section>
-  <div class="main-container">  
-    <el-card class="image-container">
-      <img :src="imageUrl" alt="Generated Image" v-if="imageUrl" class="generated-image" />
-      <p v-else>生成的图片将显示在这里</p>
-      <div class="action-buttons" v-if="imageUrl">
-        <el-button type="danger" @click="discardImage">舍弃</el-button>
-        <el-button type="success" @click="downloadImage">导出</el-button>
-        <el-button type="primary" @click="saveImage">保存</el-button>
-        <el-button type="info" @click="favoriteImage">收藏</el-button>
+  <div class="main-container">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="form-title">文字作画</div>
+        <div class="tutorial">使用指南</div>
       </div>
-    </el-card>
-
-    <el-card class="form-container">
-      <h2>参数设置</h2>
-      <el-form
-        :model="form"
-        label-position="left"
-        label-width="120px"
-        class="form"
-      >
-        <el-form-item label="提示词">
-          <el-input v-model="form.prompt" placeholder="请输入提示词"></el-input>
-        </el-form-item>
-        <el-form-item label="宽度">
-          <el-input-number v-model="form.width" :min="128" :max="1024" placeholder="宽度"></el-input-number>
-        </el-form-item>
-        <el-form-item label="高度">
-          <el-input-number v-model="form.height" :min="128" :max="1024" placeholder="高度"></el-input-number>
-        </el-form-item>
-        <el-form-item label="步数">
-          <el-input-number v-model="form.steps" :min="1" :max="100" placeholder="步数"></el-input-number>
-        </el-form-item>
-        <el-form-item label="采样方法">
-          <el-select v-model="form.samplingMethod" placeholder="选择采样方法">
-            <el-option label="DDIM" value="ddim"></el-option>
-            <el-option label="PLMS" value="plms"></el-option>
-            <el-option label="K-LMS" value="k-lms"></el-option>
+      <div class="form-body">
+        <div class="form-item">
+          <div class="form-label">文绘星河</div>
+          <el-input
+            type="textarea"
+            :rows="4"
+            placeholder="请输入您的描述"
+            v-model="form.prompt"
+          />
+        </div>
+        <div class="form-item">
+          <div class="form-label">尺寸</div>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <div class="form-sub-label">宽度</div>
+              <el-input-number v-model="form.width" :min="1" :max="1000" placeholder="宽度" />
+            </el-col>
+            <el-col :span="12">
+              <div class="form-sub-label">高度</div>
+              <el-input-number v-model="form.height" :min="1" :max="1000" placeholder="高度" />
+            </el-col>
+          </el-row>
+        </div>
+        <div class="form-item">
+          <div class="form-label">步数</div>
+          <el-select v-model="form.steps" placeholder="请选择步数">
+            <el-option
+              v-for="item in stepsOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
-        </el-form-item>
-        <el-form-item label="种子">
-          <el-input v-model="form.seed" placeholder="种子"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="generateImage">生成图片</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+        </div>
+        <div class="form-item">
+          <div class="form-label">种子</div>
+          <el-input v-model="form.seed" placeholder="请输入种子值" />
+        </div>
+        <div class="form-submit">
+          <el-button type="primary" native-type="submit">生成</el-button>
+        </div>
+      </div>
+    </div>
+    <div class="result-container">
+      <div class="result-header">
+        <div class="appName">文绘星河</div>
+        <div class="regenerate">
+          <button>再次生成</button>
+        </div>
+      </div>
+      <div class="result-content" v-if="imageUrl">
+        <div class="prompt-show">{{ this.form.prompt }}</div>
+        <img :src="imageUrl" alt="Generated Image" class="generated-image" />
+      </div>
+      <div v-else class="placeholder">生成的图片将在这里显示</div>
+    </div>
   </div>
-  </section>
 </template>
-
 <script>
 import axios from 'axios';
 
 export default {
-
   data() {
     return {
-      imageUrl: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335308.gif',
       form: {
         prompt: '',
         width: 512,
         height: 512,
-        steps: 50,
-        samplingMethod: 'ddim',
+        steps: 10,
         seed: ''
       },
+      stepsOptions: [
+        { value: 10, label: '10' },
+        { value: 15, label: '15' },
+        { value: 20, label: '20' },
+        { value: 25, label: '25' },
+        { value: 30, label: '30' },
+        { value: 35, label: '35' },
+        { value: 40, label: '40' }
+      ],
+      imageUrl: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282349099.png' // 添加图片URL字段
     };
   },
   methods: {
-    goToHistory() {
-      this.$router.push('/HistoryPage');
-    },
-    generateImage() {
-      const params = {
-        prompt: this.form.prompt,
-        width: this.form.width,
-        height: this.form.height,
-        steps: this.form.steps,
-        sampling_method: this.form.samplingMethod,
-        seed: this.form.seed
-      };
-
-      axios.post('/api/generate-image', params)
-        .then(response => {
-          if (response.data.success) {
-            this.imageUrl = response.data.image_url;
-          } else {
-            this.$message.error(response.data.message);
-          }
-        })
-        .catch(error => {
-          console.error('生成图片失败:', error);
-          if (error.response) {
-            this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-          } else if (error.request) {
-            this.$message.error('请求未响应，请检查网络连接');
-          } else {
-            this.$message.error('请求发送失败，请稍后再试');
-          }
-        });
-    },
-    discardImage() {
-      this.imageUrl = '';
-      this.$message.success('图片已舍弃');
-    },
-    downloadImage() {
-      const link = document.createElement('a');
-      link.href = this.imageUrl;
-      link.download = 'generated_image.png';
-      link.click();
-      this.$message.success('图片已下载');
-    },
-    saveImage() {
-      // 假设这里有一个 API 用于保存图片到服务器
-      axios.post('/api/save-image', { image_url: this.imageUrl })
-        .then(response => {
-          if (response.data.success) {
-            this.$message.success('图片已保存');
-          } else {
-            this.$message.error(response.data.message);
-          }
-        })
-        .catch(error => {
-          console.error('保存图片失败:', error);
-          if (error.response) {
-            this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-          } else if (error.request) {
-            this.$message.error('请求未响应，请检查网络连接');
-          } else {
-            this.$message.error('请求发送失败，请稍后再试');
-          }
-        });
-    },
-    favoriteImage() {
-      // 假设这里有一个 API 用于收藏图片
-      axios.post('/api/favorite-image', { image_url: this.imageUrl })
-        .then(response => {
-          if (response.data.success) {
-            this.$message.success('图片已收藏');
-          } else {
-            this.$message.error(response.data.message);
-          }
-        })
-        .catch(error => {
-          console.error('收藏图片失败:', error);
-          if (error.response) {
-            this.$message.error(`服务器错误: ${error.response.status} - ${error.response.data.message}`);
-          } else if (error.request) {
-            this.$message.error('请求未响应，请检查网络连接');
-          } else {
-            this.$message.error('请求发送失败，请稍后再试');
-          }
-        });
+    async handleSubmit() {
+      try {
+        // 模拟发送请求
+        const response = await axios.post('http://localhost:8080/auth/generate', this.form);
+        this.imageUrl = response.data.imageUrl;
+      } catch (error) {
+        console.error('生成图片失败', error);
+      }
     }
   }
 };
 </script>
-
 <style scoped>
-.main-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 100vh;
-  padding: 20px;
-  background-color: #f5f5f5;
-}
-
-.image-container {
-  width: 50%;
-  max-width: 600px;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .generated-image {
@@ -181,26 +114,86 @@ export default {
   object-fit: contain;
 }
 
-.action-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.form-container {
-  width: 40%;
-  max-width: 400px;
+.placeholder {
+  font-size: 16px;
+  color: #909399;
+  text-align: center;
   padding: 20px;
 }
 
-.form {
-  margin: 0 auto;
+.main-container {
+  height: 98vh;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 1vw;
+  background-color: #f0f2f5;
 }
 
-h2 {
-  text-align: center;
+.form-container {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.result-container {
+  flex: 2;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  color: #333333;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.tutorial {
+  font-size: 14px;
+  color: #909399;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 60px); /* Adjust height to accommodate header and footer */
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.form-sub-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  margin: 0 auto;
 }
 </style>
