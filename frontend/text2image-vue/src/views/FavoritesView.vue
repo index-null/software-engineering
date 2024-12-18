@@ -92,7 +92,7 @@ export default {
                     headers: {
                         Authorization: this.token,
                     },
-                    params: { id: image.id },  // 传递图像的收藏表id
+                    params: { url: image.url },  // 传递图像收藏的url
                 }
                 );
                 if (response.status === 200) {

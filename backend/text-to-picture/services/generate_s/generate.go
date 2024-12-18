@@ -249,7 +249,7 @@ func SavetoOss(imageParaments ImageParaments) (string, error) {
 	localFileName, err := GenerateFromWebUI(imageParaments)
 
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		log.Printf("上传失败，error%v", err)
+		log.Printf("上传失败，error: %v", err)
 	}
 	bucket, err := client.Bucket(bucketName)
 	if err != nil {
