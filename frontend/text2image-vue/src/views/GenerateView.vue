@@ -41,7 +41,7 @@
         </div>
         <div class="form-item">
           <div class="form-label">种子</div>
-          <el-input v-model.trim.number="form.seed" placeholder="请输入种子值" />
+          <el-input v-model="form.seed" placeholder="请输入种子值" />
         </div>
         <div class="form-submit">
           <el-button type="primary" native-type="submit"  @click="handleSubmit">生成</el-button>
@@ -74,11 +74,11 @@ export default {
   data() {
     return {
       form: {
-        prompt: '',
-        width: 512,
-        height: 512,
+        prompt: 'cute girl with a kite',
+        width: 1024,
+        height: 1024,
         steps: 10,
-        seed: -1
+        seed: 1024
       },
       stepsOptions: [
         { value: 10, label: '10' },
@@ -101,29 +101,50 @@ export default {
       });
     },
     handleSubmit() {
-      this.$message.success('提交成功,正在生成图片...');
-      return this.$axios.post('http://localhost:8080/auth/generate',this.form,{
+  this.$message.success('提交成功,正在生成图片...');
+  
+  // 添加占位图片
+  const placeholderImg = {
+    prompt: this.form.prompt,
+    width: this.form.width,
+    height: this.form.height,
+    seed: this.form.seed,
+    steps: this.form.steps,
+    img_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' // 灰色占位图
+  };
+  this.temp_generatedImg_results.push(placeholderImg);
+  
+  this.loading = true;
+
+  return this.$axios.post('http://localhost:8080/auth/generate', this.form, {
     timeout: 300000 // 设置超时时间为300秒
   }).then(response => {
-        if (response && response.data) {
-          console.log(response.data);
-          let img_item = {
-            "prompt": this.form.prompt,
-            "width": this.form.width,
-            "height": this.form.height,
-            "seed": this.form.seed,
-            "steps": this.form.steps,
-            "img_url": response.data.img_url,
-          };
-          this.temp_generatedImg_results.push(img_item);
-          this.$message.success(response.data.message);
-        } else {
-          this.$message.error('服务器返回数据异常');
-        }
-      }).catch(error => {
-        this.$message.error(error.response ? error.response.data.message : '请求失败');
-      });
+    if (response && response.data) {
+      console.log(response.data);
+      let img_item = {
+        "prompt": this.form.prompt,
+        "width": this.form.width,
+        "height": this.form.height,
+        "seed": this.form.seed,
+        "steps": this.form.steps,
+        "img_url": response.data.image_url,
+      };
+      console.log(img_item);
+
+      // 替换占位图片
+      const lastIdx = this.temp_generatedImg_results.length - 1;
+      this.$set(this.temp_generatedImg_results, lastIdx, img_item);
+
+      this.$message.success(response.data.message);
+    } else {
+      this.$message.error('服务器返回数据异常');
     }
+  }).catch(error => {
+    this.$message.error(error.response ? error.response.data.message : '请求失败');
+  }).finally(() => {
+    this.loading = false;
+  });
+}
   }
 };
 </script>
@@ -270,10 +291,11 @@ export default {
 /* 结果内容样式 */
 .result-content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap; /* 允许换行 */
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
 }
-
 
 /* 生成的图片样式 */
 .generated-image {
