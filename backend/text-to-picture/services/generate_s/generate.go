@@ -28,12 +28,11 @@ import (
 // 传入的图片参数
 // @name ImageParaments
 type ImageParaments struct {
-	Prompt         string `json:"prompt" binding:"required" fault:"缺乏提示词"`
-	Width          int    `json:"width" binding:"required,min=128,max=1024" fault:"宽度不在范围内"`
-	Height         int    `json:"height" binding:"required,min=128,max=1024" fault:"高度不在范围内"`
-	Steps          int    `json:"steps" binding:"required,min=1,max=100" fault:"步数不在范围内"`
-	SamplingMethod string `json:"sampling_method" binding:"required,oneof=DDIM PLMS K-LMS" fault:"采样方法不在范围内"`
-	Seed           string `json:"seed" binding:"required" fault:"缺乏种子"`
+	Prompt string `json:"prompt" binding:"required" fault:"缺乏提示词"`
+	Width  int    `json:"width" binding:"required,min=128,max=1024" fault:"宽度不在范围内"`
+	Height int    `json:"height" binding:"required,min=128,max=1024" fault:"高度不在范围内"`
+	Steps  int    `json:"steps" binding:"required,min=1,max=100" fault:"步数不在范围内"`
+	Seed   int    `json:"seed" binding:"required" fault:"缺乏种子"`
 }
 
 // 获取在Tag中的fault信息
@@ -195,8 +194,8 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\", \"SamplingMethod\": \"%s\"",
-			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.SamplingMethod),
+		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\"",
+			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps),
 		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
@@ -300,6 +299,7 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	apiKey := os.Getenv("GEN_API_KEY")
 	type Parameters struct {
 		Size string `json:"size"`
+		Seed int    `json:"seed"`
 	}
 	type Input struct {
 		Prompt string `json:"prompt"`
@@ -330,7 +330,7 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	}
 	// 创建 HTTP 客户端
 	client := &http.Client{}
-
+	size := fmt.Sprintf("%d*%d", imageParaments.Width, imageParaments.Height)
 	// 构建请求体
 	requestBody := RequestBody{
 		Model: "wanx-v1",
@@ -339,7 +339,8 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 		},
 		Parameters: Parameters{
 			//Style: "<auto>",
-			Size: "1024*1024",
+			Size: size,
+			Seed: imageParaments.Seed,
 			//N:    1,
 		},
 	}
