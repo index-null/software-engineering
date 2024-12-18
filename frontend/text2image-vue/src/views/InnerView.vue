@@ -115,6 +115,7 @@ export default {
       localStorage.setItem('email',response.data.user.email)
       localStorage.setItem('score',response.data.user.score)
       localStorage.setItem('createTime',response.data.user.create_time)
+      localStorage.setItem('score', response.data.user.score);
       this.$message.success('用户信息获取成功');
       this.$nextTick(() => {
         this.$forceUpdate(); // 强制更新组件
