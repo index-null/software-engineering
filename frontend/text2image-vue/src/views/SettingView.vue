@@ -148,24 +148,30 @@ export default {
       this.isEditing = !this.isEditing;
     },
     saveChanges() {
-      localStorage.setItem('personalSignature', this.user.personalSignature);
-      localStorage.setItem('gender', this.user.gender);
-      localStorage.setItem('hobbies', this.user.hobbies);
-      localStorage.setItem('location', this.user.location);
-      let updatedUser = {
-        "email": this.user.email,
-        "avatar_url": this.user.avatar
-      };
-      this.$axios.put('http://localhost:8080/auth/user/update', updatedUser).then(response => {
-        this.$message.success(response.data.message);
-      }).catch(error => {
-        this.$message.error(error.response.data.message);
+    localStorage.setItem('personalSignature', this.user.personalSignature);
+    localStorage.setItem('gender', this.user.gender);
+    localStorage.setItem('hobbies', this.user.hobbies);
+    localStorage.setItem('location', this.user.location);
+    let updatedUser = {
+      "email": this.user.email,
+      "avatar_url": this.user.avatar
+    };
+
+    this.$axios.put('http://localhost:8080/auth/user/update', updatedUser)
+      .then(response => {
+        if (response && response.data) {
+          this.$message.success(response.data.message);
+        } else {
+          this.$message.error('服务器返回数据异常');
+        }
+      })
+      .catch(error => {
+        this.$message.error(error.response ? error.response.data.message : '请求失败');
       });
-      this.isEditing = false;
-      this.$nextTick(
-        this.$forceUpdate()
-      );
-    }
+
+    this.isEditing = false;
+    this.$nextTick(this.$forceUpdate);
+  }
   },
   created() {
   }
@@ -185,7 +191,7 @@ export default {
   height: 18vh;
   width: 90vw;
   margin-bottom: 6vh;
-  background: linear-gradient(to right, #ff7e5f, #feb47b); /* 彩色渐变效果 */
+  background: linear-gradient(to right, #ff7e5f, #feb47b,#6a89c1,#F1F6FF); /* 彩色渐变效果 */
 }
 
 .user-profile {
