@@ -191,7 +191,7 @@ export default {
   height: 18vh;
   width: 90vw;
   margin-bottom: 6vh;
-  background: linear-gradient(to right, #ff7e5f, #feb47b); /* 彩色渐变效果 */
+  background: linear-gradient(to right, #ff7e5f, #feb47b,#6a89c1,#F1F6FF); /* 彩色渐变效果 */
 }
 
 .user-profile {

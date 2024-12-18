@@ -20,11 +20,11 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <div class="form-sub-label">宽度</div>
-              <el-input-number v-model="form.width" :min="1" :max="1000" placeholder="宽度" />
+              <el-input-number v-model="form.width" :min="1" :max="1280" placeholder="宽度" />
             </el-col>
             <el-col :span="12">
               <div class="form-sub-label">高度</div>
-              <el-input-number v-model="form.height" :min="1" :max="1000" placeholder="高度" />
+              <el-input-number v-model="form.height" :min="1" :max="1280" placeholder="高度" />
             </el-col>
           </el-row>
         </div>
@@ -41,31 +41,35 @@
         </div>
         <div class="form-item">
           <div class="form-label">种子</div>
-          <el-input v-model="form.seed" placeholder="请输入种子值" />
+          <el-input v-model.trim.number="form.seed" placeholder="请输入种子值" />
         </div>
         <div class="form-submit">
-          <el-button type="primary" native-type="submit">生成</el-button>
+          <el-button type="primary" native-type="submit"  @click="handleSubmit">生成</el-button>
         </div>
       </div>
     </div>
     <div class="result-container">
-      <div class="result-header">
-        <div class="appName">文绘星河</div>
-        <div class="regenerate">
-          <button>再次生成</button>
-        </div>
+    <div class="result-header">
+      <div class="appName">文绘星河</div>
+      <div class="regenerate">
+        <button @click="regenerateImage">再次生成</button>
       </div>
-      <div class="result-content" v-if="imageUrl">
-        <div class="prompt-show">{{ this.form.prompt }}</div>
-        <img :src="imageUrl" alt="Generated Image" class="generated-image" />
-      </div>
-      <div v-else class="placeholder">生成的图片将在这里显示</div>
     </div>
+    <div class="result-content" v-loading="loading">
+      <div v-for="(img, index) in temp_generatedImg_results" :key="index" class="image-card">
+        <el-image
+          style="width: 100%; height: 100%; border-radius: 8px;"
+          :src="img.img_url"
+          fit="contain"
+          lazy
+        />
+      </div>
+    </div>
+    <div v-if="temp_generatedImg_results.length === 0" class="placeholder">生成的图片将在这里显示</div>
+  </div>
   </div>
 </template>
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -74,7 +78,7 @@ export default {
         width: 512,
         height: 512,
         steps: 10,
-        seed: ''
+        seed: -1
       },
       stepsOptions: [
         { value: 10, label: '10' },
@@ -85,42 +89,46 @@ export default {
         { value: 35, label: '35' },
         { value: 40, label: '40' }
       ],
-      imageUrl: 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282349099.png' // 添加图片URL字段
+      temp_generatedImg_results: [],
+      loading: false
     };
   },
   methods: {
-    async handleSubmit() {
-      try {
-        // 模拟发送请求
-        const response = await axios.post('http://localhost:8080/auth/generate', this.form);
-        this.imageUrl = response.data.imageUrl;
-      } catch (error) {
-        console.error('生成图片失败', error);
-      }
+    regenerateImage() {
+      this.loading = true;
+      this.handleSubmit().finally(() => {
+        this.loading = false;
+      });
+    },
+    handleSubmit() {
+      this.$message.success('提交成功,正在生成图片...');
+      return this.$axios.post('http://localhost:8080/auth/generate',this.form,{
+    timeout: 300000 // 设置超时时间为300秒
+  }).then(response => {
+        if (response && response.data) {
+          console.log(response.data);
+          let img_item = {
+            "prompt": this.form.prompt,
+            "width": this.form.width,
+            "height": this.form.height,
+            "seed": this.form.seed,
+            "steps": this.form.steps,
+            "img_url": response.data.img_url,
+          };
+          this.temp_generatedImg_results.push(img_item);
+          this.$message.success(response.data.message);
+        } else {
+          this.$message.error('服务器返回数据异常');
+        }
+      }).catch(error => {
+        this.$message.error(error.response ? error.response.data.message : '请求失败');
+      });
     }
   }
 };
 </script>
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.generated-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.placeholder {
-  font-size: 16px;
-  color: #909399;
-  text-align: center;
-  padding: 20px;
-}
-
+/* 主容器样式 */
 .main-container {
   height: 98vh;
   width: 100%;
@@ -130,6 +138,7 @@ export default {
   background-color: #f0f2f5;
 }
 
+/* 表单容器样式 */
 .form-container {
   flex: 1;
   padding: 20px;
@@ -139,6 +148,89 @@ export default {
   overflow-y: auto;
 }
 
+/* 表单头部样式 */
+.form-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* 表单标题样式 */
+.form-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* 教程样式 */
+.tutorial {
+  font-size: 14px;
+  font-weight: bold;
+  color: #5f6163;
+  border: 1px gray solid;
+  border-radius: 30px;
+  padding: 6px 20px;
+}
+
+/* 表单主体样式 */
+.form-body {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 60px); /* Adjust height to accommodate header and footer */
+}
+
+/* 表单项样式 */
+.form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+/* 表单标签样式 */
+.form-label {
+  font-size: 18px;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+/* 子标签样式 */
+.form-sub-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+/* 输入框样式 */
+.el-input,
+.el-input-number,
+.el-select {
+  width: 100%;
+}
+
+/* 数字输入框样式 */
+.el-input-number {
+  width: 100%;
+}
+
+/* 选择框样式 */
+.el-select {
+  width: 100%;
+}
+
+/* 选项样式 */
+.el-option {
+  width: 100%;
+}
+
+/* 提交按钮样式 */
+.form-submit {
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* 结果容器样式 */
 .result-container {
   flex: 2;
   padding: 20px;
@@ -146,59 +238,86 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.form-header {
+/* 结果头部样式 */
+.result-header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.form-title {
+/* 应用名称样式 */
+.appName {
   font-size: 22px;
   font-weight: bold;
 }
 
-.tutorial {
+/* 重新生成按钮样式 */
+.regenerate button {
   font-size: 14px;
   font-weight: bold;
   color: #5f6163;
   border: 1px gray solid;
   border-radius: 30px;
-  padding: 6px;
-  padding-left: 20px;
-  padding-right: 20px
+  padding: 6px 20px;
+  background-color: transparent;
 }
 
-.form-body {
+/* 结果内容样式 */
+.result-content {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 60px); /* Adjust height to accommodate header and footer */
+  align-items: center;
 }
 
-.form-item {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+
+/* 生成的图片样式 */
+.generated-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
-.form-label {
-  font-size: 14px;
-  margin-bottom: 5px;
+/* 占位符样式 */
+.placeholder {
+  font-size: 16px;
+  color: #909399;
+  text-align: center;
+  padding: 20px;
 }
 
-.form-sub-label {
-  font-size: 14px;
-  margin-bottom: 5px;
+/* 其他未指定样式的组件类 */
+.el-row,
+.el-col {
+  width: 100%;
 }
 
-.form-submit {
+.el-button {
+  width: 100%;
+}
+/* 图片卡片样式 */
+.image-card {
+  width: 200px; /* 根据需要调整宽度 */
+  height: 200px; /* 根据需要调整高度 */
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   display: flex;
   justify-content: center;
-  width: 90%;
-  margin: 0 auto;
+  align-items: center;
+}
+
+/* 结果内容样式 */
+.result-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
 }
 </style>
