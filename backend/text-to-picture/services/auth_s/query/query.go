@@ -32,7 +32,7 @@ func GetUserInfo(c *gin.Context) {
 
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
-	if !exists {
+	if !exists || username == "" {
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{
 			"success": false,
