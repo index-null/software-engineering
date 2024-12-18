@@ -171,7 +171,7 @@ POST http://localhost:8080/register
   "height": 200,
   "steps": 100,
   "sampling_method": "DDIM",
-  "seed": "string"
+  "seed": 1
 }
 ```
 
@@ -184,7 +184,6 @@ POST http://localhost:8080/register
 | 400    | 宽度不在范围内       | { "code": 400, "message": "宽度不在范围内", "success": false }               |
 | 400    | 高度不在范围内       | { "code": 400, "message": "高度不在范围内", "success": false }               |
 | 400    | 步数不在范围内       | { "code": 400, "message": "步数不在范围内", "success": false }               |
-| 400    | 采样方法不在范围内   | { "code": 400, "message": "采样方法不在范围内", "success": false }           |
 | 400    | 缺少种子             | { "code": 400, "message": "缺乏种子", "success": false }                     |
 | 401    | 请求头中缺少Token     | { "code": 401, "message": "请求头中缺少Token", "success": false }             |
 | 401    | 无效的Token          | { "code": 401, "message": "无效的Token", "success": false }                  |

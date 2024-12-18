@@ -190,7 +190,9 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 func GenerateImage(username string, imageParaments ImageParaments) (string, error) {
 	//这里把图片上传到OSS,OSS会那里返回包含图片URL的json
 	urloss, err := SavetoOss(imageParaments)
-
+	if err != nil {
+		return "", err
+	}
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
@@ -249,6 +251,7 @@ func SavetoOss(imageParaments ImageParaments) (string, error) {
 
 	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
 		log.Printf("上传失败，error%v", err)
+		return "", err
 	}
 	bucket, err := client.Bucket(bucketName)
 	if err != nil {
