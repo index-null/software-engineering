@@ -3,7 +3,11 @@ package generate_s
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"io"
 	"log"
 	"net/http"
@@ -11,14 +15,10 @@ import (
 	// "net/url"
 	"os"
 	"reflect"
-	"time"
-
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	i "text-to-picture/models/image"
 	db "text-to-picture/models/init"
 	u "text-to-picture/models/user"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	//文件路径操作包
@@ -160,7 +160,7 @@ func (*ImageGeneratorImpl) ReturnImage(c *gin.Context) {
 	imageUrl, err := GenerateImage(username, imageParaments)
 	//校验生成图片
 	if err != nil {
-		log.Panicf("图片生成失败: %v", err)
+		log.Printf("图片生成失败: %v", err)
 		c.JSON(500, gin.H{
 			"code":    500,
 			"success": false,
@@ -214,54 +214,55 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss(imageParaments ImageParaments) (string, error) {
 	// 构建跨平台的路径
+	//localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
+
 	envPath := filepath.Join("config", "oss", "oss.env")
 	if err := godotenv.Load(envPath); err != nil {
 		log.Printf("Failed to load .env file: %v", err)
 	}
+	localFileName, err := GenerateFromWebUI(imageParaments)
 	// 从环境变量中获取访问凭证
-	accessKeyID := os.Getenv("OSS_ACCESS_KEY_ID")
-	accessKeySecret := os.Getenv("OSS_ACCESS_KEY_SECRET")
 	region := os.Getenv("OSS_REGION")
 	bucketName := os.Getenv("OSS_BUCKET")
-	// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
-	provider, err := oss.NewEnvironmentVariableCredentialsProvider()
-	if err != nil {
-		log.Printf("Failed to create credentials provider: %v", err)
+	accessKeyId := os.Getenv("OSS_ACCESS_KEY_ID")
+	accessKeySecret := os.Getenv("OSS_ACCESS_KEY_SECRET")
+	object := "generate"
+	// 检查bucket名称是否为空
+	if len(bucketName) == 0 {
+		flag.PrintDefaults()
+		log.Fatalf("invalid parameters, bucket name required")
 	}
 
-	// 创建OSSClient实例。
-	// yourEndpoint填写Bucket对应的Endpoint，以华东1（杭州）为例，填写为https://oss-cn-hangzhou.aliyuncs.com。其它Region请按实际情况填写。
-	// yourRegion填写Bucket所在地域，以华东1（杭州）为例，填写为cn-hangzhou。其它Region请按实际情况填写。
-	clientOptions := []oss.ClientOption{oss.SetCredentialsProvider(&provider)}
-	clientOptions = append(clientOptions, oss.Region(region))
-
-	// 设置签名版本
-	clientOptions = append(clientOptions, oss.AuthVersion(oss.AuthV2))
-	client, err = oss.New("https://"+region+".aliyuncs.com", accessKeyID, accessKeySecret, clientOptions...)
-	if err != nil {
-		log.Printf("Failed to create OSS client: %v", err)
+	// 检查region是否为空
+	if len(region) == 0 {
+		flag.PrintDefaults()
+		log.Fatalf("invalid parameters, region required")
 	}
-	// 填写存储空间名称，例如examplebucket。
 
-	// 示例操作：上传文件。
-	filetime := time.Now().Format("2006-01-02 15:04:05")
-	objectName := bucketName + "/" + filetime + ".png"
-	//localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
-	localFileName, err := GenerateFromWebUI(imageParaments)
-
-	if err := uploadFile(bucketName, objectName, localFileName); err != nil {
-		log.Printf("上传失败，error: %v", err)
-		return "", err
+	// 检查object名称是否为空
+	if len(object) == 0 {
+		flag.PrintDefaults()
+		log.Fatalf("invalid parameters, object name required")
 	}
+
+	// 创建OSS客户端
+	endPoint := region + ".aliyuncs.com"
+	client, err := oss.New(endPoint, accessKeyId, accessKeySecret)
 	bucket, err := client.Bucket(bucketName)
+	file, err := os.Open(localFileName)
 	if err != nil {
-		log.Printf("Failed to get bucket: %v", err)
+		return "", fmt.Errorf("failed to open file: %v", err)
 	}
-	signedURL, err := bucket.SignURL(objectName, oss.HTTPGet, 60)
+	defer file.Close()
+
+	objectName := "generate/" + localFileName // You can modify this path as needed
+	result := bucket.PutObject(objectName, file)
+	log.Printf("result: %v", result)
+	url, err := bucket.SignURL(objectName, oss.HTTPGet, 3600)
 	if err != nil {
-		log.Printf("Failed to sign URL: %v", err)
+		return "", fmt.Errorf("failed to generate URL: %v", err)
 	}
-	return signedURL, err
+	return url, err
 }
 
 // handleError 用于处理不可恢复的错误，并记录错误信息后终止程序。
@@ -269,34 +270,6 @@ func handleError(err error) {
 	log.Printf("Error: %v", err)
 }
 
-// uploadFile 用于将本地文件上传到OSS存储桶。
-// 参数：
-//
-//	bucketName - 存储空间名称。
-//	objectName - Object完整路径，完整路径中不包含Bucket名称。
-//	localFileName - 本地文件的完整路径。
-//	endpoint - Bucket对应的Endpoint。
-//
-// 如果成功，记录成功日志；否则，返回错误。
-func uploadFile(bucketName, objectName, localFileName string) error {
-	// 获取存储空间。
-	bucket, err := client.Bucket(bucketName)
-	if err != nil {
-		log.Printf("Failed to get bucket %s: %v", bucketName, err)
-		return err
-	}
-
-	// 上传文件。
-	err = bucket.PutObjectFromFile(objectName, localFileName)
-	if err != nil {
-		log.Printf("Failed to upload file %s to bucket %s: %v", localFileName, bucketName, err)
-		return err
-	}
-
-	// 文件上传成功后，记录日志。
-	log.Printf("File uploaded successfully to %s/%s", bucketName, objectName)
-	return nil
-}
 func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	var Url string
 	apiKey := os.Getenv("GEN_API_KEY")
@@ -344,6 +317,7 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 			//Style: "<auto>",
 			Size: size,
 			Seed: imageParaments.Seed,
+
 			//N:    1,
 		},
 	}
