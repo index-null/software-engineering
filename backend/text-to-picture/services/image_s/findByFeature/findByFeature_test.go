@@ -82,7 +82,7 @@ func SetupRouter() *gin.Engine {
 	return r
 }
 
-// TestFindByFeature_Success 测试成功获取图片的情况
+// TestFindByFeature_Success 测试成功(isOwn不为true)获取图片的情况
 func TestFindByFeature_Success(t *testing.T) {
 	fmt.Println()
 	fmt.Println()
@@ -94,7 +94,7 @@ func TestFindByFeature_Success(t *testing.T) {
 	imageData := image.ImageInformation{
 		UserName:    "czh",
 		Params:      "{\"Prompt\": \"test_1\", \"Width\": 640}",
-		Picture:     "test_15.png", //每次测试时修改一下，避免违反属性值唯一的约束
+		Picture:     "test_17.png", //每次测试时修改一下，避免违反属性值唯一的约束
 		Create_time: time.Now(),
 	}
 	db.DB.Create(&imageData)
@@ -110,6 +110,46 @@ func TestFindByFeature_Success(t *testing.T) {
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
 	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil)
+	req.Header.Set("Authorization", tokenString)
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NotNil(t, response["images"])// 确保有获取到数据
+}
+
+// TestFindByFeature_Success 测试成功(isOwn为true)获取图片的情况
+func TestFindByFeature_Success2(t *testing.T) {
+	fmt.Println()
+	fmt.Println()
+	fmt.Println("\n----------------------------------TestFindByFeature_Success")
+	gin.SetMode(gin.TestMode)
+	router := SetupRouter()
+
+	// 插入测试数据
+	imageData := image.ImageInformation{
+		UserName:    "czh",
+		Params:      "{\"Prompt\": \"test_1\", \"Width\": 640}",
+		Picture:     "test_16.png", //每次测试时修改一下，避免违反属性值唯一的约束
+		Create_time: time.Now(),
+	}
+	db.DB.Create(&imageData)
+
+	// 创建一个有效的Token
+	claims := &middlewire.Claims{
+		Username: "czh", //根据自己数据库已有的用户
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(middlewire.JwtKey)
+
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_&isOwn=true", nil)
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
@@ -171,7 +211,7 @@ func TestFindByFeature_NoUserImages(t *testing.T) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=1111111111111111111111111111111", nil)//模拟复杂特征
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=11111111111111111111&isOwn=true", nil)//模拟复杂特征
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
@@ -192,7 +232,7 @@ func TestFindByFeature_InvalidToken(t *testing.T) {
 	// 创建一个无效的Token
 	tokenString := "invalid-token"
 	// 创建一个 GET 请求
-	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil)
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_&isOwn=true", nil)
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
@@ -223,7 +263,7 @@ func TestFindByFeature_NoToken(t *testing.T) {
 	router := SetupRouter()
 	
 	// 创建一个 GET 请求
-	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil)
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_&isOwn=true", nil)
 	
 
 	w := httptest.NewRecorder()

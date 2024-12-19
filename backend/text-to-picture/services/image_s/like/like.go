@@ -38,23 +38,27 @@ func LikeImage(c *gin.Context) {
 		return
 	}
 
-	usernames, _ := c.Get("username")
-	if usernames == "" {
+	usernames, exist := c.Get("username")
+	if !exist || usernames == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"code":  401,
 			"error": "名字解析出错"})
 		return
 	}
 	username, _ := usernames.(string)
+	// 开始事务
 	tx := db.DB.Begin()
-	if tx == nil {
+	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": "点赞数据库开始出错"})
 		return
 	}
+
 	defer func() {
-		if tx == nil {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
 			tx.Rollback()
 		} else {
 			tx.Commit()
