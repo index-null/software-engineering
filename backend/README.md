@@ -103,7 +103,7 @@
 ### 开发内容
 #### 管理员账号：
 - username:root
-- password:111111(加密后"c4ca4238a0b923820dcc509a6f75849b")
+- password:111111(加密后"bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a")
 1. **登陆注册接口**
 #### 注册数据格式：
 - 注册界面接收前端传来邮箱，进行数据库查询，判断用户是否存在，不存在则注册，存在则返回错误信息，并对密码进行加密，保存到数据库中
@@ -171,7 +171,7 @@ POST http://localhost:8080/register
   "height": 200,
   "steps": 100,
   "sampling_method": "DDIM",
-  "seed": "string"
+  "seed": 1
 }
 ```
 
@@ -184,7 +184,6 @@ POST http://localhost:8080/register
 | 400    | 宽度不在范围内       | { "code": 400, "message": "宽度不在范围内", "success": false }               |
 | 400    | 高度不在范围内       | { "code": 400, "message": "高度不在范围内", "success": false }               |
 | 400    | 步数不在范围内       | { "code": 400, "message": "步数不在范围内", "success": false }               |
-| 400    | 采样方法不在范围内   | { "code": 400, "message": "采样方法不在范围内", "success": false }           |
 | 400    | 缺少种子             | { "code": 400, "message": "缺乏种子", "success": false }                     |
 | 401    | 请求头中缺少Token     | { "code": 401, "message": "请求头中缺少Token", "success": false }             |
 | 401    | 无效的Token          | { "code": 401, "message": "无效的Token", "success": false }                  |
@@ -258,7 +257,7 @@ POST http://localhost:8080/register
 | 400    | 请求数据格式错误    | `{ "code": 400, "message": "Invalid request data" }          `                                                        |
 | 404    | 用户未找到         | `{ "code": 404, "message": "用户未找到" }           `                                                                 |
 | 500    | 查询失败           | `{ "code": 500, "message": "查询失败", "error": "错误信息" }   `                                                       |
-| 200    | 查询成功           | `{ "code": 200, "user": { "id": 6, "email": "czh@qq.com", "username": "czh", "avatar_url": "https://www.chen.com", "create_time": "2024-11-24T21:49:24.78802Z" } }` |
+| 200    | 查询成功           | `{ "code": 200, "user": { "id": 6, "email": "czh@qq.com", "username": "czh", "avatar_url": "https://www.chen.com", "create_time": "2024-11-24T21:49:24.78802Z" ,"score":100} }` |
 
 ---
 
@@ -268,6 +267,7 @@ POST http://localhost:8080/register
 - (GET) http://localhost:8080/user/all
 
 #### 请求参数
+
 - 无（GET方法，不需要携带token）
 
 #### 响应
@@ -375,12 +375,13 @@ POST http://localhost:8080/register
   `(GET) http://localhost:8080/auth/user/images`
 
 - **请求头**
+  
   ```json
   {
     "Authorization": "your_jwt_token"
   }
   ```
-
+  
 - **响应**
 
 | 响应码 | 描述                | 示例响应体                                                                  |
@@ -418,7 +419,7 @@ POST http://localhost:8080/register
 | 500   | 点赞数据库操作出错       | `{ "code": 500, "error": "点赞数据库操作出错" }`                                      |
 | 200   | 点赞成功                | `{ “code":200,current_likes": 当前赞数, "message": "Image liked successfully" }` |
 ---
-  
+
 5. **图片收藏界面**
 #### 查询功能
 - 查询展示出用户的收藏图片
@@ -577,7 +578,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) http://localhost:8080/auth//image/feature`
+`(DELETE) http://localhost:8080/auth/image/feature`
 
 #### 请求头
 
@@ -599,14 +600,15 @@ POST http://localhost:8080/register
 | 401    | 无效的Token       | `{"message"："无效的Token"}`                                                             |
 | 401    | 未找到用户信息     | `{"message"："未找到用户信息"}`                                                          |
 | 500    | 根据关键字查询失败 | `{"message"："根据关键字查询失败"}`                                                       |
-| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "create_time":,},{……},…………]}`  |
+| 200    | 根据关键字查询成功 | `{"images": [{"id":, "username":, "params":, "picture":, "likecount":, "create_time":,},{……},…………]}`  |
 ---
-  
+
 
 9. **管理员操作**
 ### 删除用户
 ### 功能
-  根据前端传来的username删除指定用户
+  根据前端传来的?username删除指定用户
+  如果?isOwn=true表示账号注销（即删除自己的账号信息，如果没有这个，则表示root用户删除违规账号）
 
 #### URL地址
 
@@ -622,7 +624,7 @@ POST http://localhost:8080/register
 
 #### 请求体
 无。
-通过查询参数:   ?username=
+通过查询参数:   ?username= (可选isOwn=true)
 
 #### 响应
 
@@ -637,8 +639,9 @@ POST http://localhost:8080/register
 | 400    | 用户不存在         | `{"message"："用户不存在"}`                       |
 | 500    | 删除用户失败       | `{"message"："删除用户失败"}`                      |
 | 200    | 成功删除用户       | `{"message"："成功删除用户：（用户名）"}`           |
+| 200    | 账号注销成功       | `{"message"："（用户名）的账号注销成功"}`           |
 ---
- 
+
 
 10. **数据库设计**
    - 用户登录表：id，email，user，password，token

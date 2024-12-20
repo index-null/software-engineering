@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	image2 "text-to-picture/models/image"
 	user2 "text-to-picture/models/user"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -114,6 +116,7 @@ func InitTestUser() error {
 	}()
 
 	var user user2.UserInformation
+	currentTime := time.Now()
 	result := tx.Where("username=?", "root").First(&user)
 
 	if result.Error == nil {
@@ -137,11 +140,12 @@ func InitTestUser() error {
 
 	// 创建用户信息
 	user = user2.UserInformation{
-		Email:      "root@example.com",
-		UserName:   "root",
-		Password:   "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a", //111111
-		Avatar_url: "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
-		Score:      10000,
+		Email:       "root@example.com",
+		UserName:    "root",
+		Password:    "bcb15f821479b4d5772bd0ca866c00ad5f926e3580720659cc80d39c9d09802a", //111111
+		Avatar_url:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202407272335307.png",
+		Score:       10000,
+		Create_time: currentTime.AddDate(-1, 0, 0),
 	}
 	if result := tx.Create(&user); result.Error != nil {
 		log.Printf("Failed to create user: %v", result.Error)
@@ -151,8 +155,9 @@ func InitTestUser() error {
 
 	// 创建用户积分记录
 	userscore := user2.UserScore{
-		Username: "root",
-		Record:   "积分+100",
+		Username:    "root",
+		Record:      "积分+100",
+		Create_time: currentTime.AddDate(0, -1, 0),
 	}
 	if result := tx.Create(&userscore); result.Error != nil {
 		log.Printf("Failed to create record: %v", result.Error)
@@ -170,52 +175,74 @@ func InitTestUser() error {
 	}
 	defer file.Close()
 
-	i := 0
+	var imageUrls []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		imageURL := scanner.Text()
+		imageUrls = append(imageUrls, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Printf("Failed to read file : %v", err)
+		tx.Rollback()
+		return fmt.Errorf("&v", err)
+	}
+	i := 0
+
+	// 创建图像记录
+	for _, url := range imageUrls {
 		i++
 		test := fmt.Sprintf("test%d", i)
-		// 创建ImageInformation记录
+		createTime := currentTime.AddDate(0, 0, -(11 + i))
 		imageInfo := image2.ImageInformation{
-			UserName: "root", // 假设用户名为root
-			Params:   "Prompt:" + test + ", Width: 512, Height: 512, Steps: 20, SamplingMethod: Euler a",
-			Picture:  imageURL,
+			UserName:    "root", // 假设用户名为root
+			Params:      "\"Prompt\": \"" + test + "\", \"Width\": \"512\", \"Height\": \"512\", \"Steps\": \"20\", \"SamplingMethod\": \"Euler a\"",
+			Picture:     url,
+			Create_time: createTime,
 		}
 
-		// 插入数据库
 		result := tx.Create(&imageInfo)
 		if result.Error != nil {
-			log.Printf("Failed to create image information: %v", result.Error)
+			log.Printf("Faile to create image information: %v", result.Error)
 			return result.Error
 		}
 	}
-	if err := scanner.Err(); err != nil {
-		log.Printf("Failed to read file: %v", err)
-		tx.Rollback()
-		return fmt.Errorf("%v", err)
+
+	// 如果超过10 张图像，随机选取10个用于点赞和收藏
+	if len(imageUrls) > 10 {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(imageUrls), func(i, j int) { imageUrls[i], imageUrls[j] = imageUrls[j], imageUrls[i] })
+		imageUrls = imageUrls[:10]
 	}
 
-	// 创建图片点赞记录
-	imagelike := image2.ImageLike{
-		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202411282351707.png",
-		UserName: "root",
-	}
-	if result := tx.Create(&imagelike); result.Error != nil {
-		log.Printf("Failed to create image like: %v", result.Error)
-		tx.Rollback()
-		return result.Error
-	}
+	currentTime = time.Now()
 
-	// 创建图片收藏记录
-	imagefavor := image2.FavoritedImages{
-		UserName: "root",
-		Picture:  "https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347058.jpg",
-	}
-	if result := tx.Create(&imagefavor); result.Error != nil {
-		log.Printf("Failed to create image favor: %v", result.Error)
-		tx.Rollback()
-		return result.Error
+	// 创建点赞和收藏记录
+	for i, url := range imageUrls {
+		createTime := currentTime.AddDate(0, 0, -(i + 1))
+		// 创建图像点赞记录
+		imagelike := image2.ImageLike{
+			Picture:     url,
+			UserName:    "root",
+			Create_time: createTime,
+		}
+		if result := tx.Create(&imagelike); result.Error != nil {
+			log.Printf("Failed to create image like for URL %s: %v", url, result.Error)
+			tx.Rollback()
+			return result.Error
+		}
+
+		// 创建图像收藏记录
+		imagefavor := image2.FavoritedImages{
+			UserName:    "root",
+			Picture:     url,
+			Create_time: createTime,
+		}
+		if result := tx.Create(&imagefavor); result.Error != nil {
+			log.Printf("Failed to create image favor for URL %s: %v", url, result.Error)
+			tx.Rollback()
+			return result.Error
+		}
+
 	}
 
 	if err := tx.Commit().Error; err != nil {

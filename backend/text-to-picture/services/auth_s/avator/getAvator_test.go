@@ -14,6 +14,7 @@ import (
 	"text-to-picture/models/user"
 
 	db "text-to-picture/models/init"
+	getDB "text-to-picture/config"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -49,7 +50,7 @@ type DBConfig struct {
 // TestMain 是测试的入口函数
 func TestMain(m *testing.M) {
 	// 读取测试数据库配置
-	yamlFile, err := os.ReadFile("D:/go project/src/gocode/software-engineering/backend/text-to-picture/config/DBconfig/DBconfig.yaml")
+	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
 		fmt.Printf("Error reading DBconfig_test.yaml file: %v\n", err)
 		os.Exit(1)
