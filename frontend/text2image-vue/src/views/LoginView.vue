@@ -74,11 +74,7 @@ export default {
           axios.post('http://localhost:8080/login', formData)
             .then(response => {
               if (response.data.message === '登录成功') {
-<<<<<<< HEAD
-                localStorage.setItem('token',response.data.token)
-=======
                 localStorage.setItem('token', response.data.token);
->>>>>>> f2a1e84a4dd03e67adce77d34a866eeb905af9eb
                 this.$message.success('登录成功');
                 this.$router.push('/home');
                 

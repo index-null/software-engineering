@@ -57,6 +57,7 @@ export default {
                         isFavorite: true   
                 })
                 //console.log(this.images);
+                console.log(this.token);
             });
             } catch (error) {
                 console.error('获取收藏的图片失败:', error.response?.data || error.message);
@@ -92,9 +93,10 @@ export default {
                     headers: {
                         Authorization: this.token,
                     },
-                    params: { id: image.id },  // 传递图像的收藏表id
+                    params: { url: image.url },  // 传递图像的收藏表url
                 }
                 );
+                
                 if (response.status === 200) {
                     this.images = this.images.filter(i => i.id !== image.id);  // 从收藏列表中移除已取消收藏的图像
                     this.$message.success('取消收藏成功');
@@ -147,7 +149,7 @@ export default {
     padding: 20px;
     margin-left: 130px;
     margin-top: 100px;
-    width: 100%;
+    width: 80%;
     /* 容器宽度设置为页面宽度的 100% */
 }
 
