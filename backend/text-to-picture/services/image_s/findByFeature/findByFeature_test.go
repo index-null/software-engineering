@@ -256,6 +256,31 @@ func TestFindByFeature_InvalidToken(t *testing.T) {
 	assert.Equal(t, "无效的Token", message, "Expected message to be '无效的Token'")
 }
 
+// TestFindByFeature_validToken 有效的token
+func TestFindByFeature_validToken(t *testing.T) {
+	fmt.Println("\n----------------------------------InvalidToken")
+	gin.SetMode(gin.TestMode)
+	router := SetupRouter()
+	// 创建一个有效的Token
+	claims := &middlewire.Claims{
+		Username: "czh", //根据自己数据库已有的用户
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(middlewire.JwtKey)
+
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil)//模拟复杂特征
+	req.Header.Set("Authorization", tokenString)
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	fmt.Println("返回的状态码为：",w.Code)
+	// 检查响应状态码不为401(401 表示“未找到用户信息”)
+	assert.NotEqual(t, http.StatusUnauthorized, w.Code)
+}
+
 // TestFindByFeature_NoToken 测试缺少token的情况
 func TestFindByFeature_NoToken(t *testing.T) {
 	fmt.Println("\n----------------------------------NoToken")

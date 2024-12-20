@@ -148,9 +148,9 @@ func TestGetUserInfo(t *testing.T) {
 		// 设置 gin 的运行模式为测试模式
 		gin.SetMode(gin.TestMode)
 
-		 // 创建路由，其中MockJWTAuthMiddlewareNoUser()使GetUserImags的Get无法从上下文获取username
-		 router := gin.Default()
-		 router.GET("/auth/user/info", MockJWTAuthMiddlewareNoUser(), GetUserInfo)
+		// 创建路由，其中MockJWTAuthMiddlewareNoUser()使GetUserImags的Get无法从上下文获取username
+		router := gin.Default()
+		router.GET("/auth/user/info", MockJWTAuthMiddlewareNoUser(), GetUserInfo)
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
