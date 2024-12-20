@@ -3,6 +3,7 @@ package delete
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	d "text-to-picture/models/init"
 	"text-to-picture/models/repository/image_r"
@@ -12,6 +13,59 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+// 删除单个图像
+func DeleteUserOneImage(c *gin.Context) {
+	userName, exists := c.Get("username")
+	if !exists {
+		log.Printf("未找到用户名")
+		c.JSON(401, gin.H{
+			"success": false,
+			"message": "未找到用户信息",
+		})
+		return
+	}
+
+	username := userName.(string)
+
+	var err error
+	var id int
+	url := c.Query("url")
+
+	idStr := c.Query("id")
+	if idStr != ""{
+		id, err = strconv.Atoi(idStr)
+		if err != nil {
+			// 如果转换失败，返回错误信息
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid id parameter",
+			})
+			return
+		}
+	}
+	
+	// 开始事务
+	tx := d.DB.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "开始事务失败", "error": tx.Error.Error()})
+		return
+	}
+
+	err = image_r.DeleteUserOneImage(tx, url,username,id)
+	if err != nil {
+		tx.Rollback() // 回滚事务
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "删除用户的一张图像失败", "error": err.Error()})
+		return
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "提交事务失败", "error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "成功删除用户的一张图像"})
+}
+
 
 // 删除单个图像
 func DeleteOneImage(c *gin.Context) {

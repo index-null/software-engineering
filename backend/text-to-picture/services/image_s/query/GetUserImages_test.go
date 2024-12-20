@@ -140,6 +140,7 @@ func TestGetUserImages(t *testing.T) {
 		}
 		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(),&actualResponse)
+		fmt.Println("实际响应为：",actualResponse)
 		assert.Equal(t,expectedResponse,actualResponse)
 
 		//最后清理测试数据
@@ -189,11 +190,12 @@ func TestGetUserImages(t *testing.T) {
 		}
 		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(),&actualResponse)
+		fmt.Println("实际响应为：",actualResponse)
 		assert.Equal(t,expectedResponse,actualResponse)
 	})
 
-	//查询用户图片失败的测试
-	t.Run("GetUserImages_ImagesNotFound",func(t *testing.T) {
+	//查询用户图片失败的测试(数据库查询失败)
+	t.Run("GetUserImages_DatabaseQueryFailed",func(t *testing.T) {
 
 		// 创建gin运行模型为测试模式
 		gin.SetMode(gin.TestMode)
@@ -254,6 +256,7 @@ func TestGetUserImages(t *testing.T) {
 		}
 		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(),&actualResponse)
+		fmt.Println("实际响应为：",actualResponse)
 		assert.Equal(t,expectedResponse,actualResponse)
 
 		// 重新建立数据库连接

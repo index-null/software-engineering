@@ -9,6 +9,38 @@ import (
 )
 
 // 删除指定一张图像
+func DeleteUserOneImage(db *gorm.DB, imageUrl string, username string, id int) error {
+	var image i.ImageInformation
+
+	if imageUrl != "" {
+		// 首先根据用户名和图像URL查找图像记录
+		if err := db.Table("imageinformation").Where("picture = ? AND username = ?", imageUrl, username).First(&image).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("数据库中未找到对应的图像")
+			}
+			return fmt.Errorf("查询图像失败: %v", err)
+		}
+	}else if id > 0{
+		// 首先根据用户名和图像URL查找图像记录
+		if err := db.Table("imageinformation").Where("id = ? AND username = ?", id, username).First(&image).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("数据库中未找到对应的图像")
+			}
+			return fmt.Errorf("查询图像失败: %v", err)
+		}
+	}else{
+		return fmt.Errorf("没有有效的url或id")
+	}
+
+	// 使用查找到的记录的主键进行删除
+	if err := db.Delete(&image).Error; err != nil {
+		return fmt.Errorf("删除用户的一张图像失败: %v", err)
+	}
+
+	return nil
+}
+
+// 删除指定一张图像
 func DeleteOneImage(db *gorm.DB, imageUrl string) error {
 	var image i.ImageInformation
 
