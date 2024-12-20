@@ -1,9 +1,11 @@
 package delete
 
 import (
+	//"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	//"strconv"
+	//"strings"
 
 	d "text-to-picture/models/init"
 	"text-to-picture/models/repository/image_r"
@@ -13,6 +15,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+type RequestBody struct {
+	ImageUrl string `json:"url"`
+	Id       int    `json:"id" `
+}
 
 // 删除单个图像
 func DeleteUserOneImage(c *gin.Context) {
@@ -29,19 +36,11 @@ func DeleteUserOneImage(c *gin.Context) {
 	username := userName.(string)
 
 	var err error
-	var id int
-	url := c.Query("url")
-
-	idStr := c.Query("id")
-	if idStr != ""{
-		id, err = strconv.Atoi(idStr)
-		if err != nil {
-			// 如果转换失败，返回错误信息
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid id parameter",
-			})
-			return
-		}
+	var requestBody RequestBody
+	// 解析请求体
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的请求格式", "error": err.Error()})
+		return
 	}
 	
 	// 开始事务
@@ -51,7 +50,7 @@ func DeleteUserOneImage(c *gin.Context) {
 		return
 	}
 
-	err = image_r.DeleteUserOneImage(tx, url,username,id)
+	err = image_r.DeleteUserOneImage(tx, requestBody.ImageUrl,username,requestBody.Id)
 	if err != nil {
 		tx.Rollback() // 回滚事务
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "删除用户的一张图像失败", "error": err.Error()})

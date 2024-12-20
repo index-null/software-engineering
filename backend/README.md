@@ -420,6 +420,31 @@ POST http://localhost:8080/register
 | 200   | 点赞成功                | `{ “code":200,current_likes": 当前赞数, "message": "Image liked successfully" }` |
 ---
 
+### 图像删除功能
+
+- **URL地址**
+  `(POST) http://localhost:8080/auth/user/deleteOneImage`
+
+- **请求头**
+  ```json
+  {
+    "Authorization": "your_jwt_token"
+  }
+  ```
+
+- **请求体**
+  查询参数:?id= 或?url=
+
+- **响应**
+
+| 响应码 | 描述                   | 示例响应体                                                                        |
+|-------|----------------------|------------------------------------------------------------------------------|
+| 400   | id格式转换失败             | `{ "code": 400, "error": "Invalid id parameter" }`                              |
+| 500   | 删除失败              | `"message": "删除用户的一张图像失败", "error" }`                                 |
+| 200   | 成功删除用户的一张图像     | `{ "message": "成功删除用户的一张图像" }`                             |
+---
+
+
 5. **图片收藏界面**
 #### 查询功能
 - 查询展示出用户的收藏图片
