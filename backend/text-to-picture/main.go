@@ -89,7 +89,7 @@ func main() {
 	r.POST("/register", auth_s.Register) // 注册路由
 	r.POST("/login", auth_s.Login)       // 登录路由
 	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
-	{ //Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
+	{   //Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
