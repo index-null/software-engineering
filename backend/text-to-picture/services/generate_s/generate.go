@@ -29,10 +29,10 @@ import (
 // @name ImageParaments
 type ImageParaments struct {
 	Prompt string `json:"prompt" binding:"required" fault:"缺乏提示词"`
-	Width  int    `json:"width" binding:"required,min=128,max=1024" fault:"宽度不在范围内"`
-	Height int    `json:"height" binding:"required,min=128,max=1024" fault:"高度不在范围内"`
+	Width  int    `json:"width" binding:"required,min=128,max=1281" fault:"宽度不在范围内"`
+	Height int    `json:"height" binding:"required,min=128,max=1281" fault:"高度不在范围内"`
 	Steps  int    `json:"steps" binding:"required,min=1,max=100" fault:"步数不在范围内"`
-	Seed   int    `json:"seed" binding:"required" fault:"缺乏种子"`
+	Seed   int    `json:"seed" binding:"required,min=1,max=4294967290" fault:"缺乏种子"`
 }
 
 // 获取在Tag中的fault信息
