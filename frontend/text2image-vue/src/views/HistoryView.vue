@@ -75,7 +75,7 @@ export default {
           }
         ]
       },
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      value1: [new Date(2000, 10, 10, 10, 10), new Date(2030, 10, 11, 10, 10)],
       value2: ''
     };
   },
@@ -111,22 +111,22 @@ export default {
         console.error('获取收藏的图片失败:', error.response?.data || error.message);
       }
     },
-  formatDateToISO(date) {
-  // 将传入的日期字符串转换为 Date 对象
-  const dateObj = new Date(date);
-  
-  // 获取各个时间部分
-  const year = dateObj.getUTCFullYear();
-  const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
-  const day = String(dateObj.getUTCDate()).padStart(2, '0');
-  const hours = String(dateObj.getUTCHours()).padStart(2, '0');
-  const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
-  const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
-  
-  // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-  },
+    formatDateToISO(date) {
+    // 将传入的日期字符串转换为 Date 对象
+    const dateObj = new Date(date);
+    
+    // 获取各个时间部分
+    const year = dateObj.getUTCFullYear();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
+    const day = String(dateObj.getUTCDate()).padStart(2, '0');
+    const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+    const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
+    
+    // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+    },
     handleDateChange() {
       const { value1 } = this;
       if (value1 && value1.length === 2) {
@@ -176,12 +176,13 @@ export default {
     },
     async deleteRecord(image) {
       try {
-                const response = await axios.delete(
-                    'http://localhost:8080/auth/root/deleteOneImage', {
+                const response = await axios.post(
+                    'http://localhost:8080/auth/user/deleteImages', {ids:[image.id]},{
                     headers: {
                         Authorization: this.token,
+                        'Content-Type':'application/json'
                     },
-                    params: { url: image.url },  // 传递图像的收藏表url
+                    //params: { url: image.url },  // 传递图像的收藏表url
                 }
                 );
                 
@@ -192,15 +193,19 @@ export default {
           } catch (error) {
                 console.error('删除失败:', error.response?.data || error.message);
           }
-     
+    
     },
     viewImage(record) {
-      window.open(record.image_url, '_blank');
+      window.open(record.url, '_blank');
     },
     downloadImage(record) {
+      const url = record.url; // 使用正确的属性名
+      const fileName = url.substring(url.lastIndexOf('/') + 1); // 获取文件名
+
       const link = document.createElement('a');
-      link.href = record.image_url;
-      link.download = 'downloaded_image.png'; // 你可以根据需要更改文件名
+      link.href = url;
+      link.download = fileName; // 设置为实际文件名
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
