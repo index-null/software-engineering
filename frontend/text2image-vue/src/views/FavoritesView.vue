@@ -99,7 +99,7 @@ export default {
                         Authorization: this.token,
                     },
 
-                    params: { url: image.url },  // 传递图像的收藏表url
+                    params: { id: image.id },  // 传递图像的收藏表url
 
                 }
                 );
