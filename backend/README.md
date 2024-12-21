@@ -420,10 +420,10 @@ POST http://localhost:8080/register
 | 200   | 点赞成功                | `{ “code":200,current_likes": 当前赞数, "message": "Image liked successfully" }` |
 ---
 
-### 图像删除功能
+### 批量删除图像功能
 
 - **URL地址**
-  `(POST) http://localhost:8080/auth/user/deleteOneImage`
+  `(POST) http://localhost:8080/auth/user/deleteImages`
 
 - **请求头**
   ```json
@@ -433,16 +433,22 @@ POST http://localhost:8080/register
   ```
 
 - **请求体**
-  查询参数:?id= 或?url=
+   ```json
+  {// 只需传其中的一个，不要同时传"ids"和"urls"
+    "ids": [1,2,3],
+    "urls":["url1","url2","url3"]
+  }
+  ```
 
 - **响应**
 
 | 响应码 | 描述                   | 示例响应体                                                                        |
 |-------|----------------------|------------------------------------------------------------------------------|
-| 400   | id格式转换失败             | `{ "code": 400, "error": "Invalid id parameter" }`                              |
-| 500   | 删除失败              | `"message": "删除用户的一张图像失败", "error" }`                                 |
-| 200   | 成功删除用户的一张图像     | `{ "message": "成功删除用户的一张图像" }`                             |
+| 400   | 请求格式无效或同时提供了 ids 和 urls| `{ "message": "请提供有效的urls或ids列表，但不要同时提供这两个列表" }`  |`                                 |
+| 500   | 删除部分或全部图像失败，撤销所有更改| `{"message": "部分或全部图像删除失败，撤销删除", "errors": ["删除URL url1 失败：...", "删除ID 2 失败：..."] }` |
+| 200   | 成功批量删除用户指定的图像图像     | `{ "message": "成功删除用户指定的图像" }` |
 ---
+
 
 
 5. **图片收藏界面**

@@ -87,9 +87,7 @@ func UpdateUserInfo(db *gorm.DB, username string, updates map[string]interface{}
 
 	log.Printf("正在尝试更新用户 %s 的信息...", username)
 	
-	
-    // 执行数据库操作
-     // 执行数据库操作
+	// 执行数据库操作
 	result = tx.Model(&user).Updates(updateStruct)
 	if result.Error != nil {
 		tx.Rollback()

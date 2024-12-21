@@ -22,6 +22,7 @@
           <div class="overlay" v-if="hoveredImage === image.id">
             <button  circle  @click="downloadImage(image)">下载图像</button>
             <button  round @click="deleteRecord(image)">删除</button> 
+             <button  round @click="addFavoriteImage(image)">收藏</button> 
           </div>
         </div>
       </div>
@@ -75,11 +76,34 @@ export default {
           }
         ]
       },
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      value1: [new Date(2000, 10, 10, 10, 10), new Date(2030, 10, 11, 10, 10)],
       value2: ''
     };
   },
   methods: {
+    // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
+    
+    async addFavoriteImage(image) {
+       try {
+                
+                const response = await axios.post(
+                    'http://localhost:8080/auth/addFavoritedImage',
+                    {url:image.url},
+                    {
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),  // 携带 token
+                            'Content-Type': 'application/json', // 设置请求头
+                        },                      
+                    }
+                );
+                if (response.status === 200) {
+                    // this.getHistoryImages();  // 收藏成功后重新获取收藏列表
+                    this.$message.success('收藏图像成功');
+                }
+            } catch (error) {
+                console.error('收藏图像失败:', error.response?.data || error.message);
+            }
+        },
     async getHistoryImages() {
       try {
         const response = await fetch("http://localhost:8080/auth/user/images", {
@@ -90,7 +114,9 @@ export default {
         });
 
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
+        console.log(localStorage.getItem('token')?'有token':'没有token');
+        console.log(1234567);
 
         const images = data.images;
         images.forEach(item => {
@@ -111,22 +137,22 @@ export default {
         console.error('获取收藏的图片失败:', error.response?.data || error.message);
       }
     },
-  formatDateToISO(date) {
-  // 将传入的日期字符串转换为 Date 对象
-  const dateObj = new Date(date);
-  
-  // 获取各个时间部分
-  const year = dateObj.getUTCFullYear();
-  const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
-  const day = String(dateObj.getUTCDate()).padStart(2, '0');
-  const hours = String(dateObj.getUTCHours()).padStart(2, '0');
-  const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
-  const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
-  
-  // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
-  },
+    formatDateToISO(date) {
+    // 将传入的日期字符串转换为 Date 对象
+    const dateObj = new Date(date);
+    
+    // 获取各个时间部分
+    const year = dateObj.getUTCFullYear();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
+    const day = String(dateObj.getUTCDate()).padStart(2, '0');
+    const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+    const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
+    const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
+    
+    // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+    },
     handleDateChange() {
       const { value1 } = this;
       if (value1 && value1.length === 2) {
@@ -171,39 +197,38 @@ export default {
           }
         });
       } catch (error) {
-        console.error('获取收藏的图片失败:', error.response?.data || error.message);
+        console.error('获取图片失败:', error.response?.data || error.message);
       }
     },
     async deleteRecord(image) {
       try {
-                const response = await axios.delete(
-                    'http://localhost:8080/auth/root/deleteOneImage', {
+                const response = await axios.post(
+                    'http://localhost:8080/auth/user/deleteImages', {ids:[image.id]},{
                     headers: {
                         Authorization: this.token,
+                        'Content-Type':'application/json'
                     },
-                    params: { url: image.url },  // 传递图像的收藏表url
+                    //params: { url: image.url },  // 传递图像的收藏表url
                 }
                 );
                 
                 if (response.status === 200) {
-                    this.historyRecords = this.historyRecords.filter(i => i.url !== image.url);  // 从收藏列表中移除已取消收藏的图像
+                    this.historyRecords = this.historyRecords.filter(i => i.url !== image.url);  // 从历史列表中移除已删除的图像
                     this.$message.success('删除成功');
                 }
           } catch (error) {
                 console.error('删除失败:', error.response?.data || error.message);
           }
-     
+    
     },
     viewImage(record) {
-      window.open(record.image_url, '_blank');
+      window.open(record.url, '_blank');
     },
-    downloadImage(record) {
-      const link = document.createElement('a');
-      link.href = record.image_url;
-      link.download = 'downloaded_image.png'; // 你可以根据需要更改文件名
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    downloadImage(image) {
+            const link = document.createElement('a');
+            link.href = image.url;
+            link.download = image.name;
+            link.click();
     },
   },
   mounted() {
