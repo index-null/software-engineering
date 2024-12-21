@@ -16,18 +16,16 @@
           />
         </div>
         <div class="form-item">
-          <div class="form-label">尺寸</div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <div class="form-sub-label">宽度</div>
-              <el-input-number v-model="form.width" :min="1" :max="1280" placeholder="宽度" />
-            </el-col>
-            <el-col :span="12">
-              <div class="form-sub-label">高度</div>
-              <el-input-number v-model="form.height" :min="1" :max="1280" placeholder="高度" />
-            </el-col>
-          </el-row>
-        </div>
+    <div class="form-label">尺寸</div>
+    <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
+      <el-option
+        v-for="item in sizeOptions"
+        :key="item.label"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+  </div>
         <div class="form-item">
           <div class="form-label">步数</div>
           <el-select v-model="form.steps" placeholder="请选择步数">
@@ -90,10 +88,26 @@ export default {
         { value: 40, label: '40' }
       ],
       temp_generatedImg_results: [],
-      loading: false
+      loading: false,
+      sizeOptions: [
+      { label: '1024x1024', value: '1024x1024' },
+      { label: '720x1280', value: '720x1280' },
+      { label: '768x1152', value: '768x1152' },
+      { label: '1280x720', value: '1280x720' }
+    ],
+    selectedSize: '1024x1024'
     };
   },
   methods: {
+    updateSize() {
+  const selected = this.sizeOptions.find(option => option.value === this.selectedSize);
+  if (selected) {
+    console.log('Old width:', this.form.width, 'Old height:', this.form.height);
+    this.form.width = parseInt(selected.value.split('x')[0], 10);
+    this.form.height = parseInt(selected.value.split('x')[1], 10);
+    console.log('New width:', this.form.width, 'New height:', this.form.height);
+  }
+},
     regenerateImage() {
       this.loading = true;
       this.handleSubmit().finally(() => {
@@ -109,51 +123,51 @@ export default {
         this.$message.error('种子值必须是有效的整数');
         return;
       }
-  this.$message.success('提交成功,正在生成图片...');
-  const currentScore = parseInt(localStorage.getItem("score"), 10) || 0;
-  localStorage.setItem("score", currentScore - 20);
-  // 添加占位图片
-  const placeholderImg = {
-    prompt: this.form.prompt,
-    width: this.form.width,
-    height: this.form.height,
-    seed: this.form.seed,
-    steps: this.form.steps,
-    img_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' // 灰色占位图
-  };
-  this.temp_generatedImg_results.push(placeholderImg);
-  
-  this.loading = true;
-
-  return this.$axios.post('http://localhost:8080/auth/generate', this.form, {
-    timeout: 300000 // 设置超时时间为300秒
-  }).then(response => {
-    if (response && response.data) {
-      console.log(response.data);
-      let img_item = {
-        "prompt": this.form.prompt,
-        "width": this.form.width,
-        "height": this.form.height,
-        "seed": this.form.seed,
-        "steps": this.form.steps,
-        "img_url": response.data.image_url,
+      this.$message.success('提交成功,正在生成图片...');
+      const currentScore = parseInt(localStorage.getItem("score"), 10) || 0;
+      localStorage.setItem("score", currentScore - 20);
+      // 添加占位图片
+      const placeholderImg = {
+        prompt: this.form.prompt,
+        width: this.form.width,
+        height: this.form.height,
+        seed: this.form.seed,
+        steps: this.form.steps,
+        img_url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' // 灰色占位图
       };
-      console.log(img_item);
+      this.temp_generatedImg_results.push(placeholderImg);
+  
+      this.loading = true;
 
-      // 替换占位图片
-      const lastIdx = this.temp_generatedImg_results.length - 1;
-      this.$set(this.temp_generatedImg_results, lastIdx, img_item);
+      return this.$axios.post('http://localhost:8080/auth/generate', this.form, {
+        timeout: 300000 // 设置超时时间为300秒
+      }).then(response => {
+        if (response && response.data) {
+          console.log(response.data);
+          let img_item = {
+            "prompt": this.form.prompt,
+            "width": this.form.width,
+            "height": this.form.height,
+            "seed": this.form.seed,
+            "steps": this.form.steps,
+            "img_url": response.data.image_url,
+          };
+          console.log(img_item);
 
-      this.$message.success(response.data.message);
-    } else {
-      this.$message.error('服务器返回数据异常');
+          // 替换占位图片
+          const lastIdx = this.temp_generatedImg_results.length - 1;
+          this.$set(this.temp_generatedImg_results, lastIdx, img_item);
+
+          this.$message.success(response.data.message);
+        } else {
+          this.$message.error('服务器返回数据异常');
+        }
+      }).catch(error => {
+        this.$message.error(error.response ? error.response.data.message : '请求失败');
+      }).finally(() => {
+        this.loading = false;
+      });
     }
-  }).catch(error => {
-    this.$message.error(error.response ? error.response.data.message : '请求失败');
-  }).finally(() => {
-    this.loading = false;
-  });
-}
   }
 };
 </script>
@@ -301,7 +315,6 @@ export default {
 .result-content {
   display: flex;
   flex-wrap: wrap; /* 允许换行 */
-  justify-content: center;
   align-items: flex-start;
   padding: 20px;
 }
