@@ -7,10 +7,6 @@ import (
 	d "text-to-picture/models/init"
 	"text-to-picture/models/repository/image_r"
 
-	//"text-to-picture/models/repository/user_r"
-
-	//u "text-to-picture/models/user"
-
 	"github.com/gin-gonic/gin"
 )
 
