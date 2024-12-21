@@ -125,7 +125,7 @@ func DeleteUserImagesBatch(c *gin.Context) {
 		}
 	}else{
 		tx.Rollback()
-		c.JSON(http.StatusBadRequest,gin.H{"message":"请提供有效的urls或ids列表，但不要同时提供这两个列表"})
+		c.JSON(http.StatusBadRequest,gin.H{"message":"请提供有效的urls或ids列表，并且不要同时提供这两个列表"})
 		return
 	}
 
