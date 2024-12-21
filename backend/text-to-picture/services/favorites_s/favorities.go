@@ -116,7 +116,6 @@ func DeleteFavoritedImage(c *gin.Context) {
 		imageInfo, err = image_r.GetImageByUrl(d.DB, url)
 
 	} else if idStr != "" {
-		if idStr != "" {
 			id, err1 := strconv.Atoi(idStr)
 			if err1 != nil || id <= 0 {
 				c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})
@@ -125,7 +124,6 @@ func DeleteFavoritedImage(c *gin.Context) {
 			var imageInfo1 *i.FavoritedImages
 			imageInfo1, err = image_r.GetFavoritedImageById(d.DB, imageInfo.ID)
 			imageInfo.Picture = imageInfo1.Picture
-		}
 
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})

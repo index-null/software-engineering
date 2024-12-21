@@ -171,7 +171,7 @@ POST http://localhost:8080/register
   "height": 200,
   "steps": 100,
   "sampling_method": "DDIM",
-  "seed": "string"
+  "seed": 1
 }
 ```
 
@@ -184,7 +184,6 @@ POST http://localhost:8080/register
 | 400    | 宽度不在范围内       | { "code": 400, "message": "宽度不在范围内", "success": false }               |
 | 400    | 高度不在范围内       | { "code": 400, "message": "高度不在范围内", "success": false }               |
 | 400    | 步数不在范围内       | { "code": 400, "message": "步数不在范围内", "success": false }               |
-| 400    | 采样方法不在范围内   | { "code": 400, "message": "采样方法不在范围内", "success": false }           |
 | 400    | 缺少种子             | { "code": 400, "message": "缺乏种子", "success": false }                     |
 | 401    | 请求头中缺少Token     | { "code": 401, "message": "请求头中缺少Token", "success": false }             |
 | 401    | 无效的Token          | { "code": 401, "message": "无效的Token", "success": false }                  |
@@ -420,6 +419,31 @@ POST http://localhost:8080/register
 | 500   | 点赞数据库操作出错       | `{ "code": 500, "error": "点赞数据库操作出错" }`                                      |
 | 200   | 点赞成功                | `{ “code":200,current_likes": 当前赞数, "message": "Image liked successfully" }` |
 ---
+
+### 图像删除功能
+
+- **URL地址**
+  `(POST) http://localhost:8080/auth/user/deleteOneImage`
+
+- **请求头**
+  ```json
+  {
+    "Authorization": "your_jwt_token"
+  }
+  ```
+
+- **请求体**
+  查询参数:?id= 或?url=
+
+- **响应**
+
+| 响应码 | 描述                   | 示例响应体                                                                        |
+|-------|----------------------|------------------------------------------------------------------------------|
+| 400   | id格式转换失败             | `{ "code": 400, "error": "Invalid id parameter" }`                              |
+| 500   | 删除失败              | `"message": "删除用户的一张图像失败", "error" }`                                 |
+| 200   | 成功删除用户的一张图像     | `{ "message": "成功删除用户的一张图像" }`                             |
+---
+
 
 5. **图片收藏界面**
 #### 查询功能
