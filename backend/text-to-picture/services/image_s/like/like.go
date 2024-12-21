@@ -74,11 +74,11 @@ func LikeImage(c *gin.Context) {
 	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
 		// 如果找到了记录，则返回冲突状态码
 		//if imageLike.UserName != "root" { // 这一行可以移除，除非有特殊原因保留
-			c.JSON(http.StatusConflict, gin.H{
-				"code":  409,
-				"error": "用户已经点赞过该图片",
-			})
-			return
+		c.JSON(http.StatusConflict, gin.H{
+			"code":  409,
+			"error": "用户已经点赞过该图片",
+		})
+		return
 		//}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		// 只有当发生非“未找到记录”的错误时才回滚事务并返回 500
@@ -97,7 +97,7 @@ func LikeImage(c *gin.Context) {
 		fmt.Printf("%v  %v %v", username, imageURL, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
-			"error": err.Error()})
+			"error": err.Error()}) //"sql: no rows in result set"
 		return
 	}
 
