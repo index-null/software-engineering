@@ -110,7 +110,8 @@ export default {
         return;
       }
   this.$message.success('提交成功,正在生成图片...');
-  
+  const currentScore = parseInt(localStorage.getItem("score"), 10) || 0;
+  localStorage.setItem("score", currentScore - 20);
   // 添加占位图片
   const placeholderImg = {
     prompt: this.form.prompt,

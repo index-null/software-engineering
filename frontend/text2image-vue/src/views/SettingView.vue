@@ -33,7 +33,7 @@
             <span class="info-value">{{ user.location }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">已收藏图片数:</span>
+            <span class="info-label">积分:</span>
             <span class="info-value">{{ user.collectedPictures }}</span>
           </div>
         </div>
@@ -66,7 +66,7 @@
             <el-option v-for="province in provinces" :key="province" :label="province" :value="province"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="收藏">
+        <el-form-item label="积分">
           <el-input v-model="user.collectedPictures" disabled class="form-item-input"></el-input>
         </el-form-item>
         <el-form-item>
@@ -89,8 +89,9 @@ export default {
         avatar: localStorage.getItem('avatarUrl') || 'https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412092143859.png',
         username: localStorage.getItem('username') || '未知用户',
         email: localStorage.getItem('email') || '未知邮箱',
+        collectedPictures: localStorage.getItem('score') || 0,
         personalSignature: localStorage.getItem('personalSignature') || '快创建一个个性签名吧!',
-        gender: localStorage.getItem('gender') || '未知',
+        gender: localStorage.getItem('gender') || '未知', 
         hobbies: localStorage.getItem('hobbies') || '未知',
         location: localStorage.getItem('location') || '未知',
       },

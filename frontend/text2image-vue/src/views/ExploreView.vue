@@ -29,9 +29,13 @@
   <div class="explore-ground-container">
     <h2 class="ground-title">图片广场</h2>
     <div class="image-grid">
-      <div class="image-item" v-for="n in 16" :key="n">
-        <img src="https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347060.jpg" alt="Image" class="grid-image">
-      </div>
+        <div class="image-item" v-for="image in images" :key="image.id">
+            <el-image
+          style="width: 200px; height: 200px"
+          :src="image.picture"
+          fit="cover"
+        />
+        </div>
     </div>
   </div>
 </div>
@@ -39,8 +43,26 @@
 
 <script>
 export default {
-
-}
+  data() {
+    return {
+      images: []
+    };
+  },
+  mounted() {
+    this.fetchImages();
+  },
+  methods: {
+    fetchImages() {
+      this.$axios.get('http://localhost:8080/image/all')
+        .then(response => {
+          this.images = response.data.images;
+        })
+        .catch(error => {
+          console.error("Error fetching images:", error);
+        });
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -209,31 +231,41 @@ export default {
 }
 
 .explore-ground-container {
-    flex: 8;
-    padding: 2rem; /* 使用相对单位 */
-    box-sizing: border-box;
+  flex: 8;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .ground-title {
-    font-size: 2rem; /* 使用相对单位 */
-    margin-bottom: 2rem; /* 使用相对单位 */
-    text-align: left;
-    color: black;
-    font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem; /* 使用相对单位 */
-    justify-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
 }
 
 .image-item {
-    flex: 0 0 calc(25% - 1rem); /* 一行展示4张图片 */
-    position: relative;
-    overflow: hidden;
-    border-radius: 1rem; /* 使用相对单位 */
+  flex: 0 0 calc(25% - 1rem); /* 一行展示4张图片 */
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+  transition: transform 0.3s; /* 添加过渡效果 */
+}
+
+.image-item:hover {
+  transform: scale(1.05); /* 悬停时放大图片 */
+}
+
+.el-image__inner {
+  border-radius: 1rem; /* 保持图片圆角 */
 }
 
 .text-box {
