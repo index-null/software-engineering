@@ -22,6 +22,7 @@
           <div class="overlay" v-if="hoveredImage === image.id">
             <button  circle  @click="downloadImage(image)">下载图像</button>
             <button  round @click="deleteRecord(image)">删除</button> 
+             <button  round @click="addFavoriteImage(image)">收藏</button> 
           </div>
         </div>
       </div>
@@ -80,6 +81,29 @@ export default {
     };
   },
   methods: {
+    // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
+    
+    async addFavoriteImage(image) {
+       try {
+                
+                const response = await axios.post(
+                    'http://localhost:8080/auth/addFavoritedImage',
+                    {url:image.url},
+                    {
+                        headers: {
+                            'Authorization': localStorage.getItem('token'),  // 携带 token
+                            'Content-Type': 'application/json', // 设置请求头
+                        },                      
+                    }
+                );
+                if (response.status === 200) {
+                    // this.getHistoryImages();  // 收藏成功后重新获取收藏列表
+                    this.$message.success('收藏图像成功');
+                }
+            } catch (error) {
+                console.error('收藏图像失败:', error.response?.data || error.message);
+            }
+        },
     async getHistoryImages() {
       try {
         const response = await fetch("http://localhost:8080/auth/user/images", {
@@ -90,7 +114,9 @@ export default {
         });
 
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
+        console.log(localStorage.getItem('token')?'有token':'没有token');
+        console.log(1234567);
 
         const images = data.images;
         images.forEach(item => {
@@ -171,7 +197,7 @@ export default {
           }
         });
       } catch (error) {
-        console.error('获取收藏的图片失败:', error.response?.data || error.message);
+        console.error('获取图片失败:', error.response?.data || error.message);
       }
     },
     async deleteRecord(image) {
@@ -187,7 +213,7 @@ export default {
                 );
                 
                 if (response.status === 200) {
-                    this.historyRecords = this.historyRecords.filter(i => i.url !== image.url);  // 从收藏列表中移除已取消收藏的图像
+                    this.historyRecords = this.historyRecords.filter(i => i.url !== image.url);  // 从历史列表中移除已删除的图像
                     this.$message.success('删除成功');
                 }
           } catch (error) {
@@ -198,17 +224,11 @@ export default {
     viewImage(record) {
       window.open(record.url, '_blank');
     },
-    downloadImage(record) {
-      const url = record.url; // 使用正确的属性名
-      const fileName = url.substring(url.lastIndexOf('/') + 1); // 获取文件名
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName; // 设置为实际文件名
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    downloadImage(image) {
+            const link = document.createElement('a');
+            link.href = image.url;
+            link.download = image.name;
+            link.click();
     },
   },
   mounted() {

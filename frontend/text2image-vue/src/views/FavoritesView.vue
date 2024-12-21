@@ -6,11 +6,15 @@
         <div v-if="images &&images.length" class="image-gallery-container">
             <div v-for="image in images" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id"
                 @mouseleave="hoveredImage = null">
-                <img :src="image.url" :alt="image.name" class="image">
+
+                <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
+                <img :src="image.url" :alt="image.name" class="image">      
                 <div class="overlay" v-if="hoveredImage === image.id">
                     <button @click="toggleFavorite(image)">{{ image.isFavorite ? '取消收藏' : '收藏' }}</button>
                     <button @click="downloadImage(image)">下载</button>
+                    <!-- <i class="el-icon-delete"></i> -->
                 </div>
+                
             </div>
         </div>
 
@@ -31,6 +35,7 @@ export default {
             images: [],  // 存储用户的收藏图片
             hoveredImage: null,  // 用于追踪当前悬停的图片
             token: localStorage.getItem('token') || '',  // 获取用户的 token
+            checked: [],
         };
     },
     mounted() {
@@ -169,8 +174,8 @@ export default {
 }
 
 .image {
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     object-fit: cover;
 }
 
