@@ -27,6 +27,11 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
+// TestMain 是测试的入口函数
+func testMain() {
+	var m *testing.M
+	TestMain(m) // 已在getAvator_test.go定义
+}
 
 func TestSetAvator(t *testing.T) {
 	
@@ -113,7 +118,7 @@ func TestSetAvator(t *testing.T) {
 
 		//创建一个POST请求
 		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
+		request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		
 		//创建一个响应器
@@ -146,7 +151,7 @@ func TestSetAvator(t *testing.T) {
 
 		// 创建一个POST请求
 		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
+		request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 
 		//放入一个无效令牌
@@ -192,7 +197,7 @@ func TestSetAvator(t *testing.T) {
 		
 		//创建一个POST请求
 		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
+		request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Authorization", tokenString)
 

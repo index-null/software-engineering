@@ -84,8 +84,8 @@ func TestDeleteUserByName_Success(t *testing.T) {
     router := SetupRouter()
 
     // 创建测试用户
-    testUsername := "testuser_success3" // 每次测试要修改，避免违反唯一约束"userinformation_username_key" 和"userinformation_email_key"
-    db.DB.Create(&u.UserInformation{UserName: testUsername, Email:"testuser_success3@qq.com"})
+    testUsername := "testuser_success" 
+    db.DB.Create(&u.UserInformation{UserName: testUsername, Email:"testuser_success@qq.com"})
 
     // 创建有效的Token
     claims := &middlewire.Claims{
@@ -97,7 +97,7 @@ func TestDeleteUserByName_Success(t *testing.T) {
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_success3", nil)
+    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_success", nil)
     req.Header.Set("Authorization", tokenString)
 
     w := httptest.NewRecorder()
@@ -107,7 +107,7 @@ func TestDeleteUserByName_Success(t *testing.T) {
 
     var response map[string]interface{}
     json.Unmarshal(w.Body.Bytes(), &response)
-    assert.Equal(t, "成功删除用户：testuser_success3", response["message"])
+    assert.Equal(t, "成功删除用户：testuser_success", response["message"])
 }
 
 // TestDeleteUserByName_Success 测试用户账号成功注销的情况
@@ -117,12 +117,12 @@ func TestDeleteUserByName_LogoutSuccess(t *testing.T) {
     router := SetupRouter()
 
     // 创建测试用户
-    testUsername := "testuser_logout5"
-    db.DB.Create(&u.UserInformation{UserName: testUsername, Email: "testuser_logout5@qq.com"})
+    testUsername := "testuser_logout"
+    db.DB.Create(&u.UserInformation{UserName: testUsername, Email: "testuser_logout@qq.com"})
 
     // 创建有效的Token
     claims := &middlewire.Claims{
-        Username: "testuser_logout5", // 使用root用户进行删除
+        Username: "testuser_logout", // 使用用户自身进行账号注销
         StandardClaims: jwt.StandardClaims{
             ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
         },
@@ -130,7 +130,7 @@ func TestDeleteUserByName_LogoutSuccess(t *testing.T) {
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_logout5&isOwn=true", nil)
+    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_logout&isOwn=true", nil)
     req.Header.Set("Authorization", tokenString)
 
     w := httptest.NewRecorder()
@@ -140,7 +140,8 @@ func TestDeleteUserByName_LogoutSuccess(t *testing.T) {
 
     var response map[string]interface{}
     json.Unmarshal(w.Body.Bytes(), &response)
-    assert.Equal(t, "testuser_logout5的账号注销成功", response["message"])
+    fmt.Println("返回的message为：",response["message"])
+    assert.Equal(t, "testuser_logout的账号注销成功", response["message"])
 }
 
 // TestDeleteUserByName_UserNotFound 测试用户不存在的情况
@@ -179,8 +180,8 @@ func TestDeleteUserByName_NoPermission(t *testing.T) {
     router := SetupRouter()
 
     // 创建测试用户
-    testUsername := "testuser_non2"
-    db.DB.Create(&u.UserInformation{UserName: testUsername,Email: "testuser_non2@qq.com"})
+    testUsername := "testuser_non3"// 每次测试要修改，避免违反唯一约束"userinformation_username_key" 和"userinformation_email_key"
+    db.DB.Create(&u.UserInformation{UserName: testUsername,Email: "testuser_non3@qq.com"})
 
     // 创建有效的Token
     claims := &middlewire.Claims{
@@ -192,7 +193,7 @@ func TestDeleteUserByName_NoPermission(t *testing.T) {
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_non2", nil)
+    req, _ := http.NewRequest("DELETE", "/auth/root/deleteOneUser?username=testuser_non3", nil)
     req.Header.Set("Authorization", tokenString)
 
     w := httptest.NewRecorder()

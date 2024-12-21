@@ -1,11 +1,14 @@
 package like
 
 import (
+	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"text-to-picture/models/image"
 	db "text-to-picture/models/init"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ReqBody struct {
@@ -38,23 +41,27 @@ func LikeImage(c *gin.Context) {
 		return
 	}
 
-	usernames, _ := c.Get("username")
-	if usernames == "" {
+	usernames, exist := c.Get("username")
+	if !exist || usernames == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"code":  401,
 			"error": "名字解析出错"})
 		return
 	}
 	username, _ := usernames.(string)
+	// 开始事务
 	tx := db.DB.Begin()
-	if tx == nil {
+	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": "点赞数据库开始出错"})
 		return
 	}
+
 	defer func() {
-		if tx == nil {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
 			tx.Rollback()
 		} else {
 			tx.Commit()
@@ -64,10 +71,22 @@ func LikeImage(c *gin.Context) {
 	var imageLike image.ImageLike
 
 	// 查询用户是否有点赞记录
-	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil && imageLike.UserName != "root" {
+	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil {
+		// 如果找到了记录，则返回冲突状态码
+		//if imageLike.UserName != "root" { // 这一行可以移除，除非有特殊原因保留
 		c.JSON(http.StatusConflict, gin.H{
 			"code":  409,
-			"error": "用户已经点赞过该图片"})
+			"error": "用户已经点赞过该图片",
+		})
+		return
+		//}
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		// 只有当发生非“未找到记录”的错误时才回滚事务并返回 500
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "Database query error",
+		})
 		return
 	}
 
@@ -78,7 +97,7 @@ func LikeImage(c *gin.Context) {
 		fmt.Printf("%v  %v %v", username, imageURL, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
-			"error": err.Error()})
+			"error": err.Error()}) //"sql: no rows in result set"
 		return
 	}
 

@@ -93,7 +93,9 @@ export default {
                     headers: {
                         Authorization: this.token,
                     },
+
                     params: { url: image.url },  // 传递图像的收藏表url
+
                 }
                 );
                 

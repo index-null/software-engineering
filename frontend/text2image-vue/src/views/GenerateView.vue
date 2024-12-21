@@ -101,6 +101,14 @@ export default {
       });
     },
     handleSubmit() {
+      // 强制将 seed 转换为整数
+      this.form.seed = parseInt(this.form.seed, 10) || 0;
+  
+      // 确保转换后的 seed 是有效的整数
+      if (isNaN(this.form.seed)) {
+        this.$message.error('种子值必须是有效的整数');
+        return;
+      }
   this.$message.success('提交成功,正在生成图片...');
   
   // 添加占位图片

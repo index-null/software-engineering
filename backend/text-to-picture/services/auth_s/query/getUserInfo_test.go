@@ -28,6 +28,13 @@ func SetupRouter() *gin.Engine {
 	return r
 }
 
+//模拟JWT中间件，主要是不要设置Set，使得Get无法获取username上下文，模拟未找到用户信息
+func MockJWTAuthMiddlewareNoUser() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Next()
+    }
+}
+
 // DBConfig 结构体定义
 type DBConfig struct {
 	DB struct {
@@ -39,9 +46,10 @@ type DBConfig struct {
 	} `yaml:"db"`
 }
 
-// TestMain 是测试的入口函数
+// TestGetUserInfo 是测试GetUserInfo函数的入口函数
 func TestGetUserInfo(t *testing.T) {
 
+	//设置gin的运行模式为测试模式
 	gin.SetMode(gin.TestMode)
 
 	// 读取测试数据库配置
@@ -122,6 +130,7 @@ func TestGetUserInfo(t *testing.T) {
 				"score":      float64(100),
 				"token":      tokenString,
 				"create_time": create_time.Format("2006-01-02T15:04:05.000000Z"),
+				//测试时，有时实际结果的时间是5位小数，导致出错，可以再次测一次，或者去掉一位小数
 			},
 		}
 		var actualResponse gin.H
@@ -139,15 +148,13 @@ func TestGetUserInfo(t *testing.T) {
 		// 设置 gin 的运行模式为测试模式
 		gin.SetMode(gin.TestMode)
 
-		//创建一个路由
-		router := SetupRouter()
-
-		// 用户名置空
-		testUsername := "" 
+		// 创建路由，其中MockJWTAuthMiddlewareNoUser()使GetUserImags的Get无法从上下文获取username
+		router := gin.Default()
+		router.GET("/auth/user/info", MockJWTAuthMiddlewareNoUser(), GetUserInfo)
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: "test", 
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
