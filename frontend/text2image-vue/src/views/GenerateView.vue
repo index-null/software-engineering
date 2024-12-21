@@ -311,12 +311,13 @@ export default {
   background-color: transparent;
 }
 
-/* 结果内容样式 */
 .result-content {
   display: flex;
   flex-wrap: wrap; /* 允许换行 */
+  justify-content: flex-start; /* 从左侧开始 */
   align-items: flex-start;
   padding: 20px;
+  gap: 10px; /* 设置间距 */
 }
 
 /* 生成的图片样式 */
