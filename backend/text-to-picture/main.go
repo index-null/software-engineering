@@ -104,7 +104,7 @@ func main() {
 		// 下面3个Get请求无需参数
 		auth.GET("/user/info", user_q.GetUserInfo)                        // 查询当前用户信息
 		auth.GET("/user/images", image_q.GetUserImages)                   // 查询当前用户生成的所有图片
-		auth.POST("/user/deleteOneImage", image_d.DeleteUserOneImage)     // 删除当前用户的一张图像
+		auth.POST("/user/deleteImages", image_d.DeleteUserImagesBatch)     // (批量)删除当前用户的图像
 		auth.GET("/user/favoritedimages", image_q.GetUserFavoritedImages) // 查询当前用户收藏的图片
 
 		auth.GET("/user/images/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）

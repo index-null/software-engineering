@@ -2,8 +2,10 @@ package delete
 
 import (
 	//"fmt"
+	"fmt"
 	"log"
 	"net/http"
+
 	//"strconv"
 	//"strings"
 
@@ -21,7 +23,12 @@ type RequestBody struct {
 	Id       int    `json:"id" `
 }
 
-// 删除单个图像
+type BatchDeleteRequestBody struct {
+	Urls []string `json:"urls"`
+	Ids	 []int	  `json:"ids"`
+}
+
+// 删除用户的单个图像
 func DeleteUserOneImage(c *gin.Context) {
 	userName, exists := c.Get("username")
 	if !exists {
@@ -63,6 +70,80 @@ func DeleteUserOneImage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "成功删除用户的一张图像"})
+}
+
+// 删除用户多张图像
+func DeleteUserImagesBatch(c *gin.Context) {
+	userName, exists := c.Get("username")
+	if !exists {
+		log.Printf("未找到用户名")
+		c.JSON(401, gin.H{
+			"success": false,
+			"message": "未找到用户信息",
+		})
+		return
+	}
+
+	username := userName.(string)
+
+	var requestBody BatchDeleteRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "无效的请求格式", "error": err.Error()})
+		return
+	}
+
+	// 开始事务
+	tx := d.DB.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "开始事务失败", "error": tx.Error.Error()})
+		return
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "服务器内部错误"})
+			return
+		}
+	}()
+
+	var errors []string
+	
+	if len(requestBody.Urls) >0 && len(requestBody.Ids) == 0{		
+		for _, url := range requestBody.Urls {
+			err := image_r.DeleteUserOneImage(tx, url, username, 0)
+			if err != nil {
+				errors = append(errors, fmt.Sprintf("删除URL %s 失败：%v", url,err))
+			}
+		}
+	}else if len(requestBody.Ids)>0 && len(requestBody.Urls)==0{
+		for _, id := range requestBody.Ids{
+			err :=image_r.DeleteUserOneImage(tx, "", username, id)
+			if err != nil {
+				errors = append(errors, fmt.Sprintf("删除ID %d 失败：%v",id,err))
+			}
+		}
+	}else{
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest,gin.H{"message":"请提供有效的urls或ids列表，并且不要同时提供这两个列表"})
+		return
+	}
+
+	if len(errors)>0{
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError,gin.H{
+			"message":"部分或全部图像删除失败，撤销删除",
+			"errors":errors,
+		})
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "提交事务失败", "error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "成功删除用户指定的图像"})
 }
 
 
