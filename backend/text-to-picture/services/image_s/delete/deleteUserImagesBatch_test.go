@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
+
 type DBConfig struct {
 	DB struct {
 		User     string `yaml:"user"`
@@ -30,6 +31,7 @@ type DBConfig struct {
 		Name     string `yaml:"name"`
 	} `yaml:"db"`
 }
+
 // SetupRouter 设置 Gin 路由
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
@@ -97,16 +99,16 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 	userinfo := &user.UserInformation{
 		UserName: testUsername,
 		Password: "123456",
-		Email: testUsername+"@qq.com",
+		Email:    testUsername + "@qq.com",
 	}
 	imageInfo1 := &image.ImageInformation{
-		UserName:   testUsername,
-		Picture:    "http://example.com/test_1.jpg",
+		UserName:    testUsername,
+		Picture:     "http://example.com/test_1.jpg",
 		Create_time: time.Now(),
 	}
 	imageInfo2 := &image.ImageInformation{
-		UserName:   testUsername,
-		Picture:    "http://example.com/test_2.jpg",
+		UserName:    testUsername,
+		Picture:     "http://example.com/test_2.jpg",
 		Create_time: time.Now(),
 	}
 	db.DB.Create(&userinfo)
@@ -116,7 +118,7 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 	// 测试成功删除
 	t.Run("Successful_Delete", func(t *testing.T) {
 		requestBody := BatchDeleteRequestBody{
-			Ids:  []int{int(imageInfo2.ID)},
+			Ids: []int{int(imageInfo2.ID)},
 		}
 
 		jsonData, _ := json.Marshal(requestBody)
@@ -229,6 +231,32 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, resp.Code)
 		expectedResponse := gin.H{
 			"message": "请提供有效的urls或ids列表，并且不要同时提供这两个列表",
+		}
+		var actualResponse gin.H
+		json.Unmarshal(resp.Body.Bytes(), &actualResponse)
+		fmt.Println("实际响应为：", actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
+	})
+
+	// 测试错误的 URL
+	t.Run("Invalid_URL", func(t *testing.T) {
+		requestBody := BatchDeleteRequestBody{
+			Urls: []string{"http://example.com/nonexistent.jpg"},
+		}
+
+		jsonData, _ := json.Marshal(requestBody)
+		req, _ := http.NewRequest("POST", "/auth/user/deleteImages", bytes.NewBuffer(jsonData))
+		req.Header.Set("Authorization", tokenString)
+		req.Header.Set("Content-Type", "application/json")
+		resp := httptest.NewRecorder()
+
+		router.ServeHTTP(resp, req)
+
+		assert.Equal(t, http.StatusInternalServerError, resp.Code)
+		expectedResponse := gin.H{
+			"errors": []interface{}{
+				"删除URL http://example.com/nonexistent.jpg 失败：数据库中未找到对应的图像"},
+			"message": "部分或全部图像删除失败，撤销删除",
 		}
 		var actualResponse gin.H
 		json.Unmarshal(resp.Body.Bytes(), &actualResponse)
