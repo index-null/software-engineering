@@ -154,5 +154,3 @@ config/DBconfig/DBconfig.yaml
 
 backend/text-to-picture/czh_demo
 czh_demo/
-# 忽略生成结果
-./assets/examples/images/*.png
