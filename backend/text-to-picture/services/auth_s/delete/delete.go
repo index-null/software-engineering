@@ -40,10 +40,9 @@ func DeleteUserByName(c *gin.Context) {
 
 	isOwn := c.Query("isOwn")
 
-	// 非root用户，不能删除其他某个用户
+	// 判断是不是既非root用户也非账号注销这两种情况
 	if (isOwn != "true" && isOwn != "True") && userName.(string) != "root" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			//"success": false,
 			"message": "非root用户，不可删除其他某个用户",
 		})
 		return

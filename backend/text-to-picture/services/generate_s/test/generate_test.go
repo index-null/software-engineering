@@ -103,7 +103,7 @@ func TestGenerateImage_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	// 创建一个有效的Token
 	claims := &middlewire.Claims{
-		Username: "testuser11", //根据自己数据库已有的用户
+		Username: "testuser_success1", //根据自己数据库已有的用户
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
 		},
@@ -111,10 +111,11 @@ func TestGenerateImage_Success(t *testing.T) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 	user := userLogin.UserInformation{
-		UserName: "testuser11",
+		UserName: "testuser_success1",
 		Token:    tokenString,
-		Email:    "test11@qq.com",
+		Email:    "testuser_success1@qq.com",
 		Password: "aaaaaa",
+		Score: 100,
 	}
 	err := user_r.InsertUserInformation(models.DB, &user)
 	if err != nil {
@@ -129,7 +130,7 @@ func TestGenerateImage_Success(t *testing.T) {
 		Width:  1024,
 		Height: 1024,
 		Steps:  50,
-		Seed:   123456,
+		Seed:   123,
 	}
 
 	// Marshal input into JSON
@@ -152,8 +153,10 @@ func TestGenerateImage_Success(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("实际响应为：",response)
 	assert.Equal(t, float64(200), response["code"])
 	assert.Equal(t, "用户当前积分为80", response["message"])
+	db.DB.Table("userinformation").Delete(user)
 }
 func TestGenerateImage_NoToken(t *testing.T) {
 	// Set Gin to test mode
@@ -190,6 +193,7 @@ func TestGenerateImage_NoToken(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("实际的响应为",response)
 	assert.Equal(t, float64(401), response["code"])
 	assert.Contains(t, response["message"], "请求头中缺少Token")
 }
@@ -213,8 +217,8 @@ func TestGenerateImage_InvalidParameters(t *testing.T) {
 	// Create invalid input parameters (width out of range)
 	input := map[string]interface{}{
 		"prompt": "A beautiful sunset",
-		"width":  2000,
-		"height": 512,
+		"width":  2000, //超出限制
+		"height": 1024,
 		"steps":  50,
 		"seed":   123456,
 	}
@@ -238,6 +242,7 @@ func TestGenerateImage_InvalidParameters(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("实际响应为：",response)
 	assert.Equal(t, float64(400), response["code"])
 	assert.Contains(t, response["message"], "宽度不在范围内")
 }
@@ -285,6 +290,61 @@ func TestGenerateImage_MissingParameters(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("实际的响应为",response)
 	assert.Equal(t, float64(400), response["code"])
 	assert.Contains(t, response["message"], "缺乏提示词")
+}
+
+
+
+func TestGenerateImage_InsufficientScore(t *testing.T) {
+	// Set Gin to test mode
+	gin.SetMode(gin.TestMode)
+
+	// Set up the router
+	router := SetupRouter()
+	testUsername := "testuser_InsufficientScore"
+	// 积分为0，无法生成图像
+    db.DB.Create(&userLogin.UserInformation{UserName: testUsername,Email: testUsername+"@qq.com", Score:0})
+
+	// 创建一个有效的Token
+	claims := &middlewire.Claims{
+		Username: testUsername, //根据自己数据库已有的用户
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(middlewire.JwtKey)
+	// Create input with missing "prompt"
+	input := map[string]interface{}{
+		"prompt": "A beautiful sunset",
+		"width":  1024,
+		"height": 1024,
+		"steps":  50,
+		"seed":   1234,
+	}
+
+	// Marshal input into JSON
+	jsonData, _ := json.Marshal(input)
+
+	// Create a POST request
+	req, _ := http.NewRequest("POST", "/generate", bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", tokenString)
+	// Create a response recorder
+	w := httptest.NewRecorder()
+
+	// Perform the request
+	router.ServeHTTP(w, req)
+
+	// Check response status code
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+
+	// Check response body
+	var response map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("实际的响应为",response)
+	assert.Equal(t, float64(401), response["code"])
+	assert.Contains(t, response["message"], "用户积分不足")
 }

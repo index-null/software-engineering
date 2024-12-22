@@ -159,7 +159,7 @@ export default {
 
         const data = await response.json();
         //console.log(data);
-        console.log(localStorage.getItem('token')?'有token':'没有token');
+        console.log(localStorage.getItem('token')? '有token':'没有token');
         console.log(1234567);
 
         const images = data.images;
