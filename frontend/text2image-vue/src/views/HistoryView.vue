@@ -10,7 +10,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       ></el-date-picker>
-    <el-button type="success" icon="el-icon-check" circle @click="handleDateChange()"></el-button>
+    <el-button  icon="el-icon-check" circle @click="handleDateChange()"></el-button>
     </div>
     <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreRecord">批量管理</el-button>
     <div style="margin-top: 50px;">
