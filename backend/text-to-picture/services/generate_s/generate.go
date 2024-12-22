@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
+
 	//"net/http"
 	// "net/url"
 	"os"
@@ -32,7 +34,7 @@ type ImageParaments struct {
 	Width  int    `json:"width" binding:"required,min=128,max=1281" fault:"宽度不在范围内"`
 	Height int    `json:"height" binding:"required,min=128,max=1281" fault:"高度不在范围内"`
 	Steps  int    `json:"steps" binding:"required,min=1,max=100" fault:"步数不在范围内"`
-	Seed   int    `json:"seed" binding:"required,min=1,max=4294967290" fault:"缺乏种子"`
+	Seed   int    `json:"seed" binding:"required,min=1,max=4294967290" fault:"种子不在范围"`
 }
 
 // 获取在Tag中的fault信息
@@ -214,9 +216,10 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss(imageParaments ImageParaments) (string, error) {
 	// 构建跨平台的路径
-	//localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
+	//localFileName := "D:/软件工程项目/software-engineering/backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 
 	envPath := filepath.Join("config", "oss", "oss.env")
+	//envPath := "D:/软件工程项目/software-engineering/backend/text-to-picture/config/oss/oss.env"
 	if err := godotenv.Load(envPath); err != nil {
 		log.Printf("Failed to load .env file: %v", err)
 	}

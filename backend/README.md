@@ -184,7 +184,7 @@ POST http://localhost:8080/register
 | 400    | 宽度不在范围内       | { "code": 400, "message": "宽度不在范围内", "success": false }               |
 | 400    | 高度不在范围内       | { "code": 400, "message": "高度不在范围内", "success": false }               |
 | 400    | 步数不在范围内       | { "code": 400, "message": "步数不在范围内", "success": false }               |
-| 400    | 缺少种子             | { "code": 400, "message": "缺乏种子", "success": false }                     |
+| 400    | 种子不在范围           | { "code": 400, "message": "缺乏种子", "success": false }                     |
 | 401    | 请求头中缺少Token     | { "code": 401, "message": "请求头中缺少Token", "success": false }             |
 | 401    | 无效的Token          | { "code": 401, "message": "无效的Token", "success": false }                  |
 | 401    | 未找到用户信息       | { "code": 401, "message": "未找到用户信息", "success": false }                |
@@ -513,7 +513,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) localhost:8080/auth/deleteFavoritedImage`
+(DELETE) localhost:8080/auth/deleteFavoritedImage`
 
 #### 请求头
 
@@ -527,8 +527,8 @@ POST http://localhost:8080/register
 //至少传递一个参数
 ```json
    
-  "url": "",
-  "id": ""
+  "url":"",
+  "id": "",
 ```
 
 #### 响应
@@ -673,6 +673,78 @@ POST http://localhost:8080/register
 | 200    | 账号注销成功       | `{"message"："（用户名）的账号注销成功"}`           |
 ---
 
+### 删除单个图像
+### 功能
+根据前端传来的?url删除指定图像
+
+#### URL地址
+
+`(DELETE) http://localhost:8080/auth/root/deleteOneImage`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无。
+通过查询参数:   ?url= (可选isOwn=true)
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                        |
+|-----| ----------------- | ------------------------------------------------- |
+| 401 | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 401 | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 401 | 未找到用户信息      | `{"message"："未找到用户信息"}`                   |
+| 400 | 非root用户         | `{"message"："非root用户，不可删除某张图像"}`   |
+| 401 | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 500 | 根据关键字查询图片失败| `{"message"："根据关键字查询图片失败"}`              |
+| 500 | 开始事务失败        | `{"message"："开始事务失败"}`                       |
+| 500 | 删除图像失败      | `{"message"："删除图像失败"}`                      |
+| 500 | 提交事务失败       | `{"message"："提交事务失败"}`           |
+| 200 | 成功删除图像      | `{"message"："成功删除图像"}`           |
+---
+### 删除单个图像
+### 功能
+删除指定用户的所有图像
+
+#### URL地址
+
+`(DELETE) http://localhost:8080/auth/root/deleteImagesByUser
+
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无。
+通过查询参数:   ?username= (可选isOwn=true)
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                        |
+|-----| ----------------- | ------------------------------------------------- |
+| 401 | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 401 | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 401 | 未找到用户信息      | `{"message"："未找到用户信息"}`                   |
+| 400 | 非root用户         | `{"message"："非root用户，不可删除某张图像"}`   |
+| 401 | 无效的Token        | `{"message"："无效的Token"}`                      |
+| 500 | 查询用户是否存在失败| `{"message"："根据关键字查询图片失败"}`              |
+| 500 | 用户不存在         | `{"message"："开始事务失败"}`                       |
+| 500 | 用户"username不存在       | `{"message"："用户username"不存在"}`                      |
+| 500 | 删除用户username的所有图像失败       | `{"message"："删除用户username的所有图像失败"}`                      |
+| 500 | 成功删除用户       | `{"message"："提交事务失败"}`           |
+| 200 | 成功删除用户username的所有图像      | `{"message"："成功删除用户username的所有图像"}`           |
+---
 
 10. **数据库设计**
    - 用户登录表：id，email，user，password，token
