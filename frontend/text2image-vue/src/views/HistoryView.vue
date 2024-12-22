@@ -150,7 +150,19 @@ export default {
                     this.$message.success('收藏图像成功');
                 }
             } catch (error) {
-                console.error('收藏图像失败:', error.response?.data || error.message);
+              if (error.response) {
+                // 请求成功发出但服务器返回了非2xx的状态码
+                if (error.response.status === 409) {
+                  this.$message.warning("收藏失败：您之前已经收藏了该图像");
+                } else {
+                  console.error('收藏图像失败:', error.response.data || error.message);
+                  this.$message.error('收藏图像失败，请稍后再试或联系管理员');
+                }
+              } else {
+                // 对于网络错误或其他情况，直接使用 error.message
+                console.error('收藏图像失败:', error.message);
+                this.$message.error('收藏图像失败，请检查网络连接后重试');
+              }
             }
         },
     async getHistoryImages() {
@@ -192,12 +204,12 @@ export default {
     
     // 获取各个时间部分
     const year = dateObj.getUTCFullYear();
-    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
-    const day = String(dateObj.getUTCDate()).padStart(2, '0');
-    const hours = String(dateObj.getUTCHours()).padStart(2, '0');
-    const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
-    const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+    const milliseconds = String(dateObj.getMilliseconds()).padStart(3, '0');
     
     // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
@@ -206,6 +218,8 @@ export default {
       const { value1 } = this;
       if (value1 && value1.length === 2) {
         const [startDate, endDate] =value1;
+        console.log('开始:', startDate);
+        console.log('结束:', endDate);
         const start = this.formatDateToISO(startDate);  // 转换格式
         const end =  this.formatDateToISO(endDate);
         console.log('开始日期:', start);
