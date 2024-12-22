@@ -11,6 +11,35 @@
         <div class="title-text">{{ appName }}</div>
       </div>
       <el-tabs type="border-card">
+        <el-tab-pane label="登录">
+          <!-- <el-card class="box-card"> -->
+            <h2>登录</h2>
+            <el-form
+              :model="loginForm"
+              status-icon
+              :rules="loginRules"
+              ref="loginForm"
+              label-position="left"
+              label-width="70px"
+              class="login-form"
+            >
+              <el-form-item label="用户名" prop="username">
+                <el-input v-model="loginForm.username"></el-input>
+              </el-form-item>
+              <el-form-item label="密码" prop="password">
+                <el-input
+                  type="password"
+                  v-model="loginForm.password"
+                  autocomplete="off"
+                ></el-input>
+              </el-form-item>
+            </el-form>
+            <div class="btn-group">
+              <el-button type="primary" @click="submitLoginForm('loginForm')">登录</el-button>
+              <el-button @click="resetLoginForm('loginForm')">重置</el-button>
+            </div>
+          <!-- </el-card> -->
+        </el-tab-pane>
         <el-tab-pane label="注册">
           <!-- <el-card class="box-card"> -->
             <h2>注册</h2>
@@ -50,35 +79,7 @@
             </div>
           <!-- </el-card> -->
         </el-tab-pane>
-        <el-tab-pane label="登录">
-          <!-- <el-card class="box-card"> -->
-            <h2>登录</h2>
-            <el-form
-              :model="loginForm"
-              status-icon
-              :rules="loginRules"
-              ref="loginForm"
-              label-position="left"
-              label-width="70px"
-              class="login-form"
-            >
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="loginForm.username"></el-input>
-              </el-form-item>
-              <el-form-item label="密码" prop="password">
-                <el-input
-                  type="password"
-                  v-model="loginForm.password"
-                  autocomplete="off"
-                ></el-input>
-              </el-form-item>
-            </el-form>
-            <div class="btn-group">
-              <el-button type="primary" @click="submitLoginForm('loginForm')">登录</el-button>
-              <el-button @click="resetLoginForm('loginForm')">重置</el-button>
-            </div>
-          <!-- </el-card> -->
-        </el-tab-pane>
+        
       </el-tabs>
     </div>
   </div>
