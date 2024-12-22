@@ -234,7 +234,7 @@ export default {
           // 清除本地存储的数据和执行其他清理工作
           localStorage.clear();
           // 可能还需要重定向到登录页面或主页等
-          this.$router.push({ name: 'Login' }); // 假设有一个名为Login的路由
+          this.$router.push({ name: '/log-reg' }); // 假设有一个名为Login的路由
         } else {
           this.$message.error('服务器返回异常');
         }
