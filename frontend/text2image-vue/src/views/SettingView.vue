@@ -38,8 +38,15 @@
           </div>
         </div>
       </div>
+      <!-- 新增签到按钮 -->
+      <el-button type="success" @click="signIn" class="sign-in-button" :disabled="hasSignedInToday" v-show="!isEditing">
+        {{ hasSignedInToday ? '已签到' : '签到' }}
+      </el-button>
       <el-button type="primary" @click="toggleEdit" class="edit-button" v-show="!isEditing">
         编辑
+      </el-button>
+      <el-button type="danger" @click="confirmLogout" class="logout-button" v-show="!isEditing">
+        注销
       </el-button>
       <el-form v-if="isEditing" label-width="80px" class="edit-form">
         <el-form-item label="昵称">
@@ -81,7 +88,6 @@
 
 <script>
 import OSS from 'ali-oss';
-
 export default {
   data() {
     return {
@@ -96,6 +102,7 @@ export default {
         location: localStorage.getItem('location') || '未知',
       },
       isEditing: false,
+      hasSignedInToday: false, // 添加此属性以跟踪签到状态
       client: null,
       provinces: [
         '北京市', '天津市', '上海市', '重庆市', '河北省', '山西省', '辽宁省', '吉林省', '黑龙江省', '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '河南省', '湖北省', '湖南省', '广东省', '海南省', '四川省', '贵州省', '云南省', '陕西省', '甘肃省', '青海省', '台湾省', '内蒙古自治区', '广西壮族自治区', '西藏自治区', '宁夏回族自治区', '新疆维吾尔自治区', '香港特别行政区', '澳门特别行政区'
@@ -148,6 +155,95 @@ export default {
     toggleEdit() {
       this.isEditing = !this.isEditing;
     },
+    // 签到
+    checkSignInStatus() {
+      const lastSignIn = localStorage.getItem('lastSignInDate');
+      if (!lastSignIn) {
+        this.hasSignedInToday = false;
+        return;
+      }
+
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      
+      const lastSignInDate = new Date(lastSignIn);
+      lastSignInDate.setHours(0, 0, 0, 0);
+
+      this.hasSignedInToday = todayStart.getTime() === lastSignInDate.getTime();
+    },
+    setupResetTimer() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      const timeToTomorrow = tomorrow.getTime() - now.getTime();
+
+      setTimeout(() => {
+        this.hasSignedInToday = false;
+        localStorage.removeItem('lastSignInDate'); // 清除本地存储中的最后签到日期
+      }, timeToTomorrow);
+    },
+    async signIn() {
+      try {
+        const response = await this.$axios.get('http://localhost:8080/auth/score', {
+          headers: {
+            Authorization: localStorage.getItem('token') || ''
+          }
+        });
+
+        if (response.status === 200) {
+          this.hasSignedInToday = true; // 更新签到状态
+          this.user.collectedPictures = response.data.score; // 更新积分显示
+          this.$message.success(response.data.message);
+          // 更新本地存储中的最后签到日期
+          localStorage.setItem('lastSignInDate', new Date().toISOString());
+        } else {
+          this.$message.error('签到失败');
+        }
+      } catch (error) {
+        console.error('签到失败:', error.response?.data || error.message);
+        this.$message.error('签到失败，请稍后再试');
+      }
+    },
+
+    // 账号注销
+    confirmLogout() {
+      const isConfirmed = confirm('确认注销吗？注销后本系统将清除关于你的所有信息记录。');
+      if (isConfirmed) {
+        this.performLogout();
+      } else {
+        this.$message({
+          type: 'info',
+          message: '已取消注销'
+        });
+      }
+    },
+
+    performLogout() {
+      this.$axios.delete('http://localhost:8080/auth/root/deleteOneUser', {
+        params: {
+          isOwn: true
+        },
+        headers: {
+          Authorization: localStorage.getItem('token') || ''
+        }
+      }).then(response => {
+        if (response.status === 200) {
+          this.$message.success('注销成功');
+          // 清除本地存储的数据和执行其他清理工作
+          localStorage.clear();
+          // 可能还需要重定向到登录页面或主页等
+          this.$router.push({ name: 'Login' }); // 假设有一个名为Login的路由
+        } else {
+          this.$message.error('服务器返回异常');
+        }
+      }).catch(error => {
+        console.error('注销失败:', error.response?.data || error.message);
+        this.$message.error('注销失败，请稍后再试');
+      });
+    },
+
     saveChanges() {
     localStorage.setItem('personalSignature', this.user.personalSignature);
     localStorage.setItem('gender', this.user.gender);
@@ -175,6 +271,10 @@ export default {
   }
   },
   created() {
+  },
+  mounted() {
+    this.checkSignInStatus();
+    this.setupResetTimer();
   }
 };
 </script>
@@ -182,7 +282,7 @@ export default {
 <style scoped>
 .setting-container {
   background-color: #F1F6FF;
-  height: 100vh;
+  min-height: 100vh;
   width: 90vw;
   display: flex;
   flex-direction: column;
@@ -269,19 +369,29 @@ export default {
   color: #333; /* 苹果风格的值颜色 */
 }
 
+.sign-in-button {
+  margin-left: 10px;
+  animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
+}
+
 .edit-button {
   margin-top: 20px;
   animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
 }
-
 .save-button {
   margin-left: -10%;
+  animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
+}
+
+.logout-button {
+  margin-left: 10px;
   animation: fadeIn 0.5s ease-in-out; /* 添加简单的动画效果 */
 }
 
 .edit-form {
   margin-top: 20px;
   margin-left: -10%;
+  margin-bottom: 10px;
 }
 
 .form-item-input {
