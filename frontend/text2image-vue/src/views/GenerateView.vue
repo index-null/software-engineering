@@ -3,7 +3,7 @@
     <div class="form-container">
       <div class="form-header">
         <div class="form-title">文字作画</div>
-        <div class="tutorial">使用指南</div>
+        <div class="tutorial" @click="$router.push('/usage')">使用指南</div>
       </div>
       <div class="form-appname">文绘星河</div>
       <div class="form-body">
