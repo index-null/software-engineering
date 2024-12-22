@@ -67,6 +67,13 @@ const routes = [{
         name: 'log-reg', // 添加了名称
         component: () =>
             import ('@/views/LogRegView.vue')
+    },
+
+    {
+        path: '/usage',
+        name: 'usage',
+        component: () =>
+            import ('@/views/UsageGuide.vue')
     }
 ]
 
