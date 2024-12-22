@@ -49,7 +49,12 @@ func DeleteUserByName(c *gin.Context) {
 		return
 	}
 
-	username := c.Query("username")
+	var username string
+	if isOwn !="true"{
+		username = c.Query("username")
+	}else if isOwn == "true"{
+		username = userName.(string)
+	}
 
 	// 开始事务
 	tx := d.DB.Begin()
