@@ -22,13 +22,13 @@
       <div v-if="historyRecords && historyRecords.length" class="image-gallery-container">
         <div v-for="image in historyRecords" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id" 
         @mouseleave="hoveredImage = null">
-         <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
+        <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
           <img :src="image.url" :alt="image.name" class="image">
           <!-- <div font="微软雅黑">图片ID:{{ image.id }} 点赞数量:{{ image.likecount }}</div> -->
           <div class="overlay" v-if="hoveredImage === image.id">
             <button  circle  @click="downloadImage(image)">下载图像</button>
             <button  round @click="deleteRecord(image)">删除</button> 
-             <button  round @click="addFavoriteImage(image)">收藏</button> 
+            <button  round @click="addFavoriteImage(image)">收藏</button> 
           </div>
         </div>
       </div>
@@ -89,22 +89,27 @@ export default {
     };
   },
   methods: {
-    // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
+    // 按关键字搜索图像
     async searchimage(){
       try {
         console.log(this.input);
+        // 分割输入的字符串为多个feature，使用正则表达式匹配空白字符和中文、英文逗号，并过滤掉空字符串
+        const features = this.input.split(/[\s，,]+/).filter(Boolean);
+
+        // 创建URLSearchParams 对象用于构建查询字符串
+        const params = new URLSearchParams();
+        features.forEach(feature => params.append('feature', feature));
+
         const response = await axios.get(
             'http://localhost:8080/auth/image/feature',
             {
                 headers: {
                     'Authorization': this.token,  // 携带 token
                 },
-                params: {
-                    feature: this.input,
-                },
+                params: params,
             }
         );
-       const data = response.data;
+        const data = response.data;
         console.log(data);
         
         const images = data.images;
@@ -128,7 +133,7 @@ export default {
       }
     },
     async addFavoriteImage(image) {
-       try {
+      try {
                 
                 const response = await axios.post(
                     'http://localhost:8080/auth/addFavoritedImage',
