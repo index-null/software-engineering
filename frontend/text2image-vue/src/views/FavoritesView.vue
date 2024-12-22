@@ -16,6 +16,7 @@
                 <button @click="downloadImage(image)">下载</button>
                 <!-- <i class="el-icon-delete"></i> -->
                 </div>
+                
             </div>
         </div>
 
@@ -204,8 +205,8 @@ export default {
 }
 
 .image {
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     object-fit: cover;
 }
 
