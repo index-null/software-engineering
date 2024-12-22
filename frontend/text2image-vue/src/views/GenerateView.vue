@@ -58,7 +58,7 @@
           </el-input>
         </div>
         <div class="form-submit">
-          <el-button type="primary" native-type="submit"  @click="handleSubmit">生成</el-button>
+          <el-button type="primary" native-type="submit"  @click="handleSubmit">生成 (消耗20积分)</el-button>
         </div>
       </div>
     </div>
@@ -362,7 +362,25 @@ export default {
     generateRandomSeed() {
       this.form.seed = Math.floor(Math.random() * 4369000);
     },
-  }
+    
+  },
+  watch: {
+    '$route.query.prompt': {
+      handler(newPrompt) {
+        if (newPrompt) {
+          try {
+            this.form.prompt = decodeURIComponent(newPrompt);
+            console.log("Decoded Prompt:", this.form.prompt);
+          } catch (e) {
+            console.error("解码失败:", e);
+            this.form.prompt = ''; // 或者其他的错误处理逻辑
+          }
+        }
+      },
+      immediate: true // 立即执行一次，确保首次加载时也生效
+    }
+  },
+
 };
 </script>
 <style scoped>
@@ -478,6 +496,7 @@ export default {
   margin: 0 auto;
 }
 
+
 /* 结果容器样式 */
 .result-container {
   flex: 3.5;
@@ -555,8 +574,8 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; /* 添加 opacity 过渡 */
-  height: 350px;
-  width: 350px;
+  height: 280px;
+  width: 280px;
 }
 
 .image-card:hover {
