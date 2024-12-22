@@ -214,9 +214,10 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss(imageParaments ImageParaments) (string, error) {
 	// 构建跨平台的路径
-	localFileName := "assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
+	localFileName := "D:/goproject/src/gocode/backend/backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 
-	envPath := filepath.Join("config", "oss", "oss.env")
+	//envPath := filepath.Join("config", "oss", "oss.env")
+	envPath := "D:/goproject/src/gocode/backend/backend/text-to-picture/config/oss/oss.env"
 	if err := godotenv.Load(envPath); err != nil {
 		log.Printf("Failed to load .env file: %v", err)
 	}

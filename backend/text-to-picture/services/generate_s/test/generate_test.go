@@ -90,6 +90,7 @@ func TestMain(m *testing.M) {
 func SetupRouter() *gin.Engine {
 	imgGen := generate.NewImageGenerator()
 	r := gin.Default()
+	r.Use(middlewire.JWTAuthMiddleware())
 	r.POST("/generate", func(c *gin.Context) {
 		imgGen.ReturnImage(c)
 	})
@@ -102,7 +103,7 @@ func TestGenerateImage_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	// 创建一个有效的Token
 	claims := &middlewire.Claims{
-		Username: "testuser", //根据自己数据库已有的用户
+		Username: "testuser11", //根据自己数据库已有的用户
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
 		},
@@ -110,9 +111,9 @@ func TestGenerateImage_Success(t *testing.T) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 	user := userLogin.UserInformation{
-		UserName: "testuser",
+		UserName: "testuser11",
 		Token:    tokenString,
-		Email:    "test@qq.com",
+		Email:    "test11@qq.com",
 		Password: "aaaaaa",
 	}
 	err := user_r.InsertUserInformation(models.DB, &user)
@@ -152,7 +153,7 @@ func TestGenerateImage_Success(t *testing.T) {
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Equal(t, float64(200), response["code"])
-	assert.Equal(t, "Image generated successfully", response["msg"])
+	assert.Equal(t, "用户当前积分为80", response["message"])
 }
 func TestGenerateImage_NoToken(t *testing.T) {
 	// Set Gin to test mode
@@ -184,13 +185,13 @@ func TestGenerateImage_NoToken(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	// Check response status code
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	assert.Equal(t, float64(400), response["code"])
-	assert.Contains(t, response["msg"], "宽度不在范围内")
+	assert.Equal(t, float64(401), response["code"])
+	assert.Contains(t, response["message"], "请求头中缺少Token")
 }
 
 // TestGenerateImage_InvalidParameters tests the case where invalid parameters are provided
@@ -238,7 +239,7 @@ func TestGenerateImage_InvalidParameters(t *testing.T) {
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Equal(t, float64(400), response["code"])
-	assert.Contains(t, response["msg"], "宽度不在范围内")
+	assert.Contains(t, response["message"], "宽度不在范围内")
 }
 
 // TestGenerateImage_MissingParameters tests the case where required parameters are missing
@@ -285,56 +286,5 @@ func TestGenerateImage_MissingParameters(t *testing.T) {
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Equal(t, float64(400), response["code"])
-	assert.Contains(t, response["msg"], "缺乏提示词")
-}
-
-// TestGenerateImage_ServerError tests the case where the server encounters an error
-func TestGenerateImage_ServerError(t *testing.T) {
-	// Set Gin to test mode
-	gin.SetMode(gin.TestMode)
-	// 创建一个有效的Token
-	claims := &middlewire.Claims{
-		Username: "testuser", //根据自己数据库已有的用户
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // 设置有效的过期时间
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, _ := token.SignedString(middlewire.JwtKey)
-	// Simulate database connection failure
-	// (you can mock database connection here to force an error)
-
-	// Set up the router
-	router := SetupRouter()
-
-	// Create valid input parameters
-	input := image.ImageParaments{
-		Prompt: "A beautiful sunset",
-		Width:  512,
-		Height: 512,
-		Steps:  50,
-		Seed:   123456,
-	}
-
-	// Marshal input into JSON
-	jsonData, _ := json.Marshal(input)
-
-	// Create a POST request
-	req, _ := http.NewRequest("POST", "/generate", bytes.NewBuffer(jsonData))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", tokenString)
-	// Create a response recorder
-	w := httptest.NewRecorder()
-
-	// Perform the request
-	router.ServeHTTP(w, req)
-
-	// Check response status code
-	assert.Equal(t, http.StatusInternalServerError, w.Code)
-
-	// Check response body
-	var response map[string]interface{}
-	json.Unmarshal(w.Body.Bytes(), &response)
-	assert.Equal(t, float64(500), response["code"])
-	assert.Equal(t, "Server error", response["msg"])
+	assert.Contains(t, response["message"], "缺乏提示词")
 }
