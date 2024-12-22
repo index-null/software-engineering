@@ -37,6 +37,7 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/auth/user/update", middlewire.JWTAuthMiddleware(), UpdateUser)
 	return r
 }
+
 // MockJWTAuthMiddlewareNoUser 模拟 JWT 中间件，但不设置用户名到上下文中
 func MockJWTAuthMiddlewareNoUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -119,8 +120,8 @@ func TestUpdateUser(t *testing.T) {
 	// 测试成功更新用户信息
 	t.Run("Successful_Update", func(t *testing.T) {
 		requestBody := map[string]interface{}{
-			"password": "abcdefg",
-			"email":    "newemail@qq.com",
+			"password":   "abcdefg",
+			"email":      "newemail@qq.com",
 			"avatar_url": "http://example.com/new_avatar.jpg",
 		}
 
@@ -252,6 +253,38 @@ func TestUpdateUser(t *testing.T) {
 
 		jsonData, _ := json.Marshal(requestBody)
 		req, _ := http.NewRequest("PUT", "/auth/user/update", bytes.NewBuffer(jsonData))
+		req.Header.Set("Authorization", tokenString)
+		req.Header.Set("Content-Type", "application/json")
+		resp := httptest.NewRecorder()
+
+		router1.ServeHTTP(resp, req)
+
+		var actualResponse gin.H
+		if err := json.Unmarshal(resp.Body.Bytes(), &actualResponse); err != nil {
+			t.Fatalf("Failed to unmarshal response body: %v", err)
+		}
+		fmt.Println("实际响应为：", actualResponse)
+
+		assert.Equal(t, http.StatusUnauthorized, resp.Code)
+		assert.Contains(t, actualResponse["message"], "未找到用户信息")
+	})
+
+	// 测试缺少用户名信息
+	t.Run("Missing_Username", func(t *testing.T) {
+		router1 := gin.Default()
+		router1.PUT("/auth/user/update", MockJWTAuthMiddlewareNoUser(), UpdateUser)
+		requestBody := map[string]interface{}{
+			"email": "newemail@qq.com",
+		}
+
+		jsonData, err := json.Marshal(requestBody)
+		if err != nil {
+			t.Fatalf("Failed to marshal request body: %v", err)
+		}
+		req, err := http.NewRequest("PUT", "/auth/user/update", bytes.NewBuffer(jsonData))
+		if err != nil {
+			t.Fatalf("Failed to create request: %v", err)
+		}
 		req.Header.Set("Authorization", tokenString)
 		req.Header.Set("Content-Type", "application/json")
 		resp := httptest.NewRecorder()
