@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2>历史记录</h2> 
-    <div class="block">
+    <h2 class="history-title">历史记录</h2> 
+    <div class="block" style="margin-left:50px;margin-top: 50px;">
       <span class="demonstration"></span>
       <el-date-picker
         v-model="value1"
@@ -12,11 +12,17 @@
       ></el-date-picker>
     <el-button type="success" icon="el-icon-check" circle @click="handleDateChange()"></el-button>
     </div>
-
+    <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreRecord">批量管理</el-button>
+    <div style="margin-top: 50px;">
+    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
+    <el-button slot="append" icon="el-icon-search" @click="searchimage"></el-button>
+    </el-input>
+    </div>
     <div class="history-container">
       <div v-if="historyRecords && historyRecords.length" class="image-gallery-container">
         <div v-for="image in historyRecords" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id" 
         @mouseleave="hoveredImage = null">
+         <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
           <img :src="image.url" :alt="image.name" class="image">
           <!-- <div font="微软雅黑">图片ID:{{ image.id }} 点赞数量:{{ image.likecount }}</div> -->
           <div class="overlay" v-if="hoveredImage === image.id">
@@ -77,12 +83,50 @@ export default {
         ]
       },
       value1: [new Date(2000, 10, 10, 10, 10), new Date(2030, 10, 11, 10, 10)],
-      value2: ''
+      value2: '',
+      checked: {},
+      input: '',
     };
   },
   methods: {
     // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
-    
+    async searchimage(){
+      try {
+        console.log(this.input);
+        const response = await axios.get(
+            'http://localhost:8080/auth/image/feature',
+            {
+                headers: {
+                    'Authorization': this.token,  // 携带 token
+                },
+                params: {
+                    feature: this.input,
+                },
+            }
+        );
+       const data = response.data;
+        console.log(data);
+        
+        const images = data.images;
+        this.historyRecords = [];//置为空
+        images.forEach(item => {
+          if (!this.historyRecords.some(record => record.id === item.id)) {
+            this.historyRecords.push({
+              id: item.id,
+              name: item.username,
+              params: item.params,
+              url: item.picture,
+              likecount: item.likecount,
+              createtime: item.create_time
+            });
+          } else {
+            console.log(`记录 id: ${item.id} 已经存在，跳过添加`);
+          }
+        });
+      } catch (error) {
+        console.error('获取图片失败:', error.response?.data || error.message);
+      }
+    },
     async addFavoriteImage(image) {
        try {
                 
@@ -200,6 +244,30 @@ export default {
         console.error('获取图片失败:', error.response?.data || error.message);
       }
     },
+    async removemoreRecord() {
+            try {
+                const checkedKeys = Object.keys(this.checked).filter(key => this.checked[key]);
+                if (!checkedKeys.length) {
+                this.$message.warning('请选择要删除的图片');
+                return;
+                }
+
+                // 使用 Promise.all 并发处理所有选定图片的取消收藏请求
+                const promises = checkedKeys.map(async (key) => {
+                const image = this.historyRecords.find(img => img.id === parseInt(key));
+                if (image) {
+                    await this.deleteRecord(image);
+                }
+                });
+
+                await Promise.all(promises);
+
+                this.$message.success(`成功删除了 ${checkedKeys.length} 张图片的历史记录`);
+            } catch (error) {
+                console.error('多张图片删除失败:', error.message);
+                this.$message.error('批量删除时发生了错误');
+            }
+        },
     async deleteRecord(image) {
       try {
                 const response = await axios.post(
@@ -238,6 +306,35 @@ export default {
 </script>
 
 <style scoped>
+ .el-input {
+    width: 500px;
+  }
+  .el-input-group__prepend {
+    background-color: #fff;
+    width: 200px;
+  }
+.history-title {
+    position: fixed;
+    /* 固定位置 */
+    top: 30px;
+    /* 离页面顶部20px */
+    left: 300px;
+    /* 离页面右边20px */
+    z-index: 900;
+    /* 确保按钮显示在页面最上面 */
+    border-radius: 30px;
+}
+.delete-button {
+    position: fixed;
+    /* 固定位置 */
+    top: 50px;
+    /* 离页面顶部20px */
+    right: 50px;
+    /* 离页面右边20px */
+    z-index: 900;
+    /* 确保按钮显示在页面最上面 */
+    border-radius: 30px;
+}
 .overlay {
     position: absolute;
     top: 0;
@@ -252,10 +349,7 @@ export default {
     opacity: 0;
     transition: opacity 0.3s ease;
 }
-/* 保持原有的样式 */
-.h2 {
-  text-align: left;
-}
+
 .image-gallery-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(365px, 1fr));
