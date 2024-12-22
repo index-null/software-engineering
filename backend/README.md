@@ -609,7 +609,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) http://localhost:8080/auth/image/feature`
+`(GET) http://localhost:8080/auth/image/feature`
 
 #### 请求头
 
