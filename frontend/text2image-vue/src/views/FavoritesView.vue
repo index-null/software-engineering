@@ -1,18 +1,20 @@
 <template>
     <div>
-        <el-button type="primary" icon="el-icon-delete" class="delete-button">批量管理</el-button>
+        <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreFavorite">批量管理</el-button>
 
         <!-- 显示图片 -->
-        <div v-if="images &&images.length" class="image-gallery-container">
-            <div v-for="image in images" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id"
+        <div v-if="images && images.length" class="image-gallery-container">
+            <div v-for="image in images" :key="image.id" class="image-card"
+                @mouseover="hoveredImage = image.id"
                 @mouseleave="hoveredImage = null">
-
                 <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
-                <img :src="image.url" :alt="image.name" class="image">      
+                <img :src="image.url" :alt="image.name" class="image">
                 <div class="overlay" v-if="hoveredImage === image.id">
-                    <button @click="toggleFavorite(image)">{{ image.isFavorite ? '取消收藏' : '收藏' }}</button>
-                    <button @click="downloadImage(image)">下载</button>
-                    <!-- <i class="el-icon-delete"></i> -->
+                <button @click="toggleFavorite(image)">
+                    {{ image.isFavorite ? '取消收藏' : '收藏' }}
+                </button>
+                <button @click="downloadImage(image)">下载</button>
+                <!-- <i class="el-icon-delete"></i> -->
                 </div>
                 
             </div>
@@ -35,7 +37,7 @@ export default {
             images: [],  // 存储用户的收藏图片
             hoveredImage: null,  // 用于追踪当前悬停的图片
             token: localStorage.getItem('token') || '',  // 获取用户的 token
-            checked: [],
+            checked: {},
         };
     },
     mounted() {
@@ -54,16 +56,18 @@ export default {
                 })
                 
                 const data = await response.json();
-                data.forEach(item => {
-                    this.images.push({
-                        id: item.id,
-                        url: item.picture,
-                        name: item.username,
-                        isFavorite: true   
-                })
-                //console.log(this.images);
-                console.log(this.token);
-            });
+                this.images = data.map(item => ({
+                id: item.id,
+                url: item.picture,
+                name: item.username,
+                isFavorite: true,
+                }));
+
+                // 初始化 checked 对象以匹配新的 images 数组
+                this.checked = {}; // 清空旧的 checked
+                this.images.forEach(image => {
+                    this.$set(this.checked, image.id, false); // 使用 $set 确保反应性
+                });
             } catch (error) {
                 console.error('获取收藏的图片失败:', error.response?.data || error.message);
             }
@@ -89,7 +93,30 @@ export default {
         //         console.error('收藏图像失败:', error.response?.data || error.message);
         //     }
         // },
+        async removemoreFavorite() {
+            try {
+                const checkedKeys = Object.keys(this.checked).filter(key => this.checked[key]);
+                if (!checkedKeys.length) {
+                this.$message.warning('请选择要取消收藏的图片');
+                return;
+                }
 
+                // 使用 Promise.all 并发处理所有选定图片的取消收藏请求
+                const promises = checkedKeys.map(async (key) => {
+                const image = this.images.find(img => img.id === parseInt(key));
+                if (image) {
+                    await this.removeFavorite(image);
+                }
+                });
+
+                await Promise.all(promises);
+
+                this.$message.success(`成功取消了 ${checkedKeys.length} 张图片的收藏`);
+            } catch (error) {
+                console.error('取消多张图片收藏失败:', error.message);
+                this.$message.error('批量取消收藏时发生了错误');
+            }
+        },
         // 取消收藏图像
         async removeFavorite(image) {
             try {
@@ -99,14 +126,18 @@ export default {
                         Authorization: this.token,
                     },
 
-                    params: { id: image.id },  // 传递图像的收藏表url
+                    params: { id: image.id },  // 传递图像的收藏表id或url
 
-                }
+                    }
                 );
                 
-                if (response.status === 200) {
-                    this.images = this.images.filter(i => i.id !== image.id);  // 从收藏列表中移除已取消收藏的图像
-                    this.$message.success('取消收藏成功');
+                if (response.status === 200) { 
+                    // 移除已取消收藏的图像之前，先检查是否存在于 images 中
+                    if (this.images.some(i => i.id === image.id)) {
+                        this.images = this.images.filter(i => i.id !== image.id);  // 从收藏列表中移除已取消收藏的图像
+                        this.$message.success('取消收藏成功');
+                        delete this.checked[image.id]; // 移除对应的 checked 元素
+                    }
                 }
             } catch (error) {
                 console.error('取消收藏失败:', error.response?.data || error.message);

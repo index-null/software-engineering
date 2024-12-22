@@ -41,23 +41,8 @@ func GetUserInfo(c *gin.Context) {
 		return
 	}
 
-	// username := c.Query("username") // 从查询参数中获取用户名
-	// useremail := c.Query("email")
-	// userId := c.Query("id")
-	// userid, err1 := strconv.Atoi(userId)
-
 	var user *u.UserInformation
 	var err error
-	// if err1 == nil {
-	// 	user, err = user_r.GetUserById(d.DB, userid)
-	// } else if username != "" {
-	// 	user, err = user_r.GetUserByName(d.DB, username)
-	// } else if useremail != "" {
-	// 	user, err = user_r.GetUserByEmail(d.DB, useremail)
-	// } else {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request data"})
-	// 	return
-	// }
 	user, err = user_r.GetUserByName(d.DB, username.(string))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

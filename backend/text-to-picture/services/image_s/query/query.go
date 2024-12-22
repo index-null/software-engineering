@@ -35,9 +35,6 @@ import (
 // @Failure 500 {object} map[string]interface{} "查询用户图片失败"
 // @Router /auth/user/images [get]
 func GetUserImages(c *gin.Context) {
-	// username := c.Query("username") // 从请求中获取用户名
-	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
-	// userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
 	if !exists {
@@ -57,26 +54,6 @@ func GetUserImages(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "获取用户的图像成功", "images": images})
 	return
-
-	// }else if err == nil{// id转username
-	// 	var user u.UserInformation
-	// 	err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
-	// 		if err != nil {
-	// 			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id"})
-	// 		}
-
-	// 		images, err := image_r.GetUserImagesByUsername(d.DB, user.UserName)
-	// 		if err != nil {
-	// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户图片失败","error":err})
-	// 			return
-	// 		}
-	// 		c.JSON(http.StatusOK, gin.H{"message":"获取用户的图像成功","images":images})
-	// 		return
-
-	// }else {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户名或用户id"})
-	// 	return
-	// }
 }
 
 // 获取当前登录用户的收藏图像
@@ -89,11 +66,6 @@ func GetUserImages(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "查询用户收藏的图片失败"
 // @Router /auth/user/favoritedimages [get]
 func GetUserFavoritedImages(c *gin.Context) {
-	// username := c.Query("username") // 从请求中获取用户名
-	// userIdStr := c.Query("id") // 从请求中获取用户ID（字符串）
-	// userId, err := strconv.Atoi(userIdStr) // 将字符串转换为整数
-
-	// if username != ""{
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
 	fmt.Println(username.(string))
@@ -112,28 +84,6 @@ func GetUserFavoritedImages(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, images)
-	//	return
-
-	// }else if err == nil{// id转username
-	// 	var user u.UserInformation
-	// 	err := d.DB.Table("userinformation").Where("id = ?", userId).First(&user).Error // 使用 Find 而不是 First
-	// 		if err != nil {
-	// 			c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户id","error":err})
-	// 		}
-
-	// 		images, err := image_r.GetUserFavoritedImagesByUsername(d.DB, user.UserName)
-	// 		if err != nil {
-	// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "查询用户收藏的图片失败","err":err})
-	// 			return
-	// 		}
-	// 		c.JSON(http.StatusOK, images)
-	// 		return
-
-	// }else {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "无效的用户ID或用户名"})
-	// 	return
-	// }
-
 }
 
 // 查询指定的某张图像
