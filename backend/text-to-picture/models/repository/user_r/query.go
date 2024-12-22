@@ -57,5 +57,3 @@ func GetAllUsers(db *gorm.DB) ([]u.UserInformation, error) {
 	}
 	return users, nil
 }
-
-//-----------------------------------------------------------------------------------------------

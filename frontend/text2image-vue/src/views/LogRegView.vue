@@ -176,19 +176,7 @@ export default {
             this.$router.push('/main');
           } 
         } catch (error) {
-          if (error.response) {
-            // 服务器返回了错误响应
-            switch (error.response.status) {
-              case 401:
-                this.$message.error('用户名或密码错误');
-                break;
-              default:
-                this.$message.error('登录过程中发生错误');
-            }
-          } else {
-            // 其他错误，如网络问题
-            this.$message.error('登录过程中发生错误');
-          }
+          this.$message.error(error.response ? error.response.data.message : '请求失败');
         }
       } else {
         console.log("error submit!!");
@@ -214,19 +202,7 @@ export default {
             this.$message.success('注册成功');
           } 
         } catch (error) {
-          if (error.response) {
-            // 服务器返回了错误响应
-            switch (error.response.status) {
-              case 401:
-                this.$message.error('用户名或密码错误');
-                break;
-              default:
-                this.$message.error('注册过程中发生错误');
-            }
-          } else {
-            // 其他错误，如网络问题
-            this.$message.error('注册过程中发生错误');
-          }
+          this.$message.error(error.response ? error.response.data.message : '请求失败');
         }
       }
     });

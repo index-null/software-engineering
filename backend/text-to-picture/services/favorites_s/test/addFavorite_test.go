@@ -101,7 +101,8 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",
+		Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
 
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", nil)
 		request.Header.Set("Authorization", tokenString)
@@ -177,7 +178,7 @@ func TestAddFavoritedImage(t *testing.T) {
 		create_time := time.Now().UTC()
 		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
 
-		requestBody := `{"url": "http://example.com/notfound.jpg", "id": 0}`
+		requestBody := `{"url": "http://example.com/notfound.jpg"}`
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
 		request.Header.Set("Authorization", tokenString)
 		response := httptest.NewRecorder()
@@ -226,7 +227,7 @@ func TestAddFavoritedImage(t *testing.T) {
 		// 假设用户已收藏该图像
 		db.DB.Create(&image.FavoritedImages{UserName: testUsername, Picture: imageUrl})
 
-		requestBody := `{"url": "http://example.com/test.jpg", "id": 0}`
+		requestBody := `{"url": "http://example.com/test.jpg"}`
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
 		request.Header.Set("Authorization", tokenString)
 		response := httptest.NewRecorder()
@@ -274,7 +275,7 @@ func TestAddFavoritedImage(t *testing.T) {
 		}
 		db.DB.Create(&imageInfo)
 
-		requestBody := `{"url": "http://example.com/newimage.jpg", "id": 0}`
+		requestBody := `{"url": "http://example.com/newimage.jpg"}`
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
 		request.Header.Set("Authorization", tokenString)
 		response := httptest.NewRecorder()
@@ -284,6 +285,52 @@ func TestAddFavoritedImage(t *testing.T) {
 		assert.Equal(t, http.StatusOK, response.Code)
 
 		expectedResponse := gin.H{"message": "图像收藏成功"}
+		var actualResponse gin.H
+		json.Unmarshal(response.Body.Bytes(), &actualResponse)
+		fmt.Println("实际响应：", actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
+
+		//最后清理测试数据
+		db.DB.Where("username = ?", testUsername).Delete(&user.UserInformation{})
+		db.DB.Where("username = ?", testUsername).Delete(&image.ImageInformation{})
+		db.DB.Where("username = ?", testUsername).Delete(&image.FavoritedImages{})
+	})
+	// 测试有效的url
+	t.Run("Invalid_Url", func(t *testing.T) {
+		// 创建一个数据库尚未存在的用户作为测试用户
+		testUsername := "test" 
+
+		// 创建有效的Token
+		claims := &middlewire.Claims{
+			Username: testUsername, 
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, _ := token.SignedString(middlewire.JwtKey)
+		//向数据库插入该用户的信息
+		create_time := time.Now().UTC()
+		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+
+		// 先插入测试数据
+		imageUrl := "http://example.com/newimage.jpg"
+		imageInfo := &image.ImageInformation{
+			UserName: testUsername,
+			Picture:     imageUrl,
+			Create_time: time.Now(),
+		}
+		db.DB.Create(&imageInfo)
+
+		requestBody := `{"url":"abcdef.png"}`
+		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
+		request.Header.Set("Authorization", tokenString)
+		response := httptest.NewRecorder()
+
+		router.ServeHTTP(response, request)
+		assert.Equal(t, http.StatusNotFound, response.Code)
+
+		expectedResponse := gin.H{"message": "未找到对应的图像", "error": "record not found"}
 		var actualResponse gin.H
 		json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		fmt.Println("实际响应：", actualResponse)

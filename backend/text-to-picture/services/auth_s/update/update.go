@@ -22,8 +22,6 @@ import (
 // @Failure 500 {object} map[string]interface{} "更新用户信息失败"
 // @Router /auth/user/update [put]
 func UpdateUser(c *gin.Context) { //不能更新用户名
-	// 获取用户名
-	//username := c.Param("username")
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
 	if !exists {
