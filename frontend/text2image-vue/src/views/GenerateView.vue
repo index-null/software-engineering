@@ -5,17 +5,28 @@
         <div class="form-title">文字作画</div>
         <div class="tutorial">使用指南</div>
       </div>
+      <div class="form-appname">文绘星河</div>
       <div class="form-body">
         <div class="form-item">
-          <div class="form-appname">文绘星河</div>
+          <div class="form-label">画面描述</div>
           <el-input
             type="textarea"
             autosize
             :rows="8"
             placeholder="试试输入你心中的画面,尽量描述具体,可以尝试一些风格修饰词辅助你的表达"
             v-model="form.prompt"
+            maxlength="100"
+            show-word-limit
           />
         </div>
+        <div class="form-item">
+          <div class="form-label">API调用方式</div>
+          <div class="api-mode">
+          <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API</el-button>
+          <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API</el-button>
+          </div>
+        </div>
+        
         <div class="form-item">
     <div class="form-label">尺寸</div>
     <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
@@ -87,6 +98,7 @@
   </div>
 </template>
 <script>
+import OSS from 'ali-oss';
 export default {
   data() {
     return {
@@ -115,6 +127,7 @@ export default {
             "img_url": `https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347062.jpg`,
           }],
       loading: false,
+      apiMode: 'remote',
       sizeOptions: [
       { label: '1024 x 1024px', value: '1024x1024' },
       { label: '720x1280px', value: '720x1280' },
@@ -125,6 +138,61 @@ export default {
     };
   },
   methods: {
+    async initOSSClient() {
+      this.client = new OSS({
+        region: process.env.VUE_APP_OSS_REGION,
+        accessKeyId: process.env.VUE_APP_OSS_ACCESS_KEY_ID,
+        accessKeySecret: process.env.VUE_APP_OSS_ACCESS_KEY_SECRET,
+        bucket: process.env.VUE_APP_OSS_BUCKET,
+      });
+    },
+    async uploadImageToOSS(img_url) {
+      try {
+        await this.initOSSClient();
+        const base64Data = img_url.split(',')[1];
+        const blob = this.b64toBlob(base64Data, 'image/png');
+        const fileName = `generated_image_${Date.now()}.png`;
+        const result = await this.client.put(`generated_images/${fileName}`, blob);
+        const imageUrl = result.url;
+
+        // 更新图片 URL
+        const lastIdx = this.temp_generatedImg_results.length - 1;
+        this.$set(this.temp_generatedImg_results[lastIdx], 'img_url', imageUrl);
+
+        this.$message.success('图片上传成功');
+      } catch (error) {
+        this.$message.error('上传失败');
+      }
+    },
+    b64toBlob(b64Data, contentType = '', sliceSize = 512) {
+      const byteCharacters = atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    },
+    setApiMode(mode) {
+      this.apiMode = mode;
+    },
+    handleSubmit() {
+      if (this.apiMode === 'local') {
+        this.handleLocalSubmit();
+      } else {
+        this.handleRemoteSubmit();
+      }
+    },
     reuseParameters(img) {
     this.form.prompt = img.prompt;
     this.form.width = img.width;
@@ -169,7 +237,76 @@ export default {
         this.loading = false;
       });
     },
-    handleSubmit() {
+    handleLocalSubmit() {
+      // 强制将 seed 转换为整数
+      this.form.seed = parseInt(this.form.seed, 10) || 0;
+
+      // 确保转换后的 seed 是有效的整数
+      if (isNaN(this.form.seed)) {
+        this.$message.error('种子值必须是有效的整数');
+        return;
+      }
+      this.$message.success('提交成功,正在生成图片...');
+      const currentScore = parseInt(localStorage.getItem("score"), 10) || 0;
+      localStorage.setItem("score", currentScore - 20);
+
+      // 添加占位图片
+      const placeholderImg = {
+        prompt: this.form.prompt,
+        width: this.form.width,
+        height: this.form.height,
+        seed: this.form.seed,
+        steps: this.form.steps,
+        img_url: 'https://via.placeholder.com/150'}
+      this.temp_generatedImg_results.push(placeholderImg);
+
+      this.loading = true;
+
+      const url = "http://172.30.176.1:7860"; // 使用WSL中的Windows主机IP地址
+      const testPayload = {
+        "prompt": this.form.prompt,
+        "seed": this.form.seed,
+        "sampler_name": "Euler",
+        "scheduler": "Simple",
+        "batch_size": 1,
+        "steps": this.form.steps,
+        "cfg_scale": 1,
+        "distilled_cfg_scale": 3.5,
+        "width": this.form.width,
+        "height": this.form.height
+      };
+
+      return this.$axios.post(`${url}/sdapi/v1/txt2img`, testPayload, {
+        timeout: 300000 // 设置超时时间为300秒
+      }).then(response => {
+        if (response && response.data && 'images' in response.data) {
+          console.log(response.data);
+          let img_item = {
+            "prompt": this.form.prompt,
+            "width": this.form.width,
+            "height": this.form.height,
+            "seed": this.form.seed,
+            "steps": this.form.steps,
+            "img_url": `data:image/png;base64,${response.data.images[0]}`,
+          };
+          console.log(img_item);
+
+          // 替换占位图片
+          const lastIdx = this.temp_generatedImg_results.length - 1;
+          this.$set(this.temp_generatedImg_results, lastIdx, img_item);
+
+          this.$message.success(response.data.message);
+          this.uploadImageToOSS(img_item.img_url);
+        } else {
+          this.$message.error('服务器返回数据异常');
+        }
+      }).catch(error => {
+        this.$message.error(error.response ? error.response.data.message : '请求失败');
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    handleRemoteSubmit() {
       // 强制将 seed 转换为整数
       this.form.seed = parseInt(this.form.seed, 10) || 0;
   
@@ -498,5 +635,11 @@ export default {
   font-weight: bold; /* 加粗 */
   border-radius: 6px;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.api-mode {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 </style>
