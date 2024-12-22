@@ -234,7 +234,7 @@ export default {
           // 清除本地存储的数据和执行其他清理工作
           localStorage.clear();
           // 可能还需要重定向到登录页面或主页等
-          this.$router.push({ name: '/log-reg' }); 
+          this.$router.push({ name: 'log-reg' }); // 重定向到登录/注册页面
         } else {
           this.$message.error('服务器返回异常');
         }
@@ -280,6 +280,17 @@ export default {
 </script>
 
 <style scoped>
+/*
+  // 在控制台输入以下语句，可以取消签到状态
+  let vm = document.getElementById('app').__vue__;
+  if (vm) {
+    vm.hasSignedInToday = false;
+    vm.$forceUpdate();
+  } else {
+    console.error('未能找到Vue实例');
+  }
+  localStorage.setItem('lastSignInDate', ''); // 清除最后签到日期
+*/
 .setting-container {
   background-color: #F1F6FF;
   min-height: 100vh;
