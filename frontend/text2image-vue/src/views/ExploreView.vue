@@ -139,7 +139,7 @@ export default {
   }
   this.$axios.post('http://localhost:8080/auth/like', { url: image.picture })
     .then(response => {
-      if (response.data.code === 200) {
+      if (response.status === 200) {
         image.likecount = response.data.current_likes;
         this.$message.success('点赞成功');
       } else {
@@ -231,7 +231,7 @@ export default {
     align-items: center; /* 垂直居中对齐 */
     margin-left: 6rem; /* 使用相对单位 */
     margin-right: 6rem; /* 使用相对单位 */
-    margin-bottom: rem; /* 使用相对单位 */
+    //margin-bottom: 6rem; /* 使用相对单位 */
     position: relative; /* 确保生成按钮和其他元素不重叠 */
     z-index: 1; /* 确保生成按钮在背景之上 */
     

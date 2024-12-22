@@ -59,6 +59,7 @@ func (t *TextToPicture) Start() {
 		auth.PUT("/user/update", user_up.UpdateUser) // 更新当前用户信息(拒绝改用户名)
 
 		//历史记录界面
+		auth.GET("/user/images", image_q.GetUserImages)                      // 查询当前用户生成的所有图片
 		auth.GET("/user/images/timeRange", image_q.GetImagesWithinTimeRange) // 获取当前用户指定时间段内的图像（start_time=YYYY-MM-DD&end_time=YYYY-MM-DD）
 		// 或（任意一个都可）完整的时间戳格式：2006-01-02T15:04:05.000000Z
 		auth.POST("/like", like.LikeImage) // 参数?url=
@@ -72,7 +73,7 @@ func (t *TextToPicture) Start() {
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 
 		//图像界面
-		auth.GET("/user/images", image_q.GetUserImages)                // 查询当前用户生成的所有图片
+
 		auth.POST("/user/deleteImages", image_d.DeleteUserImagesBatch) // (批量)删除当前用户的图像
 
 		//搜索界面

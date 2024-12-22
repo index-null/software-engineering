@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,9 +15,9 @@ import (
 	"text-to-picture/api/generate"
 	getDB "text-to-picture/config"
 	middlewire "text-to-picture/middlewire/jwt"
-	"text-to-picture/models/init"
+
 	db "text-to-picture/models/init"
-	"text-to-picture/models/repository/user_r"
+
 	"text-to-picture/models/user"
 	userLogin "text-to-picture/models/user"
 	image "text-to-picture/services/generate_s"
@@ -110,17 +109,7 @@ func TestGenerateImage_Success(t *testing.T) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
-	user := userLogin.UserInformation{
-		UserName: "testuser_success1",
-		Token:    tokenString,
-		Email:    "testuser_success1@qq.com",
-		Password: "aaaaaa",
-		Score: 100,
-	}
-	err := user_r.InsertUserInformation(models.DB, &user)
-	if err != nil {
-		log.Printf("插入错误%v", err)
-	}
+
 	// Set up the router
 	router := SetupRouter()
 
@@ -153,10 +142,9 @@ func TestGenerateImage_Success(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	fmt.Println("实际响应为：",response)
+	fmt.Println("实际响应为：", response)
 	assert.Equal(t, float64(200), response["code"])
 	assert.Equal(t, "用户当前积分为80", response["message"])
-	db.DB.Table("userinformation").Delete(user)
 }
 func TestGenerateImage_NoToken(t *testing.T) {
 	// Set Gin to test mode
@@ -193,7 +181,7 @@ func TestGenerateImage_NoToken(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	fmt.Println("实际的响应为",response)
+	fmt.Println("实际的响应为", response)
 	assert.Equal(t, float64(401), response["code"])
 	assert.Contains(t, response["message"], "请求头中缺少Token")
 }
@@ -242,7 +230,7 @@ func TestGenerateImage_InvalidParameters(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	fmt.Println("实际响应为：",response)
+	fmt.Println("实际响应为：", response)
 	assert.Equal(t, float64(400), response["code"])
 	assert.Contains(t, response["message"], "宽度不在范围内")
 }
@@ -290,12 +278,10 @@ func TestGenerateImage_MissingParameters(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	fmt.Println("实际的响应为",response)
+	fmt.Println("实际的响应为", response)
 	assert.Equal(t, float64(400), response["code"])
 	assert.Contains(t, response["message"], "缺乏提示词")
 }
-
-
 
 func TestGenerateImage_InsufficientScore(t *testing.T) {
 	// Set Gin to test mode
@@ -305,7 +291,7 @@ func TestGenerateImage_InsufficientScore(t *testing.T) {
 	router := SetupRouter()
 	testUsername := "testuser_InsufficientScore"
 	// 积分为0，无法生成图像
-    db.DB.Create(&userLogin.UserInformation{UserName: testUsername,Email: testUsername+"@qq.com", Score:0})
+	db.DB.Create(&userLogin.UserInformation{UserName: testUsername, Email: testUsername + "@qq.com", Score: 0})
 
 	// 创建一个有效的Token
 	claims := &middlewire.Claims{
@@ -344,7 +330,7 @@ func TestGenerateImage_InsufficientScore(t *testing.T) {
 	// Check response body
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	fmt.Println("实际的响应为",response)
+	fmt.Println("实际的响应为", response)
 	assert.Equal(t, float64(401), response["code"])
 	assert.Contains(t, response["message"], "用户积分不足")
 }
