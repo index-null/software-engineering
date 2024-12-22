@@ -11,8 +11,6 @@ import (
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
-
 	//"net/http"
 	// "net/url"
 	"os"
@@ -218,11 +216,6 @@ func SavetoOss(imageParaments ImageParaments) (string, error) {
 	// 构建跨平台的路径
 	//localFileName := "D:/软件工程项目/software-engineering/backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 
-	envPath := filepath.Join("config", "oss", "oss.env")
-	//envPath := "D:/软件工程项目/software-engineering/backend/text-to-picture/config/oss/oss.env"
-	if err := godotenv.Load(envPath); err != nil {
-		log.Printf("Failed to load .env file: %v", err)
-	}
 	localFileName, err := GenerateFromWebUI(imageParaments)
 	// 从环境变量中获取访问凭证
 	region := os.Getenv("OSS_REGION")
