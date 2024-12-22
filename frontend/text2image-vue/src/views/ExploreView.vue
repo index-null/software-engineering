@@ -148,7 +148,7 @@ export default {
     })
     .catch(error => {
       console.error('Error liking image:', error);
-      this.$message.error('点赞失败，请重试');
+      this.$message.error(error.response ? error.response.data.error : '请求失败');
     });
 }
   }
