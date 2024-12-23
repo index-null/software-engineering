@@ -68,7 +68,7 @@ func TestLikeImage(t *testing.T) {
 				db.DB.Create(&imgInfo)
 			},
 			expectedStatus: http.StatusOK, //在JSON解码的过程中，Go 的 encoding/json 默认会将数字解析为 float64
-			expectedBody:   map[string]interface{}{"current_likes": float64(1), "message": "Image liked successfully"},
+			expectedBody:   map[string]interface{}{"code":float64(200), "current_likes": float64(1), "message": "Image liked successfully"},
 		},
 		{
 			name:           "缺少图片 URL",

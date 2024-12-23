@@ -140,6 +140,7 @@ export default {
     },
     async handleFileChange(event) {
       const file = event.target.files[0];
+      console.log('Selected file:', file); // 添加这行来调试
       if (!file) return;
 
       try {
@@ -149,6 +150,7 @@ export default {
         localStorage.setItem('avatarUrl', this.user.avatar);
         this.$message.success('头像上传成功');
       } catch (error) {
+        console.error('Upload failed:', error); // More detailed error logging
         this.$message.error('上传失败');
       }
     },

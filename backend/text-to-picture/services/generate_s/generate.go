@@ -196,8 +196,8 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\"",
-			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps),
+		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\",\"Seed\": \"%d\"",
+			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.Seed),
 		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
@@ -305,7 +305,7 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	size := fmt.Sprintf("%d*%d", imageParaments.Width, imageParaments.Height)
 	// 构建请求体
 	requestBody := RequestBody{
-		Model: "wanx-v1",
+		Model: "flux-dev",
 		Input: Input{
 			Prompt: imageParaments.Prompt,
 		},
