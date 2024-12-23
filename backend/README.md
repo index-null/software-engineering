@@ -746,7 +746,47 @@ POST http://localhost:8080/register
 | 200 | 成功删除用户username的所有图像      | `{"message"："成功删除用户username的所有图像"}`           |
 ---
 
-10. **数据库设计**
+10**插入到历史记录**
+#### URL地址
+
+(POST) http://localhost:8080/auth/generate/addhistory
+
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+
+```json
+{
+  "prompt": "prompt",
+  "width": 1024,
+  "height": 1024, 
+  "seed": 123456,
+  "steps": 50,
+  "pictureURL":"url"
+}
+```
+#### 响应
+
+| 响应码 | 描述             | 示例响应体                                        |
+|-----| --------------- | ------------------------------------------------- |
+| 401 | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 401 | 无效的Token      | `{"message"："无效的Token"}`                      |
+| 401 | 未找到用户信息      | `{"message"："未找到用户信息"}`                   |
+| 400 | 参数解析失败        | `{"code":    400,"success": false,"message": "参数解析失败",}`   |
+| 500 | 插入获取数据库连接失败| `{"code":    500,"success": false,"message": "插入获取数据库连接失败",}`             |
+| 500 | 插入数据到数据库失败         | `{"code":    500,"success": false,"message": "插入数据到数据库失败",}`                      |
+| 200 | 插入数据到历史记录成功    | `"code":    200,"success": true,"message": "插入数据到历史记录成功",}`          |
+---
+
+
+11**数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

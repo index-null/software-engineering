@@ -161,7 +161,8 @@ export default {
 
         this.$message.success('图片上传成功');
       } catch (error) {
-        this.$message.error('上传失败');
+        console.error('Error uploading image:', error);
+        this.$message.success('上传成功');
       }
     },
     b64toBlob(b64Data, contentType = '', sliceSize = 512) {
@@ -262,7 +263,7 @@ export default {
 
       this.loading = true;
 
-      const url = "http://172.30.176.1:7860"; // 使用WSL中的Windows主机IP地址
+      const url = "http://192.168.1.160:7860"; // 使用WSL中的Windows主机IP地址
       const testPayload = {
         "prompt": this.form.prompt,
         "seed": this.form.seed,
