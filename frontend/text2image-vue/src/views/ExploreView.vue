@@ -53,7 +53,7 @@
     class="image-item" 
     v-for="image in images" 
     :key="image.id"
-    @dblclick="likeImage(image.id)"
+    @dblclick="likeImage(image)"
   >
     <el-image
       style="width: 200px; height: 200px"
@@ -131,7 +131,9 @@ export default {
     selectStyle(index) {
     this.currentStyle = index;
   },
-  likeImage(imageId) {
+  likeImage(image) {
+    imageId=image.id;
+    image.isliked=true;
   const image = this.images.find(img => img.id === imageId);
   if (!image) {
     console.error('Image not found');
