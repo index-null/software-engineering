@@ -305,7 +305,7 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	size := fmt.Sprintf("%d*%d", imageParaments.Width, imageParaments.Height)
 	// 构建请求体
 	requestBody := RequestBody{
-		Model: "wanx-v1",
+		Model: "flux-dev",
 		Input: Input{
 			Prompt: imageParaments.Prompt,
 		},
