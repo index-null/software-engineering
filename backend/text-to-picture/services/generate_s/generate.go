@@ -214,7 +214,7 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 var client *oss.Client // 全局变量用来存储OSS客户端实例
 func SavetoOss(imageParaments ImageParaments) (string, error) {
 	// 构建跨平台的路径
-	//localFileName := "D:/软件工程项目/software-engineering/backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
+	//localFileName := "D:/goproject/src/gocode/backend/backend/text-to-picture/assets/examples/images/3.jpg" //测试就换成自己要上传的图片即可
 
 	localFileName, err := GenerateFromWebUI(imageParaments)
 	// 从环境变量中获取访问凭证

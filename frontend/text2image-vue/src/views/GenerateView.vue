@@ -129,11 +129,13 @@ export default {
       loading: false,
       apiMode: 'remote',
       sizeOptions: [
-      { label: '1024 x 1024px', value: '1024x1024' },
-      { label: '720x1280px', value: '720x1280' },
-      { label: '768x1152px', value: '768x1152' },
-      { label: '1280x720px', value: '1280x720' }
-    ],
+    { label: '512 x 1024px', value: '512x1024' },
+    { label: '768 x 1024px', value: '768x1024' },
+    { label: '576 x 1024px', value: '576x1024' },
+    { label: '768 x 512px', value: '768x512' },
+    { label: '1024 x 576px', value: '1024x576' },
+    { label: '1024 x 1024px', value: '1024x1024' }
+],
     selectedSize: '1024x1024'
     };
   },
@@ -162,7 +164,7 @@ export default {
         this.$message.success('图片上传成功');
       } catch (error) {
         console.error('Error uploading image:', error);
-        this.$message.success('上传成功');
+        this.$message.error
       }
     },
     b64toBlob(b64Data, contentType = '', sliceSize = 512) {
