@@ -87,6 +87,7 @@ export default {
     handleLogout() {
       // 清空 token
       localStorage.removeItem('token');
+      localStorage.removeItem('lastSignInDate');
       // 跳转到登录注册页面
       this.$router.push('/log-reg');
     }

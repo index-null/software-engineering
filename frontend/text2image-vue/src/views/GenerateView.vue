@@ -22,8 +22,8 @@
         <div class="form-item">
           <div class="form-label">API调用方式</div>
           <div class="api-mode">
-          <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API</el-button>
-          <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API</el-button>
+          <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API--flux.1 [dev]</el-button>
+          <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API--flux.1 [schnell]</el-button>
           </div>
         </div>
         
@@ -273,7 +273,7 @@ export default {
 
       this.loading = true;
 
-      const url = "http://192.168.1.160:7860"; // 使用WSL中的Windows主机IP地址
+      const url = "http://172.26.224.111:7860"; // 使用WSL中的Windows主机IP地址
       const testPayload = {
         "prompt": this.form.prompt,
         "seed": this.form.seed,
