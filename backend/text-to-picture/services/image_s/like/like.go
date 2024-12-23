@@ -31,7 +31,10 @@ func LikeImage(c *gin.Context) {
 	// 解析请求中的图片 URL 和 token
 
 	var reqBody ReqBody
-	c.BindJSON(&reqBody)
+	err := c.BindJSON(&reqBody)
+	if err != nil {
+		return
+	}
 	imageURL := reqBody.URL
 
 	if imageURL == "" {
@@ -71,7 +74,7 @@ func LikeImage(c *gin.Context) {
 	var imageLike image.ImageLike
 
 	// 查询用户是否有点赞记录
-	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil && !errors.Is(err, gorm.ErrRecordNotFound){
+	if err := tx.Where("username = ? AND picture = ?", username, imageURL).First(&imageLike).Error; err == nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		// 如果找到了记录，则返回冲突状态码
 		//if imageLike.UserName != "root" { // 这一行可以移除，除非有特殊原因保留
 		c.JSON(http.StatusConflict, gin.H{
@@ -119,7 +122,7 @@ func LikeImage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":200,
+		"code":          200,
 		"current_likes": currentLikeCount + 1,
 		"message":       "Image liked successfully"})
 }

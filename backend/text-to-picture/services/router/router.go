@@ -14,6 +14,7 @@ import (
 	user_q "text-to-picture/services/auth_s/query"
 	user_up "text-to-picture/services/auth_s/update"
 	favorited "text-to-picture/services/favorites_s"
+	"text-to-picture/services/history"
 	image_d "text-to-picture/services/image_s/delete"
 	image_f "text-to-picture/services/image_s/findByFeature"
 	"text-to-picture/services/image_s/like"
@@ -54,6 +55,7 @@ func (t *TextToPicture) Start() {
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
 		})
+		auth.POST("generate/addhistory", history.AddHistory)
 
 		//个人信息界面
 		auth.POST("/setavator", avator.SetAvator)    // 设置头像，参数json: url=
