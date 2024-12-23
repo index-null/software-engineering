@@ -66,8 +66,8 @@ func AddScore(c *gin.Context) {
 
 	// 创建新的签到记录
 	newRecord := u.UserScore{
-		Username:   username,
-		Record:     "积分+100",
+		Username:    username,
+		Record:      "积分+100",
 		Create_time: time.Now(),
 	}
 	if err := models.DB.Create(&newRecord).Error; err != nil {
