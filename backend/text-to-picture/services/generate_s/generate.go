@@ -196,8 +196,8 @@ func GenerateImage(username string, imageParaments ImageParaments) (string, erro
 	// 创建 ImageInformation 实例
 	imageInfo := i.ImageInformation{
 		UserName: username, // 实际使用时应该从会话信息中获取真实用户名
-		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\"",
-			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps),
+		Params: fmt.Sprintf("\"Prompt\": \"%s\", \"Width\": \"%d\", \"Height\": \"%d\", \"Steps\": \"%d\",\"Seed\": \"%d\"",
+			imageParaments.Prompt, imageParaments.Width, imageParaments.Height, imageParaments.Steps, imageParaments.Seed),
 		Picture:     urloss, // 保存生成的图片 URL
 		Create_time: time.Now(),
 	}
