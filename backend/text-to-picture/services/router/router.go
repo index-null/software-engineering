@@ -48,6 +48,9 @@ func (t *TextToPicture) Start() {
 	r.POST("/login", auth_s.Login)       // 登录路由
 	auth := r.Group("/auth", middlewire.JWTAuthMiddleware())
 	{ //Postman上测试时得在请求头上加上	Authorization：（登录时返回的Token）
+		// 探索界面
+		auth.GET("/imageSquare", image_q.GetAllImagesWithLike)
+
 		//文生图界面
 		auth.POST("/generate", func(c *gin.Context) {
 			imgGen.ReturnImage(c)
@@ -75,7 +78,6 @@ func (t *TextToPicture) Start() {
 		auth.GET("/score", user_up.AddScore) //签到增加积分接口
 
 		//图像界面
-
 		auth.POST("/user/deleteImages", image_d.DeleteUserImagesBatch) // (批量)删除当前用户的图像
 
 		//搜索界面
