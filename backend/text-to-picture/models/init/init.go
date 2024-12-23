@@ -219,18 +219,6 @@ func InitTestUser() error {
 	// 创建点赞和收藏记录
 	for i, url := range imageUrls {
 		createTime := currentTime.AddDate(0, 0, -(i + 1))
-		// 创建图像点赞记录
-		imagelike := image2.ImageLike{
-			Picture:     url,
-			UserName:    "root",
-			Create_time: createTime,
-		}
-		if result := tx.Create(&imagelike); result.Error != nil {
-			log.Printf("Failed to create image like for URL %s: %v", url, result.Error)
-			tx.Rollback()
-			return result.Error
-		}
-
 		// 创建图像收藏记录
 		imagefavor := image2.FavoritedImages{
 			UserName:    "root",

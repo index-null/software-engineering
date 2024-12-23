@@ -132,7 +132,7 @@ export default {
     this.currentStyle = index;
   },
   likeImage(image) {
-    imageId=image.id;
+    let imageId=image.id;
     image.isliked=true;
   const image = this.images.find(img => img.id === imageId);
   if (!image) {
