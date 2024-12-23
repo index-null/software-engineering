@@ -64,7 +64,7 @@ type ImageResponse struct {
 	LikeCount   int       `json:"likecount"`
 	Picture     string    `json:"picture"`
 	Create_time time.Time `json:"create_time"`
-	Isliked     bool      `json:"isliked"` // 注意这里修复了 JSON 标签
+	Isliked     bool      `json:"isliked"` 
 }
 
 func (ImageResponse) TableName() string {
