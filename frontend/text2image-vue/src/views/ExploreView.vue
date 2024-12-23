@@ -53,7 +53,7 @@
     class="image-item" 
     v-for="image in images" 
     :key="image.id"
-    @dblclick="likeImage(image)"
+    @dblclick="likeImage(image.id)"
   >
     <el-image
       style="width: 200px; height: 200px"
@@ -131,28 +131,34 @@ export default {
     selectStyle(index) {
     this.currentStyle = index;
   },
-  likeImage(image) {
-    let imageId=image.id;
-    image.isliked=true;
-  const image = this.images.find(img => img.id === imageId);
-  if (!image) {
-    console.error('Image not found');
-    return;
+  likeImage(imageId) {
+    const image = this.images.find(img => img.id === imageId);
+    if (!image) {
+      console.error('Image not found');
+      return;
+    }
+
+    // 先将本地的 isliked 字段设置为 true
+    image.isliked = true;
+
+    this.$axios.post('http://localhost:8080/auth/like', { url: image.picture })
+      .then(response => {
+        if (response.status === 200) {
+          image.likecount = response.data.current_likes;
+          this.$message.success('点赞成功');
+        } else {
+          // 如果点赞失败，恢复 isliked 状态
+          image.isliked = false;
+          this.$message.error(response.data.error);
+        }
+      })
+      .catch(error => {
+        // 如果请求失败，恢复 isliked 状态
+        image.isliked = false;
+        console.error('Error liking image:', error);
+        this.$message.error(error.response ? error.response.data.error : '请求失败');
+      });
   }
-  this.$axios.post('http://localhost:8080/auth/like', { url: image.picture })
-    .then(response => {
-      if (response.status === 200) {
-        image.likecount = response.data.current_likes;
-        this.$message.success('点赞成功');
-      } else {
-        this.$message.error(response.data.error);
-      }
-    })
-    .catch(error => {
-      console.error('Error liking image:', error);
-      this.$message.error(error.response ? error.response.data.error : '请求失败');
-    });
-}
   }
 };
 </script>

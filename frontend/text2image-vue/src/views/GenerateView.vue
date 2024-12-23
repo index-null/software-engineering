@@ -160,7 +160,15 @@ export default {
         // 更新图片 URL
         const lastIdx = this.temp_generatedImg_results.length - 1;
         this.$set(this.temp_generatedImg_results[lastIdx], 'img_url', imageUrl);
-
+         // 发送历史记录请求
+    await this.$axios.post('http://localhost:8080/auth/generate/addhistory', {
+      prompt: this.form.prompt,
+      width: this.form.width,
+      height: this.form.height,
+      seed: this.form.seed,
+      steps: this.form.steps,
+      pictureURL: imageUrl
+    });
         this.$message.success('图片上传成功');
       } catch (error) {
         console.error('Error uploading image:', error);
