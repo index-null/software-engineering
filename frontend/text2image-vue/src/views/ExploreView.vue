@@ -49,11 +49,11 @@
     <div class="explore-ground-container">
       <h2 class="ground-title">图片广场</h2>
       <div class="image-grid">
-  <div 
+        <div 
     class="image-item" 
     v-for="image in images" 
     :key="image.id"
-    @dblclick="likeImage(image.id)"
+    @dblclick="likeImage(image)"
   >
     <el-image
       style="width: 200px; height: 200px"
@@ -61,8 +61,8 @@
       fit="cover"
     />
     <div class="image-info">
-      <span class="like-count">
-        <i class="el-icon-thumb"></i> {{ image.likecount }}
+      <span class="like-count" :class="{ 'liked': image.isliked }">
+        <i class="el-icon-thumb" :class="{ 'liked': image.isliked }"></i> {{ image.likecount }}
       </span>
       <span class="username">生成用户: {{ image.username }}</span>
     </div>
@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     fetchImages() {
-      this.$axios.get('http://localhost:8080/image/all')
+      this.$axios.get('http://localhost:8080/auth/imageSquare')
         .then(response => {
           this.images = response.data.images;
         })
@@ -131,7 +131,9 @@ export default {
     selectStyle(index) {
     this.currentStyle = index;
   },
-  likeImage(imageId) {
+  likeImage(image) {
+    imageId=image.id;
+    image.isliked=true;
   const image = this.images.find(img => img.id === imageId);
   if (!image) {
     console.error('Image not found');
@@ -231,7 +233,7 @@ export default {
     align-items: center; /* 垂直居中对齐 */
     margin-left: 6rem; /* 使用相对单位 */
     margin-right: 6rem; /* 使用相对单位 */
-    //margin-bottom: 6rem; /* 使用相对单位 */
+    margin-bottom: 6rem; /* 使用相对单位 */
     position: relative; /* 确保生成按钮和其他元素不重叠 */
     z-index: 1; /* 确保生成按钮在背景之上 */
     
@@ -371,7 +373,10 @@ export default {
 .el-image__inner {
   border-radius: 1rem; /* 保持图片圆角 */
 }
-
+.like-count.liked,
+.el-icon-thumb.liked {
+  color: red; /* 设置点赞图标和点赞数为红色 */
+}
 .text-box {
     margin-top: 2rem; /* 使用相对单位 */
     display: flex;
