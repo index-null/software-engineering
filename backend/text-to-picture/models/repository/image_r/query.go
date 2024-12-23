@@ -129,7 +129,7 @@ func GetAllImagesInfo(db *gorm.DB) ([]image.ImageInformation, error) {
 // 获取图像信息，并增加一个islike字段用于显示当前用户是否点赞过该图像
 func GetAllImagesInfoWithLikeStatus(db *gorm.DB, username string) ([]image.ImageResponse, error) {
 	var images []image.ImageInformation
-	result := db.Table("imageinformation").Order("id ASC").Limit(100).Find(&images)
+	result := db.Table("imageinformation").Order("RANDOM()").Limit(100).Find(&images)
 	if result.Error != nil {
 		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
 	}

@@ -203,7 +203,7 @@ export default {
     const dateObj = new Date(date);
     
     // 获取各个时间部分
-    const year = dateObj.getUTCFullYear();
+    const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
     const day = String(dateObj.getDate()).padStart(2, '0');
     const hours = String(dateObj.getHours()).padStart(2, '0');
