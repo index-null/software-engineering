@@ -142,5 +142,6 @@ func Login(c *gin.Context) {
 		"code":    http.StatusOK,
 		"message": "登录成功",
 		"token":   tokenString,
+		"avatar": user.Avatar_url,
 	})
 }

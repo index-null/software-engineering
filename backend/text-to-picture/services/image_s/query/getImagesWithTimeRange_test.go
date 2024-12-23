@@ -163,15 +163,15 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 
 	// 测试有效的时间范围，成功查询
 	t.Run("Valid_Time_Range", func(t *testing.T) {
-		testUsername := "test"
-		create_time := time.Now().UTC()
+		testUsername := "test_Valid_Time_Range"
+		create_time := time.Now()
 		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Create_time: create_time})
 
 		tokenString := createToken(testUsername)
 
 		imageInfo := &image.ImageInformation{
 			UserName:   testUsername,
-			Picture:    "http://example.com/test.jpg",
+			Picture:    "http://example.com/test_Valid_Time_Range.jpg",
 			Create_time: time.Now(),
 		}
 		db.DB.Create(&imageInfo)

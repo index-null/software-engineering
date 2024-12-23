@@ -24,7 +24,7 @@ type ImageInformation struct {
 	ID          int       `json:"id" gorm:"primarykey"`
 	UserName    string    `json:"username" gorm:"column:username;not null"`
 	Params      string    `json:"params"`
-	LikeCount	int		  `json:"likecount" gorm:"column:likecount"`
+	LikeCount   int       `json:"likecount" gorm:"column:likecount"`
 	Picture     string    `json:"picture"`
 	Create_time time.Time `json:"create_time"`
 	//User        u.UserInformation `gorm:"foreignKey:UserName;references:Username"`
@@ -55,4 +55,18 @@ type ImageLike struct {
 
 func (ImageLike) TableName() string {
 	return "imagelike"
+}
+
+type ImageResponse struct {
+	ID          int       `json:"id"`
+	UserName    string    `json:"username"`
+	Params      string    `json:"params"`
+	LikeCount   int       `json:"likecount"`
+	Picture     string    `json:"picture"`
+	Create_time time.Time `json:"create_time"`
+	Isliked     bool      `json:"isliked"` 
+}
+
+func (ImageResponse) TableName() string {
+	return "imageresponse"
 }
