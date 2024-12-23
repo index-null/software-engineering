@@ -173,6 +173,7 @@ export default {
           if (response.data.code === 200) {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', this.loginForm.username);
+            localStorage.setItem('avatarUrl', response.data.avatar);
             this.$message.success('登录成功');
             this.$router.push('/main');
           } 

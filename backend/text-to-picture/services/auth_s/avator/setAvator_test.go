@@ -241,7 +241,7 @@ func TestSetAvator(t *testing.T) {
 		
 		//创建一个POST请求
 		body := bytes.NewBuffer([]byte(`{"url": "https://example.com/new-avatar.jpg"}`))
-	    request , _ := http.NewRequest("POST", "/auth/setavator", body)
+		request , _ := http.NewRequest("POST", "/auth/setavator", body)
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Authorization", tokenString)
 
