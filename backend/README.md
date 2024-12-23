@@ -592,13 +592,13 @@ POST http://localhost:8080/register
 
 #### 响应
 
-| 响应码 | 描述            | 示例响应体                                                               |
-| ------ | ------------- |---------------------------------------------------------------------|
-| 401    | 令牌格式不正确 | `{ "code"：StatusUnauthorized(401),"message"："令牌格式不正确",data: null}`  |
-| 401    | 令牌过期或未激活     | `{ "code"：StatusUnauthorized(401),"message"："令牌过期或未激活",data: null}` |
-| 401    | 令牌无法处理    | `{ "code"：StatusUnauthorized(401),"message"："令牌无法处理",data: null}`   |
-| 500    | 令牌无效 | `{ "code"：StatusUnauthorized(401),"message"："令牌无效",data: null}`     |
-| 200    | 令牌有效 | `{ "code"：StatusOK(200),"message"："令牌有效",data: null}`               |
+| 响应码 | 描述            | 示例响应体                                                                    |
+| ------ | ------------- |--------------------------------------------------------------------------|
+| 401    | 令牌格式不正确 | `{ "code"：StatusUnauthorized(401),"message"："令牌格式不正确",data: null}`       |
+| 401    | 令牌过期或未激活     | `{ "code"：StatusUnauthorized(401),"message"："令牌过期或未激活",data: null}`      |
+| 401    | 令牌无法处理    | `{ "code"：StatusUnauthorized(401),"message"："令牌无法处理",data: null}`        |
+| 500    | 令牌无效 | `{ "code"：StatusUnauthorized(401),"message"："令牌无效，不是root用户",data: null}` |
+| 200    | 令牌有效 | `{ "code"：StatusOK(200),"message"："令牌有效，识别为至高无上的root用户",data: null}`     |
 ---
 
 8. **搜索功能**
