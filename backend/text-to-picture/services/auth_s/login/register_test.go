@@ -160,7 +160,7 @@ func TestRegister_InternalServerError(t *testing.T) {
 	router := SetupRouter()
 
 	// 创建一个 POST 请求
-	body := bytes.NewBuffer([]byte(`{"email": "test@example.com", "username": "testuser", "password": "testpassword"}`)) // 密码长度小于6导致创建失败
+	body := bytes.NewBuffer([]byte(`{"email": "testuser1@example.com", "username": "testuser1", "password": "test"}`)) // 密码长度小于6导致创建失败
 	req, _ := http.NewRequest("POST", "/register", body)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -178,4 +178,5 @@ func TestRegister_InternalServerError(t *testing.T) {
     json.Unmarshal(w.Body.Bytes(), &response)
     fmt.Println("返回的message为：",response["message"])
     assert.Equal(t, "用户创建失败", response["message"])
+	db.DB.Table("userinformation").Where("username = ?","testuser1").Delete(&user.UserInformation{})
 }

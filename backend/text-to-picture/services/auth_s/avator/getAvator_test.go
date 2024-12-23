@@ -205,49 +205,49 @@ func TestGetAvator_InvalidToken(t *testing.T) {
 	assert.Equal(t, expectedResponse, actualResponse)
 }
 
-// TestGetAvator_ExpiredToken 测试Token过期的情况
-func TestGetAvator_ExpiredToken(t *testing.T) {
-	// 设置 Gin 为测试模式
-	gin.SetMode(gin.TestMode)
+// TestGetAvator_ExpiredToken 测试Token过期的情况(已取消校验token1是否过期)
+// func TestGetAvator_ExpiredToken(t *testing.T) {
+// 	// 设置 Gin 为测试模式
+// 	gin.SetMode(gin.TestMode)
 
-	// 创建一个新的路由器
-	router := SetupRouter()
+// 	// 创建一个新的路由器
+// 	router := SetupRouter()
 
-	// 创建一个过期的Token
-	claims := &middlewire.Claims{
-		Username: "czh1",
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(-time.Hour).Unix(), // 设置过期时间
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, _ := token.SignedString(middlewire.JwtKey)
+// 	// 创建一个过期的Token
+// 	claims := &middlewire.Claims{
+// 		Username: "czh1",
+// 		StandardClaims: jwt.StandardClaims{
+// 			ExpiresAt: time.Now().Add(-time.Hour).Unix(), // 设置过期时间
+// 		},
+// 	}
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+// 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-	// 创建一个 GET 请求
-	req, _ := http.NewRequest("GET", "/auth/getavator", nil)
-	req.Header.Set("Authorization", tokenString)
+// 	// 创建一个 GET 请求
+// 	req, _ := http.NewRequest("GET", "/auth/getavator", nil)
+// 	req.Header.Set("Authorization", tokenString)
 
-	// 创建一个响应记录器
-	w := httptest.NewRecorder()
+// 	// 创建一个响应记录器
+// 	w := httptest.NewRecorder()
 
-	// 执行请求
-	router.ServeHTTP(w, req)
+// 	// 执行请求
+// 	router.ServeHTTP(w, req)
 
-	fmt.Printf("\nTestGetAvator_ExpiredToken-------------------Response Body: %s\n", w.Body.String())
+// 	fmt.Printf("\nTestGetAvator_ExpiredToken-------------------Response Body: %s\n", w.Body.String())
 
-	// 检查响应状态码
-	assert.Equal(t, http.StatusUnauthorized, w.Code)
+// 	// 检查响应状态码
+// 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-	// 检查响应体
-	expectedResponse := AvatorResponse{
-		Code: Unauthorized,
-		Msg:  "Token已过期",
-		Data: nil,
-	}
-	var actualResponse AvatorResponse
-	json.Unmarshal(w.Body.Bytes(), &actualResponse)
-	assert.Equal(t, expectedResponse, actualResponse)
-}
+// 	// 检查响应体
+// 	expectedResponse := AvatorResponse{
+// 		Code: Unauthorized,
+// 		Msg:  "Token已过期",
+// 		Data: nil,
+// 	}
+// 	var actualResponse AvatorResponse
+// 	json.Unmarshal(w.Body.Bytes(), &actualResponse)
+// 	assert.Equal(t, expectedResponse, actualResponse)
+// }
 
 // TestGetAvator_ExpiredToken 测试名字解析出错的情况
 func TestGetAvator_NameParseError(t *testing.T) {
