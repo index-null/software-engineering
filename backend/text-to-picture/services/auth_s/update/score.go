@@ -2,15 +2,17 @@ package update
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"log"
 	models "text-to-picture/models/init"
 	u "text-to-picture/models/user"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func AddScore(c *gin.Context) {
+	fmt.Println("_------------------------------------")
 	// 从上下文中获取用户名
 	Username, exists := c.Get("username")
 	if !exists {
