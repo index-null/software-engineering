@@ -746,7 +746,36 @@ POST http://localhost:8080/register
 | 200 | 成功删除用户username的所有图像      | `{"message"："成功删除用户username的所有图像"}`           |
 ---
 
-10. **数据库设计**
+10. **图片广场**
+### 删除用户
+### 功能
+  返回所有图像，并且
+
+#### URL地址
+
+`(GET) http://localhost:8080/auth/imageSquare`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无。
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                        |
+| ------ | ----------------- | ------------------------------------------------- |
+| 401    | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 500    | 查询过程中发送错误  | `{"message": "获取图像列表失败", "error": err.Error()}`           |
+| 200    | 查询成功           | `{"message": "获取图像列表成功","images":[{"id":,"username":,}],"params":,"likecount":,"picture":,"create_time":,"isliked":,}`           |
+---
+
+11. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

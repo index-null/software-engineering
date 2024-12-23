@@ -1,10 +1,12 @@
 package image_r
 
 import (
+	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	i "text-to-picture/models/image"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // // 根据用户ID查询相关图片
@@ -122,4 +124,68 @@ func GetAllImagesInfo(db *gorm.DB) ([]i.ImageInformation, error) {
 		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
 	}
 	return images, nil
+}
+
+
+type ImageResponse struct {
+	ID          int       `json:"id"`
+	UserName    string    `json:"username"`
+	Params      string    `json:"params"`
+	LikeCount   int       `json:"likecount"`
+	Picture     string    `json:"picture"`
+	Create_time time.Time `json:"create_time"`
+	Isliked     bool      `json:"isliked"` // 注意这里修复了 JSON 标签
+}
+
+func (ImageResponse) TableName() string {
+	return "imageresponse"
+}
+
+type ImageLike struct {
+	ID          int       `json:"id" gorm:"primarykey"`
+	UserName    string    `json:"username" gorm:"column:username;not null"`
+	Picture     string    `json:"picture"`
+	Num         int       `json:"num"`
+	Create_time time.Time `json:"create_time" gorm:"default:CURRENT_TIMESTAMP"`
+}
+
+func (ImageLike) TableName() string {
+	return "imagelike"
+}
+
+// 新增的 GetAllImagesInfoWithLikeStatus 函数
+func GetAllImagesInfoWithLikeStatus(db *gorm.DB, username string) ([]ImageResponse, error) {
+	var images []i.ImageInformation
+	result := db.Table("imageinformation").Order("id ASC").Find(&images)
+	if result.Error != nil {
+		return nil, fmt.Errorf("查询图像列表时发生错误: %v", result.Error)
+	}
+
+	var num = 0
+	imageResponses := make([]ImageResponse, len(images))
+	for i, img := range images {
+		imageResponses[i] = ImageResponse{
+			ID:          img.ID,
+			UserName:    img.UserName,
+			Params:      img.Params,
+			LikeCount:   img.LikeCount,
+			Picture:     img.Picture,
+			Create_time: img.Create_time,
+			Isliked:     false, // 默认值为false
+		}
+		
+		var imageLike ImageLike
+		err := db.Where("username = ? AND picture = ?", username, img.Picture).First(&imageLike).Error
+		if err == nil {
+			imageResponses[i].Isliked = true
+			num += 1
+		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+			// 如果有其他类型的错误则返回
+			return nil, fmt.Errorf("查询点赞记录时发生错误: %v", err)
+		}
+	}
+
+	fmt.Println(num)
+
+	return imageResponses, nil
 }
