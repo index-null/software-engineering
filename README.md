@@ -107,6 +107,19 @@
      OSS_BUCKET=your_bucket_name
      ```
 
+5. **配置阿里云文生图API的密钥**
+    在`backend/text-to-picture/config/apiConfig` 目录下创建`api.env`文件，写入阿里云文生图API的密钥
+   ```bash
+   cd config/apiConfig
+   touch api.env
+   vim api.env
+   ```
+   
+   以下是一个示例配置：
+   下是一个示例配置：
+     ```plaintext
+     GEN_API_KEY=your_gen_api_key
+     ```
 
 ### 启动后端
 

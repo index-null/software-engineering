@@ -4,13 +4,12 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	//"strconv"
-	d "text-to-picture/models/init"
-	"text-to-picture/models/repository/user_r"
-	u "text-to-picture/models/user"
+	d "text-to-picture/models/init"         // 数据库模型初始化
+	"text-to-picture/models/repository/user_r" // 用户数据访问层
+	u "text-to-picture/models/user"          // 用户模型
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"               // Gin 框架
+	"gorm.io/gorm"                           // GORM ORM
 )
 
 
@@ -43,6 +42,7 @@ func GetUserInfo(c *gin.Context) {
 
 	var user *u.UserInformation
 	var err error
+	// 根据用户名获取用户信息
 	user, err = user_r.GetUserByName(d.DB, username.(string))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -53,6 +53,7 @@ func GetUserInfo(c *gin.Context) {
 		return
 	}
 
+	// 返回查到的用户信息
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
@@ -65,7 +66,8 @@ func GetUserInfo(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "获取用户列表失败"
 // @Router /user/all [get]
 func GetAllUsersInfo(c *gin.Context) {
-	users, err := user_r.GetAllUsers(d.DB)
+	// 获取所有用户信息
+	users, err := user_r.GetAllUsers(d.DB) 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取用户列表失败", "error": err.Error()})
 		return

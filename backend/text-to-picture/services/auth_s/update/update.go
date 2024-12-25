@@ -24,7 +24,7 @@ import (
 func UpdateUser(c *gin.Context) { //不能更新用户名
 	// 从上下文中获取用户名
 	username, exists := c.Get("username")
-	if !exists {
+	if !exists { // 未找到用户名，说明用户未登录或token有问题
 		log.Printf("未找到用户名")
 		c.JSON(401, gin.H{
 			"success": false,
