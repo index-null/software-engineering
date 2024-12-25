@@ -37,6 +37,7 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/auth/user/update", middlewire.JWTAuthMiddleware(), UpdateUser)
 	return r
 }
+
 // MockJWTAuthMiddlewareNoUser 模拟 JWT 中间件，但不设置用户名到上下文中
 func MockJWTAuthMiddlewareNoUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -50,14 +51,14 @@ func TestUpdateUser(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		t.Fatalf("Error reading DBconfig.yaml file: %v", err)
+		t.Fatalf("Error reading configs.yaml file: %v", err)
 	}
 
 	// 解析配置文件
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		t.Fatalf("Error parsing DBconfig.yaml file: %v", err)
+		t.Fatalf("Error parsing configs.yaml file: %v", err)
 	}
 
 	// 设置数据库连接的环境变量
@@ -119,8 +120,8 @@ func TestUpdateUser(t *testing.T) {
 	// 测试成功更新用户信息
 	t.Run("Successful_Update", func(t *testing.T) {
 		requestBody := map[string]interface{}{
-			"password": "abcdefg",
-			"email":    "newemail@qq.com",
+			"password":   "abcdefg",
+			"email":      "newemail@qq.com",
 			"avatar_url": "http://example.com/new_avatar.jpg",
 		}
 

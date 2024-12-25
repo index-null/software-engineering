@@ -50,7 +50,7 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -58,7 +58,7 @@ func TestAddFavoritedImage(t *testing.T) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -88,11 +88,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试无效的请求格式
 	t.Run("Invalid_Request_Format", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -101,8 +101,8 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",
-		Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com",
+			Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", nil)
 		request.Header.Set("Authorization", tokenString)
@@ -126,11 +126,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试无效的图像 URL 或 ID
 	t.Run("Invalid_Image_URL_Or_ID", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -139,7 +139,7 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		requestBody := `{"url": "", "id": 0}`
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
@@ -163,11 +163,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试未找到对应的图像
 	t.Run("Image_Not_Found", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -176,7 +176,7 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		requestBody := `{"url": "http://example.com/notfound.jpg"}`
 		request, _ := http.NewRequest("POST", "/auth/addFavoritedImage", strings.NewReader(requestBody))
@@ -200,11 +200,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试该图像已经被收藏过
 	t.Run("Image_Already_Favorited", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -213,12 +213,12 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		// 先插入测试数据
 		imageUrl := "http://example.com/test.jpg"
 		imageInfo := &image.ImageInformation{
-			UserName: testUsername,
+			UserName:    testUsername,
 			Picture:     imageUrl,
 			Create_time: time.Now(),
 		}
@@ -251,11 +251,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试收藏成功
 	t.Run("Add_Favorited_Image_Success", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -264,12 +264,12 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		// 先插入测试数据
 		imageUrl := "http://example.com/newimage.jpg"
 		imageInfo := &image.ImageInformation{
-			UserName: testUsername,
+			UserName:    testUsername,
 			Picture:     imageUrl,
 			Create_time: time.Now(),
 		}
@@ -298,11 +298,11 @@ func TestAddFavoritedImage(t *testing.T) {
 	// 测试有效的url
 	t.Run("Invalid_Url", func(t *testing.T) {
 		// 创建一个数据库尚未存在的用户作为测试用户
-		testUsername := "test" 
+		testUsername := "test"
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUsername, 
+			Username: testUsername,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -311,12 +311,12 @@ func TestAddFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		// 先插入测试数据
 		imageUrl := "http://example.com/newimage.jpg"
 		imageInfo := &image.ImageInformation{
-			UserName: testUsername,
+			UserName:    testUsername,
 			Picture:     imageUrl,
 			Create_time: time.Now(),
 		}

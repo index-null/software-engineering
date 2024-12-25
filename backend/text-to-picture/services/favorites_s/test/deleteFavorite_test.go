@@ -36,7 +36,7 @@ func TestDeleteFavoritedImage(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -44,7 +44,7 @@ func TestDeleteFavoritedImage(t *testing.T) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -172,12 +172,12 @@ func TestDeleteFavoritedImage(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 		//向数据库插入该用户的信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Avatar_url:testUsername+".jpg",Score: 100,Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Avatar_url: testUsername + ".jpg", Score: 100, Token: tokenString, Create_time: create_time})
 
 		// 先插入测试数据
 		imageUrl := "http://example.com/test.jpg"
 		imageInfo := &image.ImageInformation{
-			UserName: testUsername,
+			UserName:    testUsername,
 			Picture:     imageUrl,
 			Create_time: time.Now(),
 		}
@@ -196,7 +196,7 @@ func TestDeleteFavoritedImage(t *testing.T) {
 		json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		fmt.Println("实际响应：", actualResponse)
 		assert.Equal(t, expectedResponse, actualResponse)
-		
+
 		// 清理测试数据
 		db.DB.Where("username = ?", testUsername).Delete(&image.FavoritedImages{})
 		db.DB.Where("username = ?", testUsername).Delete(&image.ImageInformation{})
@@ -219,7 +219,7 @@ func TestDeleteFavoritedImage(t *testing.T) {
 		imageUrl := "http://example.com/test.jpg"
 		// 先插入测试数据
 		create_time := time.Now().UTC()
-		db.DB.Create(&user.UserInformation{UserName: testUsername, Email:testUsername+"@qq.com",Password: "123456",Token: tokenString,Create_time: create_time,})
+		db.DB.Create(&user.UserInformation{UserName: testUsername, Email: testUsername + "@qq.com", Password: "123456", Token: tokenString, Create_time: create_time})
 		db.DB.Create(&image.ImageInformation{UserName: testUsername, Picture: imageUrl})
 		db.DB.Create(&image.FavoritedImages{UserName: testUsername, Picture: imageUrl})
 
