@@ -2,6 +2,7 @@ package router
 
 import (
 	"text-to-picture/api/generate"
+	"text-to-picture/middlewire/cors"
 	middlewire "text-to-picture/middlewire/jwt"
 	"text-to-picture/services/auth_s/avator"
 	check_t "text-to-picture/services/auth_s/checkToken"
@@ -16,15 +17,10 @@ import (
 	"text-to-picture/services/image_s/like"
 	image_q "text-to-picture/services/image_s/query"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
-
-type Service interface {
-	Start()
-}
 
 type TextToPicture struct {
 }
@@ -32,14 +28,8 @@ type TextToPicture struct {
 func (t *TextToPicture) Start() {
 	// 设置路由
 	r := gin.Default()
-
-	// 配置 CORS 中间件
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8081"} // 允许的源，可以根据需要修改
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
-
-	r.Use(cors.New(config))
+	// 使用新的 CORS 中间件
+	r.Use(cors.CORSMiddleware())
 
 	// 创建 ImageGenerator 实例
 	imgGen := generate.NewImageGenerator()
