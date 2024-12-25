@@ -9,10 +9,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/go-playground/validator/v10"
-	//"net/http"
-	// "net/url"
 	"os"
 	"reflect"
 	i "text-to-picture/models/image"
@@ -20,9 +16,12 @@ import (
 	u "text-to-picture/models/user"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	//文件路径操作包
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-playground/validator/v10"
+
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 传入的图片参数
@@ -428,6 +427,7 @@ func downloadImageFromWebUI(url string, destinationPath string) error {
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		return fmt.Errorf("保存图片失败: %v", err)
+
 	}
 
 	return nil
