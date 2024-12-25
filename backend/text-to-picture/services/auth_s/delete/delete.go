@@ -26,7 +26,7 @@ import (
 // @Router /auth/root/deleteOneUser [delete]
 func DeleteUserByName(c *gin.Context) {
 	// 从上下文中获取用户名
-	userName, exists := c.Get("username")
+	userName, exists := c.Get("username") // 从上下文中获取当前登录用户的用户名
 	if !exists {
 		log.Printf("未找到用户名")
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -48,10 +48,11 @@ func DeleteUserByName(c *gin.Context) {
 		return
 	}
 
+	// isOwn为true则表示用户的账号注销操作，否则为root用户的删除用户操作
 	var username string
-	if isOwn !="true"{
+	if isOwn != "true" {
 		username = c.Query("username")
-	}else if isOwn == "true"{
+	} else if isOwn == "true" {
 		username = userName.(string)
 	}
 
@@ -89,9 +90,11 @@ func DeleteUserByName(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "提交事务失败", "error": err.Error()})
 		return
 	}
+
+	// 返回结果
 	if isOwn == "true" || isOwn == "True" {
-		c.JSON(200,gin.H{"message": username + "的账号注销成功"})
-		return 
+		c.JSON(200, gin.H{"message": username + "的账号注销成功"})
+		return
 	}
 	c.JSON(200, gin.H{"message": "成功删除用户：" + username})
 }
