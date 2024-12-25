@@ -1,34 +1,45 @@
 <template>
   <div class="inner-view">
+    <!-- 左侧容器 -->
     <div class="left-side-container">
+      <!-- 上侧容器，包含logo和导航栏 -->
       <div class="upside-container">
+        <!-- Logo 和 标题 -->
         <div class="logo-container">
           <img :src="svgPaths.logo" alt="Logo" class="logo"/>
           <span class="title">{{ appName }}</span>
         </div>
+        <!-- 导航栏 -->
         <nav class="nav-container">
+          <!-- 探索发现 -->
           <div class="nav-item" :class="{ 'active': activeRoute === '/main/explore' }" @click="setActiveRoute('/main/explore')">
             <img :src="svgPaths.explore" alt="Explore" class="nav-icon"/>
             <router-link to="/main/explore" class="nav-link">探索发现</router-link>
           </div>
+          <!-- 文字作画 -->
           <div class="nav-item" :class="{ 'active': activeRoute === '/main/generate' }" @click="setActiveRoute('/main/generate')">
             <img :src="svgPaths.generate" alt="generate" class="nav-icon"/>
             <router-link to="/main/generate" class="nav-link">文字作画</router-link>
           </div>
+          <!-- 我的收藏 -->
           <div class="nav-item" :class="{ 'active': activeRoute === '/main/favorites' }" @click="setActiveRoute('/main/favorites')">
             <img :src="svgPaths.favorite" alt="favourite" class="nav-icon"/>
             <router-link to="/main/favorites" class="nav-link">我的收藏</router-link>
           </div>
+          <!-- 历史记录 -->
           <div class="nav-item" :class="{ 'active': activeRoute === '/main/history' }" @click="setActiveRoute('/main/history')">
             <img :src="svgPaths.history" alt="History" class="nav-icon"/>
             <router-link to="/main/history" class="nav-link">历史记录</router-link>
           </div>
         </nav>
       </div>
+      <!-- 下侧容器，包含用户信息和设置 -->
       <div class="downside-container">
+        <!-- 用户头像 -->
         <div class="avatar-container">
           <el-avatar :size="100" :src="avatarUrl"></el-avatar>
         </div>
+        <!-- 退出登录确认 -->
         <el-popconfirm
           confirm-button-text='是'
           cancel-button-text='取消'
@@ -42,12 +53,14 @@
             <router-link to="#" class="nav-link">{{ username }}</router-link>
           </div>
         </el-popconfirm>
+        <!-- 账户信息 -->
         <div class="nav-item" :class="{ 'active': activeRoute === '/main/settings' }" @click="setActiveRoute('/main/settings')">
           <img :src="svgPaths.setting" alt="info" class="nav-icon"/>
           <router-link to="/main/setting" class="nav-link">账户信息</router-link>
         </div>
       </div>
     </div>
+    <!-- 视图容器，用于显示路由视图 -->
     <div class="view-container">
       <router-view></router-view>
     </div>

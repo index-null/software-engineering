@@ -311,7 +311,7 @@ POST http://localhost:8080/register
 
 
 4. **文生图历史记录**
-#### 获取所有用户所有的图像信息
+#### 获取所有用户所有的图像信息(测试用，该路由已被注释)
 
 - **URL地址**  
   `(GET) http://localhost:8080/image/all`
@@ -351,7 +351,7 @@ POST http://localhost:8080/register
 | 500   | 查询图像列表失败        | `{ "code": StatusInternalServerError (500), "message": "查询图像列表失败", "error": "" }` |
 | 200   | 查询图像列表成功        | `{ "code": StatusOK, "message": "查询图像列表成功", "images": [...] }`      |
 ---
-### 获取指定的某张图像
+### 获取指定的某张图像(测试用，该路由已被注释)
 
 - **URL地址**
   `(GET) http://localhost:8080/image`
@@ -592,13 +592,13 @@ POST http://localhost:8080/register
 
 #### 响应
 
-| 响应码 | 描述            | 示例响应体                                                               |
-| ------ | ------------- |---------------------------------------------------------------------|
-| 401    | 令牌格式不正确 | `{ "code"：StatusUnauthorized(401),"message"："令牌格式不正确",data: null}`  |
-| 401    | 令牌过期或未激活     | `{ "code"：StatusUnauthorized(401),"message"："令牌过期或未激活",data: null}` |
-| 401    | 令牌无法处理    | `{ "code"：StatusUnauthorized(401),"message"："令牌无法处理",data: null}`   |
-| 500    | 令牌无效 | `{ "code"：StatusUnauthorized(401),"message"："令牌无效",data: null}`     |
-| 200    | 令牌有效 | `{ "code"：StatusOK(200),"message"："令牌有效",data: null}`               |
+| 响应码 | 描述            | 示例响应体                                                                    |
+| ------ | ------------- |--------------------------------------------------------------------------|
+| 401    | 令牌格式不正确 | `{ "code"：StatusUnauthorized(401),"message"："令牌格式不正确",data: null}`       |
+| 401    | 令牌过期或未激活     | `{ "code"：StatusUnauthorized(401),"message"："令牌过期或未激活",data: null}`      |
+| 401    | 令牌无法处理    | `{ "code"：StatusUnauthorized(401),"message"："令牌无法处理",data: null}`        |
+| 500    | 令牌无效 | `{ "code"：StatusUnauthorized(401),"message"："令牌无效，不是root用户",data: null}` |
+| 200    | 令牌有效 | `{ "code"：StatusOK(200),"message"："令牌有效，识别为至高无上的root用户",data: null}`     |
 ---
 
 8. **搜索功能**
@@ -609,7 +609,7 @@ POST http://localhost:8080/register
 
 #### URL地址
 
-`(DELETE) http://localhost:8080/auth/image/feature`
+`(GET) http://localhost:8080/auth/image/feature`
 
 #### 请求头
 
@@ -636,7 +636,7 @@ POST http://localhost:8080/register
 
 
 9. **管理员操作**
-### 删除用户
+### 账号注销/root删除用户
 ### 功能
   根据前端传来的?username删除指定用户
   如果?isOwn=true表示账号注销（即删除自己的账号信息，如果没有这个，则表示root用户删除违规账号）
@@ -708,7 +708,7 @@ POST http://localhost:8080/register
 | 500 | 提交事务失败       | `{"message"："提交事务失败"}`           |
 | 200 | 成功删除图像      | `{"message"："成功删除图像"}`           |
 ---
-### 删除所有图像
+### 删除单个图像(测试用，该路由已被注释)
 ### 功能
 删除指定用户的所有图像
 
@@ -746,7 +746,75 @@ POST http://localhost:8080/register
 | 200 | 成功删除用户username的所有图像      | `{"message"："成功删除用户username的所有图像"}`           |
 ---
 
-10. **数据库设计**
+10. **插入到历史记录**
+#### URL地址
+
+(POST) http://localhost:8080/auth/generate/addhistory
+
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+
+```json
+{
+  "prompt": "prompt",
+  "width": 1024,
+  "height": 1024, 
+  "seed": 123456,
+  "steps": 50,
+  "pictureURL":"url"
+}
+```
+#### 响应
+
+| 响应码 | 描述             | 示例响应体                                        |
+|-----| --------------- | ------------------------------------------------- |
+| 401 | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 401 | 无效的Token      | `{"message"："无效的Token"}`                      |
+| 401 | 未找到用户信息      | `{"message"："未找到用户信息"}`                   |
+| 400 | 参数解析失败        | `{"code":    400,"success": false,"message": "参数解析失败",}`   |
+| 500 | 插入获取数据库连接失败| `{"code":    500,"success": false,"message": "插入获取数据库连接失败",}`             |
+| 500 | 插入数据到数据库失败         | `{"code":    500,"success": false,"message": "插入数据到数据库失败",}`                      |
+| 200 | 插入数据到历史记录成功    | `"code":    200,"success": true,"message": "插入数据到历史记录成功",}`          |
+---
+
+11. **图片广场**
+### 图像广场
+### 功能
+  随机获取100张带Isliked字段（表示当前登录用户是否点赞过该图像）的图像
+
+#### URL地址
+
+`(GET) http://localhost:8080/auth/imageSquare`
+
+#### 请求头
+
+```json
+{
+  "Authorization": "your_jwt_token"
+}
+```
+
+#### 请求体
+无。
+
+#### 响应
+
+| 响应码 | 描述               | 示例响应体                                        |
+| ------ | ----------------- | ------------------------------------------------- |
+| 401    | 请求头中缺少Token  | `{"message"："请求头中缺少Token"}`                 |
+| 500    | 查询过程中发送错误  | `{"message": "获取图像列表失败", "error": err.Error()}`           |
+| 200    | 查询成功           | `{"message": "获取图像列表成功","images":[{"id":,"username":,}],"params":,"likecount":,"picture":,"create_time":,"isliked":,}`           |
+---
+
+12. **数据库设计**
    - 用户登录表：id，email，user，password，token
    - 用户查询表：id，user（外键），params，picture，time
    - 收藏表：id，user（外键），picture

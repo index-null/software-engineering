@@ -1,51 +1,124 @@
 <template>
-<div class="explore-container">
-  <div class="carousel-img-container">
-    <div class="carousel-img-bg">
-      <div class="selector">
-        <div class="selector-item">精致国潮</div>
-        <div class="selector-item-unselected">国风水墨</div>
-        <div class="selector-item-unselected">厚涂原画</div>
-      </div>
-      <div class="text-box">
-        <h1>琼楼玉宇</h1>
-        <h3>中式色彩国风美学</h3>
-      </div>
-      <div class="generate-same-style">
-        <input class="search-input" type="text" placeholder="华丽的中国传统古代建筑,坐落在山脚下,山脚下有弯曲的河流流过,天空中飘着祥云" disabled>
-        <div class="generate-button" @click="$router.push('/main/generate')">生成同款</div>
-      </div>
-    </div>
-  </div>
-  <div class="generate-entry-container">
-    <div class="generate-entry">
-      <div class="text1">文字作画</div>
-      <div class="text2">
-        文字描述生成画作
-      </div>
-      <div class="generate-button" @click="$router.push('/main/generate')">去生成</div>
-    </div>
-  </div>
-  <div class="explore-ground-container">
-    <h2 class="ground-title">图片广场</h2>
-    <div class="image-grid">
-        <div class="image-item" v-for="image in images" :key="image.id">
-            <el-image
-          style="width: 200px; height: 200px"
-          :src="image.picture"
-          fit="cover"
-        />
+  <div class="explore-container">
+    <!-- 轮播图容器 -->
+    <div class="carousel-img-container">
+      <div class="carousel-img-bg" :style="{ backgroundImage: `url(${styles[currentStyle].img_url})` }">
+        <!-- 样式选择器 -->
+        <div class="selector">
+          <div 
+            v-for="(style, index) in styles" 
+            :key="style.id" 
+            :class="['selector-item', currentStyle === index ? '' : 'selector-item-unselected']"
+            @click="selectStyle(index)"
+            :style="{ backgroundColor: currentStyle === index ? style.buttonColor : '', color: currentStyle === index ? style.textColor : '' }"
+          >
+            {{ style.text1 }}
+          </div>
         </div>
+        <!-- 文本框 -->
+        <div class="text-box">
+          <h1 :style="{ color: styles[currentStyle].h1Color }">{{ styles[currentStyle].text1 }}</h1>
+          <h3 :style="{ color: styles[currentStyle].h3Color }">{{ styles[currentStyle].text2 }}</h3>
+        </div>
+        <!-- 生成同款按钮 -->
+        <div class="generate-same-style">
+          <input 
+            class="search-input" 
+            type="text" 
+            :placeholder="styles[currentStyle].prompt" 
+            disabled
+          >
+          <div 
+            class="generate-button" 
+            @click="$router.push({ 
+              name: 'generate', 
+              query: { prompt: encodeURIComponent(styles[currentStyle].prompt) } 
+            });"
+            :style="{ backgroundColor: styles[currentStyle].buttonColor, color: styles[currentStyle].textColor }"
+          >
+            生成同款
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 生成入口容器 -->
+    <div class="generate-entry-container">
+      <div class="generate-entry">
+        <div class="text1">文字作画</div>
+        <div class="text2">
+          文字描述生成画作
+        </div>
+        <div class="generate-button" @click="$router.push('/main/generate')">去生成</div>
+      </div>
+    </div>
+    <!-- 图片广场容器 -->
+    <div class="explore-ground-container">
+      <h2 class="ground-title">图片广场</h2>
+      <div class="image-grid">
+        <div 
+          class="image-item" 
+          v-for="image in images" 
+          :key="image.id"
+          @dblclick="likeImage(image.id)"
+        >
+          <el-image
+            style="width: 200px; height: 200px"
+            :src="image.picture"
+            fit="cover"
+          />
+          <div class="image-info">
+            <span class="like-count" :class="{ 'liked': image.isliked }">
+              <i class="el-icon-thumb" :class="{ 'liked': image.isliked }"></i> {{ image.likecount }}
+            </span>
+            <span class="username">生成用户: {{ image.username }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      images: []
+      images: [],
+      styles: [
+  {
+    id: 1,
+    img_url: require("@/assets/Picture-Square/1.png"),
+    text1: "琼楼玉宇",
+    text2: "中式色彩国风美学",
+    prompt: "华丽的中国传统古代建筑，坐落在山腰上，山脚下有弯曲的河流流过，天空中飘着祥云",
+    buttonColor: "#1f5a6b", // 保持不变
+    textColor: "white", // 保持不变
+    h1Color: "#ffffff", // 保持不变
+    h3Color: "#ffffff" // 保持不变
+  },
+  {
+    id: 2,
+    img_url: require("@/assets/Picture-Square/2.png"),
+    text1: "墨韵流芳",
+    text2: "水墨留白古色古香",
+    prompt: "中国古典女性，传统发型，回眸看镜头，中国传统服装",
+    buttonColor: "#8B4513", // 棕色
+    textColor: "white", // 棕色
+    h1Color: "#8B4513", // 棕色
+    h3Color: "#A0522D" // 浅棕色
+  },
+  {
+    id: 3,
+    img_url: require("@/assets/Picture-Square/3.png"),
+    text1: "华丽时光旅者",
+    text2: "厚涂风格原画细节",
+    prompt: "一位黑色长发和黑色眼睛的年轻女性，黑色连衣裙，金玫瑰背景，柔和金黄色灯光",
+    buttonColor: "#725F57", // 金色
+    textColor: "white", // 棕色
+    h1Color: "white", // 棕色
+    h3Color: "white" // 浅棕色
+  }
+],
+    currentStyle: 0 // 默认选中第一个样式
     };
   },
   mounted() {
@@ -53,14 +126,45 @@ export default {
   },
   methods: {
     fetchImages() {
-      this.$axios.get('http://localhost:8080/image/all')
+      this.$axios.get('http://localhost:8080/auth/imageSquare')
         .then(response => {
           this.images = response.data.images;
         })
         .catch(error => {
           console.error("Error fetching images:", error);
         });
+    },
+    selectStyle(index) {
+    this.currentStyle = index;
+  },
+  likeImage(imageId) {
+    const image = this.images.find(img => img.id === imageId);
+    if (!image) {
+      console.error('Image not found');
+      return;
     }
+
+    // 先将本地的 isliked 字段设置为 true
+    image.isliked = true;
+
+    this.$axios.post('http://localhost:8080/auth/like', { url: image.picture })
+      .then(response => {
+        if (response.status === 200) {
+          image.likecount = response.data.current_likes;
+          this.$message.success('点赞成功');
+        } else {
+          // 如果点赞失败，恢复 isliked 状态
+          image.isliked = false;
+          this.$message.error(response.data.error);
+        }
+      })
+      .catch(error => {
+        // 如果请求失败，恢复 isliked 状态
+        image.isliked = false;
+        console.error('Error liking image:', error);
+        this.$message.error(error.response ? error.response.data.error : '请求失败');
+      });
+  }
   }
 };
 </script>
@@ -121,18 +225,18 @@ export default {
     background-color: #BED7DA;
     border-radius: 3rem; /* 使用相对单位 */
     padding: 1rem 2rem; /* 使用相对单位 */
-    color: #7FAEBD; /* 文本颜色设置为白色 */
+    color: white; /* 文本颜色设置为白色 */
     cursor: pointer; /* 添加鼠标悬停效果 */
     transition: background-color 0.3s; /* 添加过渡效果 */
 }
 
 .selector-item {
-    background-color: #297790; /* 添加背景颜色 */
+    background-color: #B9AFA8; /* 添加背景颜色 */
 }
 
 .selector-item:hover,
 .selector-item-unselected:hover {
-    background-color: #1f5a6b; /* 悬停时改变背景色 */
+    background-color: #B9AFA8; /* 悬停时改变背景色 */
 }
 
 .generate-same-style {
@@ -141,7 +245,7 @@ export default {
     align-items: center; /* 垂直居中对齐 */
     margin-left: 6rem; /* 使用相对单位 */
     margin-right: 6rem; /* 使用相对单位 */
-    margin-bottom: rem; /* 使用相对单位 */
+    margin-bottom: 6rem; /* 使用相对单位 */
     position: relative; /* 确保生成按钮和其他元素不重叠 */
     z-index: 1; /* 确保生成按钮在背景之上 */
     
@@ -263,11 +367,28 @@ export default {
 .image-item:hover {
   transform: scale(1.05); /* 悬停时放大图片 */
 }
+.image-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.like-count {
+  color: #606266;
+}
+
+.username {
+  color: #409EFF;
+}
 
 .el-image__inner {
   border-radius: 1rem; /* 保持图片圆角 */
 }
-
+.like-count.liked,
+.el-icon-thumb.liked {
+  color: red; /* 设置点赞图标和点赞数为红色 */
+}
 .text-box {
     margin-top: 2rem; /* 使用相对单位 */
     display: flex;

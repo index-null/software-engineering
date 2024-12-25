@@ -114,24 +114,25 @@ func DeleteFavoritedImage(c *gin.Context) {
 	idStr := c.Query("id")
 
 	// 查询图像信息
-	if url != "" {
-		imageInfo, err = image_r.GetImageByUrl(d.DB, url)
+	if url != "" { // 是否提供url
+		imageInfo, err = image_r.GetImageByUrl(d.DB, url) // 提供图像url查询收藏的图像
 		if err == nil {
 			_url = imageInfo.Picture
 		}
-	} else if idStr != "" {
+	} else if idStr != "" { // 是否提供id
 		id, err1 := strconv.Atoi(idStr)
 		if err1 != nil || id <= 0 {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})
 			return
 		}
-		imageInfo1, err = image_r.GetFavoritedImageById(d.DB, id)
+		imageInfo1, err = image_r.GetFavoritedImageById(d.DB, id) // 通过收藏记录id查询收藏的图像
 		_url = imageInfo1.Picture
-	} else {
+	} else { // 为提高url或id
 		c.JSON(http.StatusBadRequest, gin.H{"message": "无有效的图像id或url", "error": "id 必须大于 0 或者 url 不得为空"})
 		return
 	}
 
+	// 查询失败，未找到对应图像
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "未找到对应的图像", "error": err.Error()})
 		return
@@ -156,6 +157,7 @@ func DeleteFavoritedImage(c *gin.Context) {
 		return
 	}
 
+	// 判断是否已收藏
 	if !isFavorited {
 		c.JSON(http.StatusConflict, gin.H{"message": "该图像未被收藏过，不可取消收藏"})
 		return
@@ -168,6 +170,7 @@ func DeleteFavoritedImage(c *gin.Context) {
 		return
 	}
 
+	// 返回结果
 	c.JSON(http.StatusOK, gin.H{"message": "取消图像收藏成功"})
 
 }

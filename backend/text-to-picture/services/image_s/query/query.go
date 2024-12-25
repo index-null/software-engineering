@@ -269,3 +269,26 @@ func GetAllImages(c *gin.Context) {
 		"images":  images,
 	})
 }
+
+
+func GetAllImagesWithLike(c *gin.Context) {
+	usernames, exist := c.Get("username")
+	if !exist || usernames == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"message": "名字解析出错"})
+		return
+	}
+	username, _ := usernames.(string) //当前用户的用户名
+	
+	images, err := image_r.GetAllImagesInfoWithLikeStatus(d.DB, username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "获取图像列表失败", "error": err.Error()})
+		return
+	}
+	// 改返回 imageResponse 而非 ImageInformation
+	c.JSON(http.StatusOK, gin.H{
+		"message": "获取图像列表成功",
+		"images":  images,
+	})
+}

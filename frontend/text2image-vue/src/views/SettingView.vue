@@ -1,12 +1,20 @@
 <template>
   <div class="setting-container">
+    <!-- 顶部闪动条 -->
     <div class="shinning-bar"></div>
+
+    <!-- 用户资料卡片 -->
     <el-card class="user-profile">
+      <!-- 用户资料头部 -->
       <div class="profile-header">
+        <!-- 头像容器，点击时触发头像点击事件 -->
         <div class="avatar-container" @click="handleAvatarClick">
           <img :src="user.avatar" alt="User Avatar" class="avatar">
+          <!-- 编辑模式下显示的头像遮罩层 -->
           <div class="avatar-overlay" v-show="isEditing"></div>
         </div>
+
+        <!-- 用户基本信息展示，编辑模式下隐藏 -->
         <div class="profile-info" v-if="!isEditing">
           <div class="info-item">
             <span class="info-label">昵称:</span>
@@ -38,16 +46,23 @@
           </div>
         </div>
       </div>
-      <!-- 新增签到按钮 -->
+
+      <!-- 签到按钮，已签到则禁用 -->
       <el-button type="success" @click="signIn" class="sign-in-button" :disabled="hasSignedInToday" v-show="!isEditing">
         {{ hasSignedInToday ? '已签到' : '签到' }}
       </el-button>
+
+      <!-- 编辑按钮，点击后进入编辑模式 -->
       <el-button type="primary" @click="toggleEdit" class="edit-button" v-show="!isEditing">
         编辑
       </el-button>
+
+      <!-- 注销按钮，点击后确认注销 -->
       <el-button type="danger" @click="confirmLogout" class="logout-button" v-show="!isEditing">
         注销
       </el-button>
+
+      <!-- 编辑表单，编辑模式下显示 -->
       <el-form v-if="isEditing" label-width="80px" class="edit-form">
         <el-form-item label="昵称">
           <el-input v-model="user.username" disabled class="form-item-input"></el-input>
@@ -80,7 +95,8 @@
           <el-button type="success" @click="saveChanges" class="save-button">保存</el-button>
         </el-form-item>
       </el-form>
-      <!-- 隐藏头像上传控件 -->
+
+      <!-- 隐藏的文件输入控件，用于上传头像 -->
       <input type="file" ref="fileInput" @change="handleFileChange" style="display: none;">
     </el-card>
   </div>
@@ -140,6 +156,7 @@ export default {
     },
     async handleFileChange(event) {
       const file = event.target.files[0];
+      console.log('Selected file:', file); // 添加这行来调试
       if (!file) return;
 
       try {
@@ -149,6 +166,7 @@ export default {
         localStorage.setItem('avatarUrl', this.user.avatar);
         this.$message.success('头像上传成功');
       } catch (error) {
+        console.error('Upload failed:', error); // More detailed error logging
         this.$message.error('上传失败');
       }
     },
@@ -280,17 +298,6 @@ export default {
 </script>
 
 <style scoped>
-/*
-  // 在控制台输入以下语句，可以取消签到状态
-  let vm = document.getElementById('app').__vue__;
-  if (vm) {
-    vm.hasSignedInToday = false;
-    vm.$forceUpdate();
-  } else {
-    console.error('未能找到Vue实例');
-  }
-  localStorage.setItem('lastSignInDate', ''); // 清除最后签到日期
-*/
 .setting-container {
   background-color: #F1F6FF;
   min-height: 100vh;

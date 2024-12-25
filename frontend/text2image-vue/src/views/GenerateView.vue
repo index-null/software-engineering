@@ -1,33 +1,52 @@
 <template>
   <div class="main-container">
+    <!-- 主容器，包含表单和结果展示区域 -->
     <div class="form-container">
+      <!-- 表单容器，包含输入字段和提交按钮 -->
       <div class="form-header">
+        <!-- 表单头部，包含标题和教程链接 -->
         <div class="form-title">文字作画</div>
-        <div class="tutorial">使用指南</div>
+        <div class="tutorial" @click="$router.push('/usage')">使用指南</div>
       </div>
+      <div class="form-appname">文绘星河</div>
+      <!-- 应用名称 -->
       <div class="form-body">
+        <!-- 表单主体，包含各个输入项 -->
         <div class="form-item">
-          <div class="form-appname">文绘星河</div>
+          <!-- 输入项：画面描述 -->
+          <div class="form-label">画面描述</div>
           <el-input
             type="textarea"
             autosize
             :rows="8"
             placeholder="试试输入你心中的画面,尽量描述具体,可以尝试一些风格修饰词辅助你的表达"
             v-model="form.prompt"
+            maxlength="100"
+            show-word-limit
           />
         </div>
         <div class="form-item">
-    <div class="form-label">尺寸</div>
-    <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
-      <el-option
-        v-for="item in sizeOptions"
-        :key="item.label"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-  </div>
+          <!-- 输入项：API调用方式 -->
+          <div class="form-label">API调用方式</div>
+          <div class="api-mode">
+            <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API</el-button>
+            <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API</el-button>
+          </div>
+        </div>
         <div class="form-item">
+          <!-- 输入项：尺寸 -->
+          <div class="form-label">尺寸</div>
+          <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
+            <el-option
+              v-for="item in sizeOptions"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+        <div class="form-item">
+          <!-- 输入项：步数 -->
           <div class="form-label">步数</div>
           <el-select v-model="form.steps" placeholder="请选择步数">
             <el-option
@@ -39,6 +58,7 @@
           </el-select>
         </div>
         <div class="form-item">
+          <!-- 输入项：种子 -->
           <div class="form-label">种子</div>
           <el-input v-model="form.seed" placeholder="请输入种子值">
             <template #suffix>
@@ -47,46 +67,53 @@
           </el-input>
         </div>
         <div class="form-submit">
-          <el-button type="primary" native-type="submit"  @click="handleSubmit">生成</el-button>
+          <!-- 提交按钮 -->
+          <el-button type="primary" native-type="submit" @click="handleSubmit">生成 (消耗20积分)</el-button>
         </div>
       </div>
     </div>
     <div class="result-container">
-    <div class="result-header">
-      <div class="appName">文绘星河</div>
-      <div class="regenerate">
-        <button @click="regenerateImage">再次生成</button>
+      <!-- 结果展示容器，包含生成的图片和相关信息 -->
+      <div class="result-header">
+        <!-- 结果头部，包含应用名称和重新生成按钮 -->
+        <div class="appName">文绘星河</div>
+        <div class="regenerate">
+          <button @click="regenerateImage">再次生成</button>
+        </div>
       </div>
+      <div class="result-content" v-loading="loading">
+        <!-- 结果内容，包含生成的图片卡片 -->
+        <div class="image-card" v-for="(img, index) in temp_generatedImg_results" :key="index">
+          <el-image
+            style="width: 100%; height: 100%; border-radius: 8px;"
+            :src="img.img_url"
+            fit="contain"
+            lazy
+          />
+          <div class="overlay">
+            <!-- 图片卡片上的覆盖层，包含图片信息和操作按钮 -->
+            <div class="image-info">
+              <p>Prompt: {{ img.prompt }}</p>
+              <p>Width: {{ img.width }}</p>
+              <p>Height: {{ img.height }}</p>
+              <p>Seed: {{ img.seed }}</p>
+              <p>Steps: {{ img.steps }}</p>
+            </div>
+            <div class="image-buttons">
+              <el-button type="primary" icon="el-icon-edit" circle @click="reuseParameters(img)"></el-button>
+              <el-button type="warning" icon="el-icon-star-off" circle @click="favoriteImage(img)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle @click="deleteImage(index)"></el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="temp_generatedImg_results.length === 0" class="placeholder">生成的图片将在这里显示</div>
+      <!-- 占位符，当没有生成图片时显示 -->
     </div>
-    <div class="result-content" v-loading="loading">
-      <div class="image-card" v-for="(img, index) in temp_generatedImg_results" :key="index">
-  <el-image
-    style="width: 100%; height: 100%; border-radius: 8px;"
-    :src="img.img_url"
-    fit="contain"
-    lazy
-  />
-  <div class="overlay">
-    <div class="image-info">
-      <p>Prompt: {{ img.prompt }}</p>
-      <p>Width: {{ img.width }}</p>
-      <p>Height: {{ img.height }}</p>
-      <p>Seed: {{ img.seed }}</p>
-      <p>Steps: {{ img.steps }}</p>
-    </div>
-    <div class="image-buttons">
-      <el-button type="primary" icon="el-icon-edit" circle @click="reuseParameters(img)"></el-button>
-      <el-button type="warning" icon="el-icon-star-off" circle @click="favoriteImage(img)"></el-button>
-      <el-button type="danger" icon="el-icon-delete" circle @click="deleteImage(index)"></el-button>
-    </div>
-  </div>
-</div>
-  </div>
-     <div v-if="temp_generatedImg_results.length === 0" class="placeholder">生成的图片将在这里显示</div>
-  </div>
   </div>
 </template>
 <script>
+import OSS from 'ali-oss';
 export default {
   data() {
     return {
@@ -115,16 +142,83 @@ export default {
             "img_url": `https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202408311347062.jpg`,
           }],
       loading: false,
+      apiMode: 'remote',
       sizeOptions: [
-      { label: '1024 x 1024px', value: '1024x1024' },
-      { label: '720x1280px', value: '720x1280' },
-      { label: '768x1152px', value: '768x1152' },
-      { label: '1280x720px', value: '1280x720' }
-    ],
+    { label: '512 x 1024px', value: '512x1024' },
+    { label: '768 x 1024px', value: '768x1024' },
+    { label: '576 x 1024px', value: '576x1024' },
+    { label: '768 x 512px', value: '768x512' },
+    { label: '1024 x 576px', value: '1024x576' },
+    { label: '1024 x 1024px', value: '1024x1024' }
+],
     selectedSize: '1024x1024'
     };
   },
   methods: {
+    async initOSSClient() {
+      this.client = new OSS({
+        region: process.env.VUE_APP_OSS_REGION,
+        accessKeyId: process.env.VUE_APP_OSS_ACCESS_KEY_ID,
+        accessKeySecret: process.env.VUE_APP_OSS_ACCESS_KEY_SECRET,
+        bucket: process.env.VUE_APP_OSS_BUCKET,
+      });
+    },
+    async uploadImageToOSS(img_url) {
+      try {
+        await this.initOSSClient();
+        const base64Data = img_url.split(',')[1];
+        const blob = this.b64toBlob(base64Data, 'image/png');
+        const fileName = `generated_image_${Date.now()}.png`;
+        const result = await this.client.put(`generated_images/${fileName}`, blob);
+        const imageUrl = result.url;
+
+        // 更新图片 URL
+        const lastIdx = this.temp_generatedImg_results.length - 1;
+        this.$set(this.temp_generatedImg_results[lastIdx], 'img_url', imageUrl);
+         // 发送历史记录请求
+    await this.$axios.post('http://localhost:8080/auth/generate/addhistory', {
+      prompt: this.form.prompt,
+      width: this.form.width,
+      height: this.form.height,
+      seed: this.form.seed,
+      steps: this.form.steps,
+      pictureURL: imageUrl
+    });
+        this.$message.success('图片上传成功');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        this.$message.error
+      }
+    },
+    b64toBlob(b64Data, contentType = '', sliceSize = 512) {
+      const byteCharacters = atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    },
+    setApiMode(mode) {
+      this.apiMode = mode;
+    },
+    handleSubmit() {
+      if (this.apiMode === 'local') {
+        this.handleLocalSubmit();
+      } else {
+        this.handleRemoteSubmit();
+      }
+    },
     reuseParameters(img) {
     this.form.prompt = img.prompt;
     this.form.width = img.width;
@@ -169,7 +263,76 @@ export default {
         this.loading = false;
       });
     },
-    handleSubmit() {
+    handleLocalSubmit() {
+      // 强制将 seed 转换为整数
+      this.form.seed = parseInt(this.form.seed, 10) || 0;
+
+      // 确保转换后的 seed 是有效的整数
+      if (isNaN(this.form.seed)) {
+        this.$message.error('种子值必须是有效的整数');
+        return;
+      }
+      this.$message.success('提交成功,正在生成图片...');
+      const currentScore = parseInt(localStorage.getItem("score"), 10) || 0;
+      localStorage.setItem("score", currentScore - 20);
+
+      // 添加占位图片
+      const placeholderImg = {
+        prompt: this.form.prompt,
+        width: this.form.width,
+        height: this.form.height,
+        seed: this.form.seed,
+        steps: this.form.steps,
+        img_url: 'https://via.placeholder.com/150'}
+      this.temp_generatedImg_results.push(placeholderImg);
+
+      this.loading = true;
+
+      const url = "http://192.168.1.160:7860"; // 使用WSL中的Windows主机IP地址
+      const testPayload = {
+        "prompt": this.form.prompt,
+        "seed": this.form.seed,
+        "sampler_name": "Euler",
+        "scheduler": "Simple",
+        "batch_size": 1,
+        "steps": this.form.steps,
+        "cfg_scale": 1,
+        "distilled_cfg_scale": 3.5,
+        "width": this.form.width,
+        "height": this.form.height
+      };
+
+      return this.$axios.post(`${url}/sdapi/v1/txt2img`, testPayload, {
+        timeout: 300000 // 设置超时时间为300秒
+      }).then(response => {
+        if (response && response.data && 'images' in response.data) {
+          console.log(response.data);
+          let img_item = {
+            "prompt": this.form.prompt,
+            "width": this.form.width,
+            "height": this.form.height,
+            "seed": this.form.seed,
+            "steps": this.form.steps,
+            "img_url": `data:image/png;base64,${response.data.images[0]}`,
+          };
+          console.log(img_item);
+
+          // 替换占位图片
+          const lastIdx = this.temp_generatedImg_results.length - 1;
+          this.$set(this.temp_generatedImg_results, lastIdx, img_item);
+
+          this.$message.success(response.data.message);
+          this.uploadImageToOSS(img_item.img_url);
+        } else {
+          this.$message.error('服务器返回数据异常');
+        }
+      }).catch(error => {
+        this.$message.error(error.response ? error.response.data.message : '请求失败');
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    handleRemoteSubmit() {
       // 强制将 seed 转换为整数
       this.form.seed = parseInt(this.form.seed, 10) || 0;
   
@@ -225,7 +388,25 @@ export default {
     generateRandomSeed() {
       this.form.seed = Math.floor(Math.random() * 4369000);
     },
-  }
+    
+  },
+  watch: {
+    '$route.query.prompt': {
+      handler(newPrompt) {
+        if (newPrompt) {
+          try {
+            this.form.prompt = decodeURIComponent(newPrompt);
+            console.log("Decoded Prompt:", this.form.prompt);
+          } catch (e) {
+            console.error("解码失败:", e);
+            this.form.prompt = ''; // 或者其他的错误处理逻辑
+          }
+        }
+      },
+      immediate: true // 立即执行一次，确保首次加载时也生效
+    }
+  },
+
 };
 </script>
 <style scoped>
@@ -341,6 +522,7 @@ export default {
   margin: 0 auto;
 }
 
+
 /* 结果容器样式 */
 .result-container {
   flex: 3.5;
@@ -418,8 +600,8 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; /* 添加 opacity 过渡 */
-  height: 350px;
-  width: 350px;
+  height: 280px;
+  width: 280px;
 }
 
 .image-card:hover {
@@ -498,5 +680,11 @@ export default {
   font-weight: bold; /* 加粗 */
   border-radius: 6px;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.api-mode {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 </style>

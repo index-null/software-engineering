@@ -1,6 +1,9 @@
 <template>
   <div>
+    <!-- 标题区域 -->
     <h2 class="history-title">历史记录</h2> 
+
+    <!-- 日期选择器和查询按钮 -->
     <div class="block" style="margin-left:50px;margin-top: 50px;">
       <span class="demonstration"></span>
       <el-date-picker
@@ -10,30 +13,60 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       ></el-date-picker>
-    <el-button  icon="el-icon-check" circle @click="handleDateChange()"></el-button>
+      <el-button icon="el-icon-check" circle @click="handleDateChange()"></el-button>
     </div>
-    <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreRecord">批量管理</el-button>
+
+    <!-- 批量管理按钮 -->
+    <el-button 
+      type="primary" 
+      icon="el-icon-delete" 
+      class="delete-button" 
+      @click="removemoreRecord"
+    >
+      批量管理
+    </el-button>
+
+    <!-- 搜索框 -->
     <div style="margin-top: 50px;">
-    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
-    <el-button slot="append" icon="el-icon-search" @click="searchimage"></el-button>
-    </el-input>
+      <el-input 
+        placeholder="请输入内容" 
+        v-model="input" 
+        class="input-with-select"
+      >
+        <el-button 
+          slot="append" 
+          icon="el-icon-search" 
+          @click="searchimage"
+        >
+          搜索
+        </el-button>
+      </el-input>
     </div>
+
+    <!-- 历史记录展示区域 -->
     <div class="history-container">
+      <!-- 如果有历史记录则显示图片卡片 -->
       <div v-if="historyRecords && historyRecords.length" class="image-gallery-container">
-        <div v-for="image in historyRecords" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id" 
-        @mouseleave="hoveredImage = null">
-         <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
+        <div 
+          v-for="image in historyRecords" 
+          :key="image.id" 
+          class="image-card" 
+          @mouseover="hoveredImage = image.id" 
+          @mouseleave="hoveredImage = null"
+        >
+          <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
           <img :src="image.url" :alt="image.name" class="image">
-          <!-- <div font="微软雅黑">图片ID:{{ image.id }} 点赞数量:{{ image.likecount }}</div> -->
+          
+          <!-- 悬停时显示的操作按钮 -->
           <div class="overlay" v-if="hoveredImage === image.id">
-            <button  circle  @click="downloadImage(image)">下载图像</button>
-            <button  round @click="deleteRecord(image)">删除</button> 
-             <button  round @click="addFavoriteImage(image)">收藏</button> 
+            <button circle @click="downloadImage(image)">下载图像</button>
+            <button round @click="deleteRecord(image)">删除</button> 
+            <button round @click="addFavoriteImage(image)">收藏</button> 
           </div>
         </div>
       </div>
 
-      <!-- 提示没有收藏 -->
+      <!-- 如果没有历史记录则显示提示信息 -->
       <div v-else>
         <img :src="require('@/assets/nofavorites.png')" alt="暂无历史记录">
         <h1>暂无历史记录</h1>
@@ -89,22 +122,27 @@ export default {
     };
   },
   methods: {
-    // 收藏图像(此功能无法在收藏界面实现，一旦取消收藏图片会立即消失)
+    // 按关键字搜索图像
     async searchimage(){
       try {
         console.log(this.input);
+        // 分割输入的字符串为多个feature，使用正则表达式匹配空白字符和中文、英文逗号，并过滤掉空字符串
+        const features = this.input.split(/[\s，,]+/).filter(Boolean);
+
+        // 创建URLSearchParams 对象用于构建查询字符串
+        const params = new URLSearchParams();
+        features.forEach(feature => params.append('feature', feature));
+
         const response = await axios.get(
             'http://localhost:8080/auth/image/feature',
             {
                 headers: {
                     'Authorization': this.token,  // 携带 token
                 },
-                params: {
-                    feature: this.input,
-                },
+                params: params,
             }
         );
-       const data = response.data;
+        const data = response.data;
         console.log(data);
         
         const images = data.images;
@@ -128,7 +166,7 @@ export default {
       }
     },
     async addFavoriteImage(image) {
-       try {
+      try {
                 
                 const response = await axios.post(
                     'http://localhost:8080/auth/addFavoritedImage',
@@ -145,7 +183,19 @@ export default {
                     this.$message.success('收藏图像成功');
                 }
             } catch (error) {
-                console.error('收藏图像失败:', error.response?.data || error.message);
+              if (error.response) {
+                // 请求成功发出但服务器返回了非2xx的状态码
+                if (error.response.status === 409) {
+                  this.$message.warning("收藏失败：您之前已经收藏了该图像");
+                } else {
+                  console.error('收藏图像失败:', error.response.data || error.message);
+                  this.$message.error('收藏图像失败，请稍后再试或联系管理员');
+                }
+              } else {
+                // 对于网络错误或其他情况，直接使用 error.message
+                console.error('收藏图像失败:', error.message);
+                this.$message.error('收藏图像失败，请检查网络连接后重试');
+              }
             }
         },
     async getHistoryImages() {
@@ -186,13 +236,13 @@ export default {
     const dateObj = new Date(date);
     
     // 获取各个时间部分
-    const year = dateObj.getUTCFullYear();
-    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
-    const day = String(dateObj.getUTCDate()).padStart(2, '0');
-    const hours = String(dateObj.getUTCHours()).padStart(2, '0');
-    const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
-    const milliseconds = String(dateObj.getUTCMilliseconds()).padStart(3, '0');
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以需要加1
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+    const milliseconds = String(dateObj.getMilliseconds()).padStart(3, '0');
     
     // 拼接成目标格式: 2006-01-02T15:04:05.000000Z
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
@@ -201,6 +251,8 @@ export default {
       const { value1 } = this;
       if (value1 && value1.length === 2) {
         const [startDate, endDate] =value1;
+        console.log('开始:', startDate);
+        console.log('结束:', endDate);
         const start = this.formatDateToISO(startDate);  // 转换格式
         const end =  this.formatDateToISO(endDate);
         console.log('开始日期:', start);
