@@ -1,26 +1,44 @@
 <template>
+    <!-- 主容器 -->
     <div>
-        <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreFavorite">批量管理</el-button>
+        <!-- 批量管理按钮 -->
+        <el-button 
+            type="primary" 
+            icon="el-icon-delete" 
+            class="delete-button" 
+            @click="removemoreFavorite"
+        >
+            批量管理
+        </el-button>
 
-        <!-- 显示图片 -->
+        <!-- 图片展示区域 -->
         <div v-if="images && images.length" class="image-gallery-container">
-            <div v-for="image in images" :key="image.id" class="image-card"
+            <!-- 每张图片卡片 -->
+            <div 
+                v-for="image in images" 
+                :key="image.id" 
+                class="image-card"
                 @mouseover="hoveredImage = image.id"
-                @mouseleave="hoveredImage = null">
+                @mouseleave="hoveredImage = null"
+            >
+                <!-- 复选框用于批量选择 -->
                 <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
-                <img :src="image.url" :alt="image.name" class="image">
-                <div class="overlay" v-if="hoveredImage === image.id">
-                <button @click="toggleFavorite(image)">
-                    {{ image.isFavorite ? '取消收藏' : '收藏' }}
-                </button>
-                <button @click="downloadImage(image)">下载</button>
-                <!-- <i class="el-icon-delete"></i> -->
-                </div>
                 
+                <!-- 图片预览 -->
+                <img :src="image.url" :alt="image.name" class="image">
+                
+                <!-- 悬停显示的操作按钮 -->
+                <div class="overlay" v-if="hoveredImage === image.id">
+                    <button @click="toggleFavorite(image)">
+                        {{ image.isFavorite ? '取消收藏' : '收藏' }}
+                    </button>
+                    <button @click="downloadImage(image)">下载</button>
+                    <!-- <i class="el-icon-delete"></i> -->
+                </div>
             </div>
         </div>
 
-        <!-- 提示没有收藏 -->
+        <!-- 暂无收藏提示 -->
         <div v-else>
             <img :src="require('@/assets/nofavorites.png')" alt="暂无收藏">
             <h1>暂无收藏</h1>

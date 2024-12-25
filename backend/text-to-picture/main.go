@@ -52,6 +52,12 @@ func main() {
 		log.Printf("Failed to initialize test user: %v", err)
 	}
 
+	// 加载 api.env 文件
+	envPathAPI := filepath.Join("config", "apiConfig", "api.env")
+	if err := godotenv.Load(envPathAPI); err != nil {
+		log.Printf("Failed to load API .env file: %v", err)
+	}
+
 	var serve router.TextToPicture
 	serve.Start()
 }

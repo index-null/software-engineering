@@ -311,7 +311,7 @@ POST http://localhost:8080/register
 
 
 4. **文生图历史记录**
-#### 获取所有用户所有的图像信息
+#### 获取所有用户所有的图像信息(测试用，该路由已被注释)
 
 - **URL地址**  
   `(GET) http://localhost:8080/image/all`
@@ -351,7 +351,7 @@ POST http://localhost:8080/register
 | 500   | 查询图像列表失败        | `{ "code": StatusInternalServerError (500), "message": "查询图像列表失败", "error": "" }` |
 | 200   | 查询图像列表成功        | `{ "code": StatusOK, "message": "查询图像列表成功", "images": [...] }`      |
 ---
-### 获取指定的某张图像
+### 获取指定的某张图像(测试用，该路由已被注释)
 
 - **URL地址**
   `(GET) http://localhost:8080/image`
@@ -636,7 +636,7 @@ POST http://localhost:8080/register
 
 
 9. **管理员操作**
-### 删除用户
+### 账号注销/root删除用户
 ### 功能
   根据前端传来的?username删除指定用户
   如果?isOwn=true表示账号注销（即删除自己的账号信息，如果没有这个，则表示root用户删除违规账号）
@@ -708,7 +708,7 @@ POST http://localhost:8080/register
 | 500 | 提交事务失败       | `{"message"："提交事务失败"}`           |
 | 200 | 成功删除图像      | `{"message"："成功删除图像"}`           |
 ---
-### 删除单个图像
+### 删除单个图像(测试用，该路由已被注释)
 ### 功能
 删除指定用户的所有图像
 
@@ -786,9 +786,9 @@ POST http://localhost:8080/register
 ---
 
 11. **图片广场**
-### 删除用户
+### 图像广场
 ### 功能
-  返回所有图像，并且
+  随机获取100张带Isliked字段（表示当前登录用户是否点赞过该图像）的图像
 
 #### URL地址
 

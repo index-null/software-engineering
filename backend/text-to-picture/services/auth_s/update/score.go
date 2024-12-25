@@ -3,16 +3,15 @@ package update
 import (
 	"fmt"
 	"log"
-	models "text-to-picture/models/init"
-	u "text-to-picture/models/user"
+	models "text-to-picture/models/init" // 数据库模型初始化
+	u "text-to-picture/models/user"        // 用户模型
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin" // Gin 框架
+	"gorm.io/gorm"             // GORM ORM
 )
 
 func AddScore(c *gin.Context) {
-	fmt.Println("_------------------------------------")
 	// 从上下文中获取用户名
 	Username, exists := c.Get("username")
 	if !exists {
@@ -28,8 +27,8 @@ func AddScore(c *gin.Context) {
 
 	// 获取当前时间
 	now := time.Now()
-	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-	todayEnd := todayStart.Add(24 * time.Hour)
+	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local) // 今天起始时间
+	todayEnd := todayStart.Add(24 * time.Hour) // 今天结束时间
 
 	var existingRecord u.UserScore
 	// 检查今天是否已有签到记录

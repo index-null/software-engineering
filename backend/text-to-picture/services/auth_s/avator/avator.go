@@ -1,10 +1,11 @@
 package avator
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	models "text-to-picture/models/init"
 	"text-to-picture/models/user"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AvatorResponse struct {
@@ -37,8 +38,8 @@ func SetAvator(c *gin.Context) {
 	c.BindJSON(&reqBody)
 
 	newURL := reqBody.URL
-	usernames, _ := c.Get("username")
-	if usernames == "" {
+	usernames, _ := c.Get("username") // 从上下文中获取当前登录用户的用户名
+	if usernames == "" {              // 用户未登录或token失效、缺少
 		c.JSON(http.StatusUnauthorized, AvatorResponse{
 			Code: Unauthorized,
 			Msg:  "名字解析出错"})
@@ -49,7 +50,7 @@ func SetAvator(c *gin.Context) {
 	// 更新数据库中的头像 URL
 	result := models.DB.Model(&user.UserInformation{}).Where("username = ?", username).Update("avatar_url", newURL)
 	if result.Error != nil || result.RowsAffected == 0 {
-		c.JSON(Error, AvatorResponse{
+		c.JSON(Error, AvatorResponse{ //查询失败
 			Code: Error,
 			Msg:  "更新头像失败",
 		})
@@ -73,8 +74,8 @@ func SetAvator(c *gin.Context) {
 // @Failure 500 {object} AvatorResponse "查询头像失败"
 // @Router /auth/getavator [get]
 func GetAvator(c *gin.Context) {
-	username, _ := c.Get("username")
-	if username == "" {
+	username, _ := c.Get("username") // 从上下文中获取当前登录用户的用户名
+	if username == "" {              // 用户未登录或token失效、缺少
 		c.JSON(http.StatusUnauthorized, AvatorResponse{
 			Code: Unauthorized,
 			Msg:  "名字解析出错"})
@@ -85,14 +86,14 @@ func GetAvator(c *gin.Context) {
 	var usera user.UserInformation
 	result := models.DB.Where("username = ?", username).First(&usera)
 	if result.Error != nil {
-		c.JSON(Error, AvatorResponse{
+		c.JSON(Error, AvatorResponse{ //查询失败
 			Code: Error,
 			Msg:  "查询头像失败",
 		})
 		return
 	}
 
-	c.JSON(Success, AvatorResponse{
+	c.JSON(Success, AvatorResponse{ // 查询成功，返回信息
 		Code: Success,
 		Msg:  "获取头像成功",
 		Data: usera.Avatar_url,

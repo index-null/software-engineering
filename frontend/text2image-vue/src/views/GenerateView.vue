@@ -1,13 +1,19 @@
 <template>
   <div class="main-container">
+    <!-- 主容器，包含表单和结果展示区域 -->
     <div class="form-container">
+      <!-- 表单容器，包含输入字段和提交按钮 -->
       <div class="form-header">
+        <!-- 表单头部，包含标题和教程链接 -->
         <div class="form-title">文字作画</div>
         <div class="tutorial" @click="$router.push('/usage')">使用指南</div>
       </div>
       <div class="form-appname">文绘星河</div>
+      <!-- 应用名称 -->
       <div class="form-body">
+        <!-- 表单主体，包含各个输入项 -->
         <div class="form-item">
+          <!-- 输入项：画面描述 -->
           <div class="form-label">画面描述</div>
           <el-input
             type="textarea"
@@ -20,25 +26,32 @@
           />
         </div>
         <div class="form-item">
+          <!-- 输入项：API调用方式 -->
           <div class="form-label">API调用方式</div>
           <div class="api-mode">
+<<<<<<< HEAD
           <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API--flux.1 [dev]</el-button>
           <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API--flux.1 [schnell]</el-button>
+=======
+            <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API</el-button>
+            <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API</el-button>
+>>>>>>> 1bb33e9b4dff2f8967e404c8886d98f258b8542f
           </div>
         </div>
-        
         <div class="form-item">
-    <div class="form-label">尺寸</div>
-    <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
-      <el-option
-        v-for="item in sizeOptions"
-        :key="item.label"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-  </div>
+          <!-- 输入项：尺寸 -->
+          <div class="form-label">尺寸</div>
+          <el-select v-model="selectedSize" placeholder="请选择尺寸" @change="updateSize">
+            <el-option
+              v-for="item in sizeOptions"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
         <div class="form-item">
+          <!-- 输入项：步数 -->
           <div class="form-label">步数</div>
           <el-select v-model="form.steps" placeholder="请选择步数">
             <el-option
@@ -50,6 +63,7 @@
           </el-select>
         </div>
         <div class="form-item">
+          <!-- 输入项：种子 -->
           <div class="form-label">种子</div>
           <el-input v-model="form.seed" placeholder="请输入种子值">
             <template #suffix>
@@ -58,43 +72,49 @@
           </el-input>
         </div>
         <div class="form-submit">
-          <el-button type="primary" native-type="submit"  @click="handleSubmit">生成 (消耗20积分)</el-button>
+          <!-- 提交按钮 -->
+          <el-button type="primary" native-type="submit" @click="handleSubmit">生成 (消耗20积分)</el-button>
         </div>
       </div>
     </div>
     <div class="result-container">
-    <div class="result-header">
-      <div class="appName">文绘星河</div>
-      <div class="regenerate">
-        <button @click="regenerateImage">再次生成</button>
+      <!-- 结果展示容器，包含生成的图片和相关信息 -->
+      <div class="result-header">
+        <!-- 结果头部，包含应用名称和重新生成按钮 -->
+        <div class="appName">文绘星河</div>
+        <div class="regenerate">
+          <button @click="regenerateImage">再次生成</button>
+        </div>
       </div>
+      <div class="result-content" v-loading="loading">
+        <!-- 结果内容，包含生成的图片卡片 -->
+        <div class="image-card" v-for="(img, index) in temp_generatedImg_results" :key="index">
+          <el-image
+            style="width: 100%; height: 100%; border-radius: 8px;"
+            :src="img.img_url"
+            fit="contain"
+            lazy
+          />
+          <div class="overlay">
+            <!-- 图片卡片上的覆盖层，包含图片信息和操作按钮 -->
+            <div class="image-info">
+              <p>Prompt: {{ img.prompt }}</p>
+              <p>Width: {{ img.width }}</p>
+              <p>Height: {{ img.height }}</p>
+              <p>Seed: {{ img.seed }}</p>
+              <p>Steps: {{ img.steps }}</p>
+            </div>
+            <div class="image-buttons">
+              <el-button type="primary" icon="el-icon-edit" circle @click="reuseParameters(img)"></el-button>
+              <el-button type="warning" icon="el-icon-star-off" circle @click="favoriteImage(img)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle @click="deleteImage(index)"></el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="temp_generatedImg_results.length === 0" class="placeholder">生成的图片将在这里显示</div>
+      <!-- 占位符，当没有生成图片时显示 -->
     </div>
-    <div class="result-content" v-loading="loading">
-      <div class="image-card" v-for="(img, index) in temp_generatedImg_results" :key="index">
-  <el-image
-    style="width: 100%; height: 100%; border-radius: 8px;"
-    :src="img.img_url"
-    fit="contain"
-    lazy
-  />
-  <div class="overlay">
-    <div class="image-info">
-      <p>Prompt: {{ img.prompt }}</p>
-      <p>Width: {{ img.width }}</p>
-      <p>Height: {{ img.height }}</p>
-      <p>Seed: {{ img.seed }}</p>
-      <p>Steps: {{ img.steps }}</p>
-    </div>
-    <div class="image-buttons">
-      <el-button type="primary" icon="el-icon-edit" circle @click="reuseParameters(img)"></el-button>
-      <el-button type="warning" icon="el-icon-star-off" circle @click="favoriteImage(img)"></el-button>
-      <el-button type="danger" icon="el-icon-delete" circle @click="deleteImage(index)"></el-button>
-    </div>
-  </div>
-</div>
-  </div>
-     <div v-if="temp_generatedImg_results.length === 0" class="placeholder">生成的图片将在这里显示</div>
-  </div>
   </div>
 </template>
 <script>

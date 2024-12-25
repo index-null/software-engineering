@@ -1,7 +1,9 @@
 <template>
   <div class="explore-container">
+    <!-- 轮播图容器 -->
     <div class="carousel-img-container">
       <div class="carousel-img-bg" :style="{ backgroundImage: `url(${styles[currentStyle].img_url})` }">
+        <!-- 样式选择器 -->
         <div class="selector">
           <div 
             v-for="(style, index) in styles" 
@@ -13,10 +15,12 @@
             {{ style.text1 }}
           </div>
         </div>
+        <!-- 文本框 -->
         <div class="text-box">
           <h1 :style="{ color: styles[currentStyle].h1Color }">{{ styles[currentStyle].text1 }}</h1>
           <h3 :style="{ color: styles[currentStyle].h3Color }">{{ styles[currentStyle].text2 }}</h3>
         </div>
+        <!-- 生成同款按钮 -->
         <div class="generate-same-style">
           <input 
             class="search-input" 
@@ -37,6 +41,7 @@
         </div>
       </div>
     </div>
+    <!-- 生成入口容器 -->
     <div class="generate-entry-container">
       <div class="generate-entry">
         <div class="text1">文字作画</div>
@@ -46,28 +51,29 @@
         <div class="generate-button" @click="$router.push('/main/generate')">去生成</div>
       </div>
     </div>
+    <!-- 图片广场容器 -->
     <div class="explore-ground-container">
       <h2 class="ground-title">图片广场</h2>
       <div class="image-grid">
         <div 
-    class="image-item" 
-    v-for="image in images" 
-    :key="image.id"
-    @dblclick="likeImage(image.id)"
-  >
-    <el-image
-      style="width: 200px; height: 200px"
-      :src="image.picture"
-      fit="cover"
-    />
-    <div class="image-info">
-      <span class="like-count" :class="{ 'liked': image.isliked }">
-        <i class="el-icon-thumb" :class="{ 'liked': image.isliked }"></i> {{ image.likecount }}
-      </span>
-      <span class="username">生成用户: {{ image.username }}</span>
-    </div>
-  </div>
-</div>
+          class="image-item" 
+          v-for="image in images" 
+          :key="image.id"
+          @dblclick="likeImage(image.id)"
+        >
+          <el-image
+            style="width: 200px; height: 200px"
+            :src="image.picture"
+            fit="cover"
+          />
+          <div class="image-info">
+            <span class="like-count" :class="{ 'liked': image.isliked }">
+              <i class="el-icon-thumb" :class="{ 'liked': image.isliked }"></i> {{ image.likecount }}
+            </span>
+            <span class="username">生成用户: {{ image.username }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
