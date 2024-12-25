@@ -29,13 +29,8 @@
           <!-- 输入项：API调用方式 -->
           <div class="form-label">API调用方式</div>
           <div class="api-mode">
-<<<<<<< HEAD
-          <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API--flux.1 [dev]</el-button>
-          <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API--flux.1 [schnell]</el-button>
-=======
             <el-button :type="apiMode === 'remote' ? 'primary' : 'default'" @click="setApiMode('remote')">远程API</el-button>
             <el-button :type="apiMode === 'local' ? 'primary' : 'default'" @click="setApiMode('local')">本地API</el-button>
->>>>>>> 1bb33e9b4dff2f8967e404c8886d98f258b8542f
           </div>
         </div>
         <div class="form-item">

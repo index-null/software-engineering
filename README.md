@@ -6,7 +6,7 @@
 
 ## 项目结构
 
-### 前端
+### 前端结构
 
 1. **`frontend/text2image-vue/.env`**
    - 前端环境变量配置文件，用于头像的上传以及本地模型生成结果的存储，便于后续与后端对接。
@@ -35,6 +35,16 @@
 
 6. **`frontend/text2image-vue/src/api/index.js`**
    - API定义，封装了axios请求，自动在请求带上token，主要便于开发和前后端交互。
+
+### 后端结构
+-	API层（处理图片生成的API逻辑）
+-	资源层（存放示例图片）
+-	配置层（数据库和对象存储配置）
+-	中间件层（JWT认证中间件）
+-	模型层（数据模型及其数据库操作）
+-	服务层（核心业务逻辑：用户认证、收藏、历史记录、图片生成等）
+-	路由层（定义所有API路由）
+
    
 ## 前端启动
 
@@ -88,45 +98,30 @@
    ```
    如果有拉取不完全的报错，可以使用 `go get + 依赖` 进行手动拉取。
 
-3. **修改数据库配置**：
-   - 进入 `backend/text-to-picture/config/DBconfig` 目录，修改 `DBconfig.yaml.example` 文件为自己的数据库配置,并重命名为 `DBconfig.yaml`。
+3. **修改配置文件**：
+   进入 `backend/text-to-picture/config/configs` 目录，修改 `config.yaml.example` 文件为自己的配置，并重命名为 `config.yaml`。
 
-4. **配置阿里云OSS**：
-    在 `text-to-picture/config/oss` 目录下创建 `oss.env` 文件，写入阿里云OSS存储的配置信息。
-   ```bash
-   cd config/oss
-   touch oss.env
-   vim oss.env
-   ```
-   
    以下是一个示例配置：
-     ```plaintext
-     OSS_REGION=oss-cn-shenzhen
-     OSS_ACCESS_KEY_ID=your_access_key_id
-     OSS_ACCESS_KEY_SECRET=your_access_key_secret
-     OSS_BUCKET=your_bucket_name
-     ```
+   ```yaml
+   db:
+     host: localhost # 数据库地址
+     port: "5432"    # 数据库端口
+     name: database  # 数据库名
+     user: user      # 数据库用户名
+     password: password # 数据库密码
 
-5. **配置阿里云文生图API的密钥**
-    在`backend/text-to-picture/config/apiConfig` 目录下创建`api.env`文件，写入阿里云文生图API的密钥
-   ```bash
-   cd config/apiConfig
-   touch api.env
-   vim api.env
+   oss:
+     OSS_REGION: region # oss区域
+     OSS_ACCESS_KEY_ID: ... # oss key
+     OSS_ACCESS_KEY_SECRET: ... # oss密钥
+     OSS_BUCKET: bucket # oss bucket
+
+   model:
+     GEN_API_KEY: sk-6e79f5171c934d8fbbbdb0f4cd42d669 # api_key
+     timeout: 30 # 轮询时间
    ```
-   
-   以下是一个示例配置：
-   下是一个示例配置：
-     ```plaintext
-     GEN_API_KEY=your_gen_api_key
-     ```
 
-### 启动后端
 
-1. **运行后端服务**：
-   ```bash
-   go run main.go
-   ```
 
 ## 其他注意事项
 
