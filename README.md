@@ -1,6 +1,9 @@
 # 文绘星河
 
 文绘星河 是一个文本到图片的 Web 应用，实现了账号的注册与管理、文生图的前端抽象集成、个人信息管理以及文生图历史查看等功能。
+
+![文绘星河](https://chuhsing-blog-bucket.oss-cn-shenzhen.aliyuncs.com/chuhsing/202412251121811.png)
+
 ## 项目结构
 
 ### 前端
@@ -38,7 +41,7 @@
 ### 配置
 
 1. **切换到前端项目目录**：
-   
+  
    ```bash
    cd frontend/text2image-vue
    ```
