@@ -3,6 +3,9 @@
     <h2 class="history-title">历史记录</h2> 
     <div class="block" style="margin-left:50px;margin-top: 50px;">
       <span class="demonstration"></span>
+      <span class="data-picker-lable">
+        选择日期：
+      </span>
       <el-date-picker
         v-model="value1"
         type="datetimerange"
@@ -10,10 +13,11 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       ></el-date-picker>
-    <el-button  icon="el-icon-check" circle @click="handleDateChange()"></el-button>
+    <el-button  icon="el-icon-check" circle @click="handleDateChange()" class="date-button"></el-button>
     </div>
     <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreRecord">批量管理</el-button>
     <div style="margin-top: 50px;">
+      <span class="search-input-label">搜索：</span>
     <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
     <el-button slot="append" icon="el-icon-search" @click="searchimage"></el-button>
     </el-input>
@@ -325,6 +329,9 @@ export default {
 </script>
 
 <style scoped>
+.date-button{
+  margin-left: 20px;
+}
  .el-input {
     width: 500px;
   }

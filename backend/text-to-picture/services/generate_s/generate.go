@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/go-playground/validator/v10"
@@ -359,7 +360,11 @@ func GenerateFromWebUI(imageParaments ImageParaments) (string, error) {
 	}
 	// 轮询任务状态
 	for {
-		time.Sleep(30 * time.Second) // 每分钟轮询一次
+		t := os.Getenv("TIME")
+		sleepSeconds, err := strconv.Atoi(t)
+		sleepDuration := time.Duration(sleepSeconds) * time.Second
+		// 使用 time.Sleep
+		time.Sleep(sleepDuration)
 
 		// 创建 GET 请求来查询任务状态
 		statusReq, err := http.NewRequest("GET", fmt.Sprintf("https://dashscope.aliyuncs.com/api/v1/tasks/%s", taskID), nil)

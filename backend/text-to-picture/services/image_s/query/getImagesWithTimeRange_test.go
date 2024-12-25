@@ -57,7 +57,7 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -65,7 +65,7 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -138,7 +138,7 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 		var actualResponse gin.H
 		err := json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		assert.NoError(t, err)
-		fmt.Println("实际的响应是：",actualResponse)
+		fmt.Println("实际的响应是：", actualResponse)
 		assert.Equal(t, float64(400), actualResponse["code"])
 		assert.Equal(t, "无效的开始时间格式", actualResponse["message"])
 	})
@@ -156,7 +156,7 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 		err := json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		assert.NoError(t, err)
 
-		fmt.Println("实际的响应是：",actualResponse)
+		fmt.Println("实际的响应是：", actualResponse)
 		assert.Equal(t, float64(400), actualResponse["code"])
 		assert.Equal(t, "无效的结束时间格式", actualResponse["message"])
 	})
@@ -170,8 +170,8 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 		tokenString := createToken(testUsername)
 
 		imageInfo := &image.ImageInformation{
-			UserName:   testUsername,
-			Picture:    "http://example.com/test_Valid_Time_Range.jpg",
+			UserName:    testUsername,
+			Picture:     "http://example.com/test_Valid_Time_Range.jpg",
 			Create_time: time.Now(),
 		}
 		db.DB.Create(&imageInfo)
@@ -184,7 +184,7 @@ func TestGetImagesWithinTimeRange(t *testing.T) {
 		err := json.Unmarshal(response.Body.Bytes(), &actualResponse)
 		assert.NoError(t, err)
 
-		fmt.Println("实际的响应是：",actualResponse)
+		fmt.Println("实际的响应是：", actualResponse)
 		assert.Equal(t, float64(200), actualResponse["code"])
 		assert.Equal(t, "查询图像列表成功", actualResponse["message"])
 		assert.NotEmpty(t, actualResponse["images"].([]interface{}))

@@ -55,7 +55,7 @@ func TestGetUserInfo(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -63,7 +63,7 @@ func TestGetUserInfo(t *testing.T) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 

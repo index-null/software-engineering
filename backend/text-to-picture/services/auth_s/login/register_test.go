@@ -12,9 +12,9 @@ import (
 
 	"gopkg.in/yaml.v2"
 	"gorm.io/gorm"
-	
-	db "text-to-picture/models/init"
+
 	getDB "text-to-picture/config"
+	db "text-to-picture/models/init"
 
 	"text-to-picture/models/user"
 
@@ -60,7 +60,7 @@ func TestMain(m *testing.M) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -68,7 +68,7 @@ func TestMain(m *testing.M) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -103,7 +103,7 @@ func TestRegister_Success(t *testing.T) {
 	router := SetupRouter()
 
 	// 创建一个 POST 请求
-	body := bytes.NewBuffer([]byte(`{"email": "test2@example.com", "username": "testuser2", "password": "testpassword"}`))// 每次测试要修改，避免违反唯一性
+	body := bytes.NewBuffer([]byte(`{"email": "test2@example.com", "username": "testuser2", "password": "testpassword"}`)) // 每次测试要修改，避免违反唯一性
 	req, _ := http.NewRequest("POST", "/register", body)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -117,9 +117,9 @@ func TestRegister_Success(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var response map[string]interface{}
-    json.Unmarshal(w.Body.Bytes(), &response)
-    fmt.Println("返回的message为：",response["message"])
-    assert.Equal(t, "注册成功", response["message"])
+	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("返回的message为：", response["message"])
+	assert.Equal(t, "注册成功", response["message"])
 }
 
 // TestRegister_BadRequest 测试请求数据格式错误的情况
@@ -146,9 +146,9 @@ func TestRegister_BadRequest(t *testing.T) {
 
 	// 检查响应的message
 	var response map[string]interface{}
-    json.Unmarshal(w.Body.Bytes(), &response)
-    fmt.Println("返回的message为：",response["message"])
-    assert.Equal(t, "请求数据格式错误", response["message"])
+	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("返回的message为：", response["message"])
+	assert.Equal(t, "请求数据格式错误", response["message"])
 }
 
 // TestRegister_InternalServerError 测试用户创建失败的情况
@@ -175,8 +175,8 @@ func TestRegister_InternalServerError(t *testing.T) {
 
 	// 检查响应的message
 	var response map[string]interface{}
-    json.Unmarshal(w.Body.Bytes(), &response)
-    fmt.Println("返回的message为：",response["message"])
-    assert.Equal(t, "用户创建失败", response["message"])
-	db.DB.Table("userinformation").Where("username = ?","testuser1").Delete(&user.UserInformation{})
+	json.Unmarshal(w.Body.Bytes(), &response)
+	fmt.Println("返回的message为：", response["message"])
+	assert.Equal(t, "用户创建失败", response["message"])
+	db.DB.Table("userinformation").Where("username = ?", "testuser1").Delete(&user.UserInformation{})
 }

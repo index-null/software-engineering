@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
+
 type DBConfig struct {
 	DB struct {
 		User     string `yaml:"user"`
@@ -30,6 +31,7 @@ type DBConfig struct {
 		Name     string `yaml:"name"`
 	} `yaml:"db"`
 }
+
 // SetupRouter 设置 Gin 路由
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
@@ -51,14 +53,14 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		t.Fatalf("Error reading DBconfig.yaml file: %v", err)
+		t.Fatalf("Error reading configs.yaml file: %v", err)
 	}
 
 	// 解析配置文件
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		t.Fatalf("Error parsing DBconfig.yaml file: %v", err)
+		t.Fatalf("Error parsing configs.yaml file: %v", err)
 	}
 
 	// 设置数据库连接的环境变量
@@ -97,16 +99,16 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 	userinfo := &user.UserInformation{
 		UserName: testUsername,
 		Password: "123456",
-		Email: testUsername+"@qq.com",
+		Email:    testUsername + "@qq.com",
 	}
 	imageInfo1 := &image.ImageInformation{
-		UserName:   testUsername,
-		Picture:    "http://example.com/test_1.jpg",
+		UserName:    testUsername,
+		Picture:     "http://example.com/test_1.jpg",
 		Create_time: time.Now(),
 	}
 	imageInfo2 := &image.ImageInformation{
-		UserName:   testUsername,
-		Picture:    "http://example.com/test_2.jpg",
+		UserName:    testUsername,
+		Picture:     "http://example.com/test_2.jpg",
 		Create_time: time.Now(),
 	}
 	db.DB.Create(&userinfo)
@@ -116,7 +118,7 @@ func TestDeleteUserImagesBatch(t *testing.T) {
 	// 测试成功删除
 	t.Run("Successful_Delete", func(t *testing.T) {
 		requestBody := BatchDeleteRequestBody{
-			Ids:  []int{int(imageInfo2.ID)},
+			Ids: []int{int(imageInfo2.ID)},
 		}
 
 		jsonData, _ := json.Marshal(requestBody)

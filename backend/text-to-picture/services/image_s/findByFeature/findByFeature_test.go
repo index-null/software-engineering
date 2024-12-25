@@ -12,10 +12,10 @@ import (
 	"testing"
 
 	//middlewire "text-to-picture/middlewire/jwt"
+	getDB "text-to-picture/config"
 	middlewire "text-to-picture/middlewire/jwt"
 	"text-to-picture/models/image"
 	db "text-to-picture/models/init"
-	getDB "text-to-picture/config"
 	"time"
 
 	//"github.com/dgrijalva/jwt-go"
@@ -41,7 +41,7 @@ func TestMain(m *testing.M) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -78,7 +78,7 @@ func TestMain(m *testing.M) {
 // SetupRouter 设置 Gin 路由
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/auth/image/feature",middlewire.JWTAuthMiddleware(), FindByFeature)
+	r.GET("/auth/image/feature", middlewire.JWTAuthMiddleware(), FindByFeature)
 	return r
 }
 
@@ -119,7 +119,7 @@ func TestFindByFeature_Success(t *testing.T) {
 
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	assert.NotNil(t, response["images"])// 确保有获取到数据
+	assert.NotNil(t, response["images"]) // 确保有获取到数据
 }
 
 // TestFindByFeature_Success 测试成功(isOwn为true)获取图片的情况
@@ -159,7 +159,7 @@ func TestFindByFeature_Success2(t *testing.T) {
 
 	var response map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &response)
-	assert.NotNil(t, response["images"])// 确保有获取到数据
+	assert.NotNil(t, response["images"]) // 确保有获取到数据
 }
 
 // TestFindByFeature_NoFeature 测试没有特征值的情况
@@ -169,7 +169,7 @@ func TestFindByFeature_NoFeature(t *testing.T) {
 	fmt.Println("\n----------------------------------TestFindByFeature_NoFeature")
 	gin.SetMode(gin.TestMode)
 	router := SetupRouter()
-	
+
 	// 创建一个有效的Token
 	claims := &middlewire.Claims{
 		Username: "czh", //根据自己数据库已有的用户
@@ -181,7 +181,7 @@ func TestFindByFeature_NoFeature(t *testing.T) {
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
 	req, _ := http.NewRequest("GET", "/auth/image/feature", nil)
-	
+
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
@@ -211,7 +211,7 @@ func TestFindByFeature_NoUserImages(t *testing.T) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=11111111111111111111&isOwn=true", nil)//模拟复杂特征
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=11111111111111111111&isOwn=true", nil) //模拟复杂特征
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
@@ -271,12 +271,12 @@ func TestFindByFeature_validToken(t *testing.T) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := token.SignedString(middlewire.JwtKey)
 
-	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil)//模拟复杂特征
+	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_", nil) //模拟复杂特征
 	req.Header.Set("Authorization", tokenString)
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
-	fmt.Println("返回的状态码为：",w.Code)
+	fmt.Println("返回的状态码为：", w.Code)
 	// 检查响应状态码不为401(401 表示“未找到用户信息”)
 	assert.NotEqual(t, http.StatusUnauthorized, w.Code)
 }
@@ -286,10 +286,9 @@ func TestFindByFeature_NoToken(t *testing.T) {
 	fmt.Println("\n----------------------------------NoToken")
 	gin.SetMode(gin.TestMode)
 	router := SetupRouter()
-	
+
 	// 创建一个 GET 请求
 	req, _ := http.NewRequest("GET", "/auth/image/feature?feature=test_&isOwn=true", nil)
-	
 
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)

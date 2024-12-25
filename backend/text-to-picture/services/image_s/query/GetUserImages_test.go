@@ -23,15 +23,15 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/auth/user/images",middlewire.JWTAuthMiddleware(), GetUserImages)
+	r.GET("/auth/user/images", middlewire.JWTAuthMiddleware(), GetUserImages)
 	return r
 }
 
-//模拟JWT中间件，主要是不要设置Set，使得Get无法获取username上下文，模拟未找到用户信息
+// 模拟JWT中间件，主要是不要设置Set，使得Get无法获取username上下文，模拟未找到用户信息
 func MockJWTAuthMiddlewareNoUser() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        c.Next()
-    }
+	return func(c *gin.Context) {
+		c.Next()
+	}
 }
 
 // DBConfig 结构体定义
@@ -54,7 +54,7 @@ func TestGetUserImages(t *testing.T) {
 	// 读取测试数据库配置
 	yamlFile, err := os.ReadFile(getDB.GetDBConfigPath())
 	if err != nil {
-		fmt.Printf("Error reading DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error reading configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -62,7 +62,7 @@ func TestGetUserImages(t *testing.T) {
 	var dbconfig DBConfig
 	err = yaml.Unmarshal(yamlFile, &dbconfig)
 	if err != nil {
-		fmt.Printf("Error parsing DBconfig.yaml file: %v\n", err)
+		fmt.Printf("Error parsing configs.yaml file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -80,7 +80,7 @@ func TestGetUserImages(t *testing.T) {
 	}
 
 	//成功获取用户收藏图片信息的测试
-	t.Run("GetUserImages_Success",func(t *testing.T) {
+	t.Run("GetUserImages_Success", func(t *testing.T) {
 
 		// 创建gin运行模型为测试模式
 		gin.SetMode(gin.TestMode)
@@ -93,7 +93,7 @@ func TestGetUserImages(t *testing.T) {
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUserName, 
+			Username: testUserName,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -102,46 +102,46 @@ func TestGetUserImages(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 
 		//为了避免违反外键约束，先插入用户信息
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUserName, Email:testUserName+"@qq.com",
-		Password: "123456",Avatar_url:testUserName+".jpg",Score: 100,Token: tokenString,Create_time: time.Now()})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUserName, Email: testUserName + "@qq.com",
+			Password: "123456", Avatar_url: testUserName + ".jpg", Score: 100, Token: tokenString, Create_time: time.Now()})
 
 		//插入生成图片信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&image.ImageInformation{ID:100,UserName: testUserName,Params: "param",LikeCount: 1,
-		Picture: testUserName+".jpg",Create_time: create_time,})
+		db.DB.Create(&image.ImageInformation{ID: 100, UserName: testUserName, Params: "param", LikeCount: 1,
+			Picture: testUserName + ".jpg", Create_time: create_time})
 
 		//创建一个GET请求
-		request , _ := http.NewRequest("GET","/auth/user/images",nil)
+		request, _ := http.NewRequest("GET", "/auth/user/images", nil)
 		request.Header.Set("Authorization", tokenString)
 
 		//创建一个响应器
 		response := httptest.NewRecorder()
 
 		//执行请求
-		router.ServeHTTP(response,request)
+		router.ServeHTTP(response, request)
 
 		//检查响应码
-		assert.Equal(t,http.StatusOK,response.Code)
+		assert.Equal(t, http.StatusOK, response.Code)
 
 		//检查响应体
 		expectedResponse := gin.H{
-			"message":"获取用户的图像成功",
-			"images":[]interface{}{
-				map[string]interface {}{
-					"id":float64(100),
-					"username": testUserName,
-					"params": "param",
-					"likecount": float64(1),
-					"picture": testUserName+".jpg",
+			"message": "获取用户的图像成功",
+			"images": []interface{}{
+				map[string]interface{}{
+					"id":          float64(100),
+					"username":    testUserName,
+					"params":      "param",
+					"likecount":   float64(1),
+					"picture":     testUserName + ".jpg",
 					"create_time": create_time.Format("2006-01-02T15:04:05.000000Z"),
 					//测试时，有时实际结果的时间是5位小数，导致出错，可以再次运行一次，或者去掉一位小数
 				},
 			},
 		}
 		var actualResponse gin.H
-		json.Unmarshal(response.Body.Bytes(),&actualResponse)
-		fmt.Println("实际响应为：",actualResponse)
-		assert.Equal(t,expectedResponse,actualResponse)
+		json.Unmarshal(response.Body.Bytes(), &actualResponse)
+		fmt.Println("实际响应为：", actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
 
 		//最后清理测试数据
 		db.DB.Where("username = ?", testUserName).Delete(&image.ImageInformation{})
@@ -149,7 +149,7 @@ func TestGetUserImages(t *testing.T) {
 	})
 
 	//未找到用户信息的测试
-	t.Run("GetUserImages_UserNotExist",func(t *testing.T) {
+	t.Run("GetUserImages_UserNotExist", func(t *testing.T) {
 
 		// 创建gin运行模型为测试模式
 		gin.SetMode(gin.TestMode)
@@ -157,10 +157,10 @@ func TestGetUserImages(t *testing.T) {
 		// 创建路由，其中MockJWTAuthMiddlewareNoUser()使GetUserImags的Get无法从上下文获取username
 		router := gin.Default()
 		router.GET("/auth/user/images", MockJWTAuthMiddlewareNoUser(), GetUserImages)
-		
+
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: "test", 
+			Username: "test",
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -171,17 +171,17 @@ func TestGetUserImages(t *testing.T) {
 		//这个测试不涉及数据库，不需要向数据库插入数据
 
 		//创建一个GET请求
-		request , _ := http.NewRequest("GET","/auth/user/images",nil)
+		request, _ := http.NewRequest("GET", "/auth/user/images", nil)
 		request.Header.Set("Authorization", tokenString)
 
 		//创建一个响应器
 		response := httptest.NewRecorder()
 
 		//执行请求
-		router.ServeHTTP(response,request)
+		router.ServeHTTP(response, request)
 
 		//检查响应码
-		assert.Equal(t,http.StatusUnauthorized,response.Code)
+		assert.Equal(t, http.StatusUnauthorized, response.Code)
 
 		//检查响应体
 		expectedResponse := gin.H{
@@ -189,13 +189,13 @@ func TestGetUserImages(t *testing.T) {
 			"message": "未找到用户信息",
 		}
 		var actualResponse gin.H
-		json.Unmarshal(response.Body.Bytes(),&actualResponse)
-		fmt.Println("实际响应为：",actualResponse)
-		assert.Equal(t,expectedResponse,actualResponse)
+		json.Unmarshal(response.Body.Bytes(), &actualResponse)
+		fmt.Println("实际响应为：", actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
 	})
 
 	//查询用户图片失败的测试(数据库查询失败)
-	t.Run("GetUserImages_DatabaseQueryFailed",func(t *testing.T) {
+	t.Run("GetUserImages_DatabaseQueryFailed", func(t *testing.T) {
 
 		// 创建gin运行模型为测试模式
 		gin.SetMode(gin.TestMode)
@@ -208,7 +208,7 @@ func TestGetUserImages(t *testing.T) {
 
 		// 创建有效的Token
 		claims := &middlewire.Claims{
-			Username: testUserName, 
+			Username: testUserName,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
 			},
@@ -217,15 +217,14 @@ func TestGetUserImages(t *testing.T) {
 		tokenString, _ := token.SignedString(middlewire.JwtKey)
 
 		//为了避免违反外键约束，先插入用户信息
-		db.DB.Create(&user.UserInformation{ID:100,UserName: testUserName, Email:testUserName+"@qq.com",
-		Password: "123456",Avatar_url:testUserName+".jpg",Score: 100,Token: tokenString,Create_time: time.Now()})
+		db.DB.Create(&user.UserInformation{ID: 100, UserName: testUserName, Email: testUserName + "@qq.com",
+			Password: "123456", Avatar_url: testUserName + ".jpg", Score: 100, Token: tokenString, Create_time: time.Now()})
 
 		//插入生成图片信息
 		create_time := time.Now().UTC()
-		db.DB.Create(&image.ImageInformation{ID:100,UserName: testUserName,Params: "param",LikeCount: 1,
-		Picture: testUserName+".jpg",Create_time: create_time,})
+		db.DB.Create(&image.ImageInformation{ID: 100, UserName: testUserName, Params: "param", LikeCount: 1,
+			Picture: testUserName + ".jpg", Create_time: create_time})
 
-		
 		//断开数据库连接
 		// 获取底层的 sql.DB 对象并关闭连接
 		sqlDB, err := db.DB.DB()
@@ -237,27 +236,27 @@ func TestGetUserImages(t *testing.T) {
 		}
 
 		//创建一个GET请求
-		request , _ := http.NewRequest("GET","/auth/user/images",nil)
+		request, _ := http.NewRequest("GET", "/auth/user/images", nil)
 		request.Header.Set("Authorization", tokenString)
 
 		//创建一个响应器
 		response := httptest.NewRecorder()
 
 		//执行请求
-		router.ServeHTTP(response,request)
+		router.ServeHTTP(response, request)
 
 		//检查响应码
-		assert.Equal(t,http.StatusInternalServerError,response.Code)
+		assert.Equal(t, http.StatusInternalServerError, response.Code)
 
 		//检查响应体
 		expectedResponse := gin.H{
-			"message": "查询用户图片失败", 
-			"error": map[string]interface{}{},
+			"message": "查询用户图片失败",
+			"error":   map[string]interface{}{},
 		}
 		var actualResponse gin.H
-		json.Unmarshal(response.Body.Bytes(),&actualResponse)
-		fmt.Println("实际响应为：",actualResponse)
-		assert.Equal(t,expectedResponse,actualResponse)
+		json.Unmarshal(response.Body.Bytes(), &actualResponse)
+		fmt.Println("实际响应为：", actualResponse)
+		assert.Equal(t, expectedResponse, actualResponse)
 
 		// 重新建立数据库连接
 		if err := db.ConnectDatabase(); err != nil {
