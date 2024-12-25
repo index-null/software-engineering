@@ -1,19 +1,27 @@
 <template>
   <div class="container">
-  <div class="log-reg-container">
-    <div class="left-side-container">
-      <div class="text-bold">用简单的文案</div>
-      <div class="text-bold-smaller">创作精彩的图片!</div>
-    </div>
-    <div class="right-side-container">
-      <div class="title">
-        <img src="@/assets/button-icon/文生图-gray.svg" alt="">
-        <div class="title-text">{{ appName }}</div>
+    <!-- 整体容器 -->
+    <div class="log-reg-container">
+      <!-- 左侧容器，包含欢迎文案 -->
+      <div class="left-side-container">
+        <div class="text-bold">用简单的文案</div>
+        <div class="text-bold-smaller">创作精彩的图片!</div>
       </div>
-      <el-tabs type="border-card">
-        <el-tab-pane label="登录">
-          <!-- <el-card class="box-card"> -->
+      
+      <!-- 右侧容器，包含登录和注册表单 -->
+      <div class="right-side-container">
+        <!-- 标题区域，包含应用图标和名称 -->
+        <div class="title">
+          <img src="@/assets/button-icon/文生图-gray.svg" alt="">
+          <div class="title-text">{{ appName }}</div>
+        </div>
+        
+        <!-- 标签页组件，包含登录和注册两个标签页 -->
+        <el-tabs type="border-card">
+          <!-- 登录标签页 -->
+          <el-tab-pane label="登录">
             <h2>登录</h2>
+            <!-- 登录表单 -->
             <el-form
               :model="loginForm"
               status-icon
@@ -34,15 +42,17 @@
                 ></el-input>
               </el-form-item>
             </el-form>
+            <!-- 登录表单按钮组 -->
             <div class="btn-group">
               <el-button type="primary" @click="submitLoginForm('loginForm')">登录</el-button>
               <el-button @click="resetLoginForm('loginForm')">重置</el-button>
             </div>
-          <!-- </el-card> -->
-        </el-tab-pane>
-        <el-tab-pane label="注册">
-          <!-- <el-card class="box-card"> -->
+          </el-tab-pane>
+          
+          <!-- 注册标签页 -->
+          <el-tab-pane label="注册">
             <h2>注册</h2>
+            <!-- 注册表单 -->
             <el-form
               :model="registerForm"
               status-icon
@@ -73,17 +83,16 @@
                 ></el-input>
               </el-form-item>
             </el-form>
+            <!-- 注册表单按钮组 -->
             <div class="btn-group">
               <el-button type="primary" @click="submitRegisterForm('registerForm')">提交</el-button>
               <el-button @click="resetRegisterForm('registerForm')">重置</el-button>
             </div>
-          <!-- </el-card> -->
-        </el-tab-pane>
-        
-      </el-tabs>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>

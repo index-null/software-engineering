@@ -1,6 +1,9 @@
 <template>
   <div>
+    <!-- 标题区域 -->
     <h2 class="history-title">历史记录</h2> 
+
+    <!-- 日期选择器和查询按钮 -->
     <div class="block" style="margin-left:50px;margin-top: 50px;">
       <span class="demonstration"></span>
       <el-date-picker
@@ -10,30 +13,60 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       ></el-date-picker>
-    <el-button  icon="el-icon-check" circle @click="handleDateChange()"></el-button>
+      <el-button icon="el-icon-check" circle @click="handleDateChange()"></el-button>
     </div>
-    <el-button type="primary" icon="el-icon-delete" class="delete-button" @click="removemoreRecord">批量管理</el-button>
+
+    <!-- 批量管理按钮 -->
+    <el-button 
+      type="primary" 
+      icon="el-icon-delete" 
+      class="delete-button" 
+      @click="removemoreRecord"
+    >
+      批量管理
+    </el-button>
+
+    <!-- 搜索框 -->
     <div style="margin-top: 50px;">
-    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
-    <el-button slot="append" icon="el-icon-search" @click="searchimage"></el-button>
-    </el-input>
+      <el-input 
+        placeholder="请输入内容" 
+        v-model="input" 
+        class="input-with-select"
+      >
+        <el-button 
+          slot="append" 
+          icon="el-icon-search" 
+          @click="searchimage"
+        >
+          搜索
+        </el-button>
+      </el-input>
     </div>
+
+    <!-- 历史记录展示区域 -->
     <div class="history-container">
+      <!-- 如果有历史记录则显示图片卡片 -->
       <div v-if="historyRecords && historyRecords.length" class="image-gallery-container">
-        <div v-for="image in historyRecords" :key="image.id" class="image-card" @mouseover="hoveredImage = image.id" 
-        @mouseleave="hoveredImage = null">
-        <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
+        <div 
+          v-for="image in historyRecords" 
+          :key="image.id" 
+          class="image-card" 
+          @mouseover="hoveredImage = image.id" 
+          @mouseleave="hoveredImage = null"
+        >
+          <el-checkbox v-model="checked[image.id]"></el-checkbox><br />
           <img :src="image.url" :alt="image.name" class="image">
-          <!-- <div font="微软雅黑">图片ID:{{ image.id }} 点赞数量:{{ image.likecount }}</div> -->
+          
+          <!-- 悬停时显示的操作按钮 -->
           <div class="overlay" v-if="hoveredImage === image.id">
-            <button  circle  @click="downloadImage(image)">下载图像</button>
-            <button  round @click="deleteRecord(image)">删除</button> 
-            <button  round @click="addFavoriteImage(image)">收藏</button> 
+            <button circle @click="downloadImage(image)">下载图像</button>
+            <button round @click="deleteRecord(image)">删除</button> 
+            <button round @click="addFavoriteImage(image)">收藏</button> 
           </div>
         </div>
       </div>
 
-      <!-- 提示没有收藏 -->
+      <!-- 如果没有历史记录则显示提示信息 -->
       <div v-else>
         <img :src="require('@/assets/nofavorites.png')" alt="暂无历史记录">
         <h1>暂无历史记录</h1>
