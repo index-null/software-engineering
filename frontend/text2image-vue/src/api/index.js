@@ -11,6 +11,7 @@ apiClient.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
         if (token) {
+            // 将 token 添加到请求头
             config.headers.Authorization = `${token}`;
         }
         return config;
