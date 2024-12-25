@@ -16,11 +16,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       ></el-date-picker>
-<<<<<<< HEAD
-    <el-button  icon="el-icon-check" circle @click="handleDateChange()" class="date-button"></el-button>
-=======
       <el-button icon="el-icon-check" circle @click="handleDateChange()"></el-button>
->>>>>>> 1bb33e9b4dff2f8967e404c8886d98f258b8542f
     </div>
 
     <!-- 批量管理按钮 -->
@@ -35,12 +31,6 @@
 
     <!-- 搜索框 -->
     <div style="margin-top: 50px;">
-<<<<<<< HEAD
-      <span class="search-input-label">搜索：</span>
-    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
-    <el-button slot="append" icon="el-icon-search" @click="searchimage"></el-button>
-    </el-input>
-=======
       <el-input 
         placeholder="请输入内容" 
         v-model="input" 
@@ -54,7 +44,6 @@
           搜索
         </el-button>
       </el-input>
->>>>>>> 1bb33e9b4dff2f8967e404c8886d98f258b8542f
     </div>
 
     <!-- 历史记录展示区域 -->
