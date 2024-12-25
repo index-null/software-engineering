@@ -10,43 +10,49 @@ import (
 	"time"
 )
 
+// Input 结构体定义了请求的输入参数
 type Input struct {
-	Prompt string `json:"prompt"`
+	Prompt string `json:"prompt"` // Prompt 是输入的文本提示
 }
 
+// Parameters 结构体定义了请求的参数
 type Parameters struct {
-	//Style string `json:"style"`
-	Size string `json:"size"`
-	//N    int    `json:"n"`// 默认为4
+	//Style string `json:"style"` // Style 定义了生成图像的风格，目前未使用
+	Size string `json:"size"`   // Size 定义了生成图像的尺寸
+	//N    int    `json:"n"`     // N 定义了生成图像的数量，默认为4
 }
 
+// RequestBody 结构体定义了API请求的主体内容
 type RequestBody struct {
-	Model      string     `json:"model"`
-	Input      Input      `json:"input"`
-	Parameters Parameters `json:"parameters"`
+	Model      string     `json:"model"`      // Model 定义了使用的模型名称
+	Input      Input      `json:"input"`      // Input 定义了请求的输入参数
+	Parameters Parameters `json:"parameters"` // Parameters 定义了请求的参数
 }
 
+// TaskResponse 结构体用于解析创建任务的响应
 type TaskResponse struct {
 	Output struct {
-		TaskStatus string `json:"task_status"`
-		TaskID     string `json:"task_id"`
+		TaskStatus string `json:"task_status"` // TaskStatus 定义了任务的状态
+		TaskID     string `json:"task_id"`     // TaskID 是创建的任务ID
 	} `json:"output"`
-	RequestID string `json:"request_id"`
+	RequestID string `json:"request_id"` // RequestID 是请求的唯一标识
 }
 
+// TaskStatusResponse 结构体用于解析任务状态的响应
 type TaskStatusResponse struct {
-	RequestID string `json:"request_id"`
+	RequestID string `json:"request_id"` // RequestID 是请求的唯一标识
 	Output    struct {
-		TaskStatus string `json:"task_status"`
-		TaskID     string `json:"task_id"`
-		Code       string `json:"code"`
-		Message    string `json:"message"`
+		TaskStatus string `json:"task_status"` // TaskStatus 定义了任务的状态
+		TaskID     string `json:"task_id"`     // TaskID 是创建的任务ID
+		Code       string `json:"code"`        // Code 是响应的状态码
+		Message    string `json:"message"`     // Message 是响应的消息
 		Result     []struct {
-			URL string `json:"url"`
-		} `json:"results"`
+			URL string `json:"url"` // URL 是生成的图像链接
+		} `json:"results"` // Result 是生成的结果列表
 	} `json:"output"`
 }
 
+// main 函数是程序的入口点
 func main() {
 	// 创建 HTTP 客户端
 	client := &http.Client{}
